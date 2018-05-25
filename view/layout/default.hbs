@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>
+            {{ title }}
+        </title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/dist/css/bootstrap.css">
+        <link rel="stylesheet" type="text/css" href="/vendor/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="/vendor/datatables/media/css/dataTables.bootstrap4.min.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/style/main.css">
+
+        <!-- Scripts -->
+        <script type="text/javascript" src="/vendor/jquery/dist/jquery.min.js" defer></script>
+        <script type="text/javascript" src="/vendor/tether/dist/js/tether.min.js" defer></script>
+        <script type="text/javascript" src="/vendor/bootstrap/dist/js/bootstrap.js" defer></script>
+        <script type="text/javascript" src="/vendor/moment/min/moment.min.js" defer></script>
+        <script type="text/javascript" src="/vendor/Chart.js/dist/Chart.min.js" defer></script>
+        <script type="text/javascript" src="/vendor/datatables/media/js/jquery.dataTables.min.js" defer></script>
+        <script type="text/javascript" src="/vendor/datatables/media/js/dataTables.bootstrap4.min.js" defer></script>
+
+        <!-- Polyfills -->
+        <script src="/vendor/better-dom/dist/better-dom.min.js" defer></script>
+        <script src="/vendor/better-i18n-plugin/dist/better-i18n-plugin.js" defer></script>
+        <script src="/vendor/better-dateinput-polyfill/dist/better-dateinput-polyfill.js" defer></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-inverse">
+            <div class="container-fluid">
+                <a class="navbar-brand" href='/'>
+                    Pain Reporting Portal
+                </a>
+                <ul class="nav navbar-nav pull-right">
+                    <li class="nav-item active">
+                        <a href="#" class="nav-link">
+                            <i class="fa fa-cog fa-lg"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        {{{ content }}}
+    </body>
+</html>

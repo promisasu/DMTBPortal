@@ -1,0 +1,77 @@
+<div class="modal fade" id="addTrial" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>
+                        &times;
+                    </span>
+                    <span class="sr-only">
+                        Close
+                    </span>
+                </button>
+                <h4 class="modal-title">
+                    Add New Trial
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="add-trial-form" action="/trial" method="POST">
+                    <div class="form-group">
+                        <label for="trial-name">
+                            Name
+                        </label>
+                        <input id="trial-name" class="form-control" name="name" type="text" pattern=".{3,}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trial-description">
+                            Description
+                        </label>
+                        <input id="trial-description" class="form-control" name="description" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trial-irb">
+                            IRB ID
+                        </label>
+                        <input id="trial-irb" class="form-control" name="IRBID" type="text" pattern=".{4,}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trial-start">
+                            IRB Start Date
+                        </label>
+                        <input id="trial-start" class="form-control" name="IRBStart" type="date" min="{{ today }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trial-end">
+                            IRB End Date
+                        </label>
+                        <input id="trial-end" class="form-control" name="IRBEnd" type="date" min="{{ today }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="target-count">
+                            Target Count
+                        </label>
+                        <input id="trial-count" class="form-control" type="number" min="0" name="targetCount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stage-count">
+                            No of Stages
+                        </label>
+                        <input id="stage-count" class="form-control" type="number" min="0" name="stagecount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stage-name">
+                            Stage Name (Comma Separated List)
+                        </label>
+                        <input id="stage-name" class="form-control" pattern="^[\w ]+(,[\w ]+)*$" type="text" min="0" name="stageName" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                </button>
+                <input type="submit" value="Add" class="btn btn-primary" form="add-trial-form">
+            </div>
+        </div>
+    </div>
+</div>

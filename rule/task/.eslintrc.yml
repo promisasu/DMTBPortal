@@ -1,0 +1,4 @@
+rules:
+    max-params:
+        - error
+        - 6

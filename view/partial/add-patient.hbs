@@ -1,0 +1,68 @@
+<style>
+    .modal-backdrop.in {
+        opacity: 1;
+    }
+</style>
+
+<div class="modal fade" id="addPatient" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>
+                        &times;
+                    </span>
+                    <span class="sr-only">
+                        Close
+                    </span>
+                </button>
+                <h4 class="modal-title">
+                    Add New Patient
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="add-patient-form" action="/patient" method="POST">
+                    <input type="hidden" name="trialId" value="{{ trial.id }}">
+                    <div class="form-group">
+                        <label for="patient-stage">
+                            Stage
+                        </label>
+                        <select class="form-control" name="stageId" id="patient-stage" required>
+                            {{#each stages}}
+                                <option value="{{ id }}">
+                                    {{ name }}
+                                </option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-start">
+                            Patient Start Date
+                        </label>
+                        <input id="patient-start" class="form-control" name="startDate" type="date" min="{{ today }}" value="{{ today }}" required>
+                    </div>
+                    <div id="patient-end-group" class="form-group">
+                        <label for="patient-end">
+                            Patient End Date
+                        </label>
+                        <input id="patient-end" class="form-control form-control-warning" name="endDate" type="date" min="{{ today }}" value = "{{ endDate }}" data-recommended-end="{{ endDate }}" data-irb-end="{{ trial.end }}" required>
+                        <p id="patient-end-default-warning" class="hidden-xl-down">
+                            End date has been changed from the recommended default
+                        </p>
+                        <p id="patient-end-irb-warning" class="hidden-xl-down">
+                            Patient end date has passed the IRB end date
+                        </p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                </button>
+                <input type="submit" value="Add" class="btn btn-primary" form="add-patient-form">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/script/add-patient.js" defer></script>

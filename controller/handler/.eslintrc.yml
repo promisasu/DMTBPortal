@@ -1,0 +1,8 @@
+rules:
+    global-require: warn
+    max-params:
+        - error
+        - 6
+    max-nested-callbacks:
+        - error
+        - 3

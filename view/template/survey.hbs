@@ -1,0 +1,59 @@
+<div class="container-fluid">
+    <br>
+    <ol class="breadcrumb">
+        <li>
+            <a href="/">
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="/trial/{{ trial.id }}">
+                Trial: {{ trial.name }}
+            </a>
+        </li>
+        <li>
+            <a href="/patient/{{ patient.pin }}">
+                Patient: {{ patient.pin }}
+            </a>
+        </li>
+        <li class="active">
+            Survey: {{ survey.id }}
+        </li>
+    </ol>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-block">
+                    <h4 class="card-title">
+                        {{ survey.name }}
+                    </h4>
+                    <p class="card-text">
+                        Available: from {{ survey.startTime }} to {{ survey.endTime }}.
+                        <br>
+                        Taken: {{#if survey.userSubmissionTime}}{{ survey.userSubmissionTime }}{{else}}survey has not been taken{{/if}}.
+                    </p>
+                    {{#each questions}}
+                        <div class="card">
+                            <div class="card-block">
+                                <h4 class="card-title">
+                                    Question #{{ this.0.questionOrder }}
+                                </h4>
+                                <p class="card-text">
+                                    <strong>
+                                        Prompt:
+                                    </strong>
+                                    {{ this.0.questionText }}
+                                    <br>
+                                    <strong>
+                                        Answer:
+                                    </strong>
+                                    {{#each this}}{{ optionText }} {{/each}}
+                                </p>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

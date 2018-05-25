@@ -1,0 +1,46 @@
+env:
+    browser: true
+    jquery: true
+    node: false
+    es6: false
+
+plugins:
+    - html
+
+globals:
+    Chart: true
+    moment: true
+
+rules:
+    # Possible Errors
+    no-console: off
+
+    # Best Practices
+    block-scoped-var: error
+    vars-on-top: error
+    new-cap: off
+    no-invalid-this: off
+    no-loop-func: error
+    # no-magic-numbers:
+    #     - error
+    #     - ignoreArrayIndexes: true
+    no-new: off
+
+    # Strict Mode
+    strict:
+        - error
+        - global
+
+    # Stylistic Issues
+    require-jsdoc: off
+    spaced-comment: off
+
+    # ECMAScript 6
+    no-var: off
+    object-shorthand: off
+    prefer-arrow-callback: off
+    prefer-const: off
+    prefer-reflect: off
+    prefer-rest-params: off
+    prefer-spread: off
+    prefer-template: off
