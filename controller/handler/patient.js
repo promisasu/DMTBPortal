@@ -44,7 +44,7 @@ function patientView (request, reply) {
                 ON si.PatientPinFK = pa.PatientPin
                 JOIN stage AS st
                 ON st.StageId = pa.StageIdFK
-                WHERE pa.PatientPin = ?
+                WHERE pa.PatientPin = ? and si.activityTitle != 'Fruit Run'
                 ORDER BY si.StartTime
                 `, {
                     type: database.sequelize.QueryTypes.SELECT,
