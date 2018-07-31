@@ -6,33 +6,33 @@
   </target>
 
 <target name="nodeins">
-  	<exec dir="." executable="npm.cmd">
+  	<exec dir="." executable="npm">
   		<arg line="install"/>
   	</exec>
   </target>
 
 
 <target name="npminit" depends="nodeins">
-    <exec dir="." executable="npm.cmd">
+    <exec dir="." executable="npm">
    <arg line="run init_new ${env} ${portal_server_host} ${portal_server_port} ${portal_db_host} ${portal_db_name} ${db_user} ${db_pass} ${db_server} ${formPostUrl} ${apiUrl} ${opioid} ${opioid_oxycodone} ${opioid_hydromorphone}"/>
     </exec>
   </target>
 
 <target name="createUserSchema" depends="npminit">
-    <exec dir="." executable="npm.cmd">
+    <exec dir="." executable="npm">
       <arg line="run preuser"/>
     </exec>
   </target>
 
 
 <target name="npmuser" depends="createUserSchema">
-    <exec dir="." executable="npm.cmd">
+    <exec dir="." executable="npm">
       <arg line="run user_new ${user} ${role} ${password}"/>
     </exec>
   </target>
 
   <target name="startportal" depends="npmuser">
-    <exec dir="." executable="npm.cmd">
+    <exec dir="." executable="npm">
       <arg line="run start"/>
     </exec>
   </target>
