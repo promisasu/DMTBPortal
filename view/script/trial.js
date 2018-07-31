@@ -32,7 +32,8 @@
         var element = document.getElementById('add-patient-btn');
         var trialId = element.getAttribute('data-trial-id');
 
-        window.location = '/enroll/' + trialId;
+        //window.location = '/enroll/' + trialId;
+        window.location = '/patient';
     });
 
     new Chart(ctx, {

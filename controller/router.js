@@ -1,6 +1,7 @@
 'use strict';
-
-const Joi = require('joi');
+const BaseJoi = require('joi');
+const Extension = require('joi-date-extensions');
+const Joi = BaseJoi.extend(Extension);
 const moment = require('moment');
 
 const createTrial = require('./handler/create-trial');
@@ -13,6 +14,7 @@ const patientCSV = require('./handler/patient-csv');
 const trialCSV = require('./handler/trial-csv');
 const surveyPresenter = require('./handler/survey');
 const webFormPresenter = require('./handler/webform');
+const testPresenter = require('./handler/test');
 const webFormPresenterPost = require('./handler/webformPost');
 const errorHandler = require('./handler/errorHandler');
 const minimumNameLength = 3;
@@ -138,29 +140,30 @@ module.exports = [
     {
         method: 'POST',
         path: '/patient',
-        handler: createPatient,
-        config: {
-            validate: {
-                payload: {
-                    stageId: Joi
-                        .number()
-                        .integer()
-                        .positive(),
-                    trialId: Joi
-                        .number()
-                        .integer()
-                        .positive(),
-                    startDate: Joi
-                        .date()
-                        .format('MM-DD-YYYY')
-                        .min(moment().startOf('day').toDate()),
-                    endDate: Joi
-                        .date()
-                        .format('MM-DD-YYYY')
-                        .min(Joi.ref('startDate'))
-                }
-            }
-        }
+        handler: testPresenter
+        // config: {
+        //     validate: {
+        //         payload: {
+        //             stageId: Joi
+        //                 .number()
+        //                 .integer()
+        //                 .positive(),
+        //             trialId: Joi
+        //                 .number()
+        //                 .integer()
+        //                 .positive(),
+        //             startDate: Joi
+        //                 .date()
+        //                 .format('MM-DD-YYYY')
+        //                 .min(moment().startOf('day').toDate()),
+        //             endDate: Joi
+        //                 .date()
+        //                 .format('MM-DD-YYYY')
+        //                 .min(Joi.ref('startDate'))
+        //         }
+        //     }
+        // }
+
     },
     {
         method: 'GET',

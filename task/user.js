@@ -60,7 +60,9 @@ read({
     });
 })
 .then(() => {
-    return userModel.create(newUser);
+    var x = userModel.create(newUser);
+    console.log(x);
+    return x;
 })
 .then(() => {
     console.log('');

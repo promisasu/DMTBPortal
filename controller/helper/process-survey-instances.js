@@ -36,10 +36,12 @@ function processSurveyInstances (surveys) {
         }
         labels.push.apply(labels, dataSet.dates);
     }
+
     const numberOfDays = 1;
-    const endDateforChart = moment(labels[labels.length - 1]).add(numberOfDays, 'day');
+    const endDateforChart = moment(labels[labels.length - 1],viewDateFormat).add(numberOfDays, 'day');
 
     labels.push(moment(endDateforChart).format(viewDateFormat));
+  
 
     return {
         labels: labels,
@@ -87,11 +89,13 @@ function pickTimeLeft (surveys) {
             return survey.activityTitle === activityTitle;
         }));
     }
+
     let returnArray = [];
 
     for (let i = 0; i < surveyTypes.length; i++) {
         if (surveyTypes[i].length > 0) {
             let samplePoint = surveyTypes[i][0];
+
             let dataPoints = surveyTypes[i].map((survey) => {
                 return calculateTimeLeft(
                     moment(survey.StartTime),
@@ -99,8 +103,9 @@ function pickTimeLeft (surveys) {
                     moment(survey.ActualSubmissionTime)
                 );
             });
+
             let dates = surveyTypes[i].map((survey) => {
-                return moment(survey.StartTime).format(viewDateFormat);
+                return moment(survey.EndTime).format(viewDateFormat);
             });
             let dataArr = {
                 label: '% Time left until ' + samplePoint.activityTitle + ' expired',
@@ -116,7 +121,6 @@ function pickTimeLeft (surveys) {
             returnArray.push(dataArr);
         }
     }
-
     return returnArray;
 }
 
@@ -145,6 +149,7 @@ function calculateTimeLeft (openTime, endTime, completedTime) {
 
     // calculate the time in hours until end time
     const totalAvailibleTime = endTime.diff(openTime, 'hours');
+
     let percentTimeLeft = minTime;
 
     if (completedTime !== null && !isNaN(completedTime)) {
@@ -172,7 +177,7 @@ function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidRes
         return moment(survey.StartTime).format(viewDateFormat);
     });
     const numberOfDays = 1;
-    const endDateforChart = moment(labels[labels.length - 1]).add(numberOfDays, 'day');
+    const endDateforChart = moment(labels[labels.length - 1],viewDateFormat).add(numberOfDays, 'day');
 
     labels.push(moment(endDateforChart).format(viewDateFormat));
 
