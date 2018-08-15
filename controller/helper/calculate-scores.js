@@ -108,7 +108,7 @@ function calculatePromisScores (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -178,7 +178,7 @@ function calculatePR_Fatigue (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -260,7 +260,7 @@ function calculatePR_Anxiety (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -332,7 +332,7 @@ function calculatePR_PhyFuncMob (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -404,7 +404,7 @@ function calculatePR_PainInt (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -570,7 +570,7 @@ function getOpioidActualValuesCalculated (opioidResults) {
                 y: 0
             };
 
-            date = moment(singleSurveyBlock[key][0].StartTime).format(viewDateFormat);
+            date = moment.utc(singleSurveyBlock[key][0].StartTime).format(viewDateFormat);
             returnDict[date] = 0;
             singleSurveyBlock[key].forEach((survey) => {
                 survey.dosage = survey.dosage.replace(' ', '');

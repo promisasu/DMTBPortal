@@ -38,9 +38,9 @@ function processSurveyInstances (surveys) {
     }
 
     const numberOfDays = 1;
-    const endDateforChart = moment(labels[labels.length - 1],viewDateFormat).add(numberOfDays, 'day');
+    const endDateforChart = moment.utc(labels[labels.length - 1],viewDateFormat).add(numberOfDays, 'day');
 
-    labels.push(moment(endDateforChart).format(viewDateFormat));
+    labels.push(moment.utc(endDateforChart).format(viewDateFormat));
   
 
     return {
@@ -56,16 +56,16 @@ function processSurveyInstances (surveys) {
  */
 function pickDates (surveys) {
     const dates = surveys.map((survey) => {
-        return moment(survey.StartTime).format(viewDateFormat);
+        return moment.utc(survey.StartTime).format(viewDateFormat);
     });
 
     if (surveys[0]) {
         // Adding an additional week to include all the dates in compliance chart.
         // This is done because chart js plots only the first day of the week.
         const numberOfDays = 1;
-        const endDateforChart = moment(surveys[surveys.length - 1].EndTime).add(numberOfDays, 'day');
+        const endDateforChart = moment.utc(surveys[surveys.length - 1].EndTime).add(numberOfDays, 'day');
 
-        dates.push(moment(endDateforChart).format(viewDateFormat));
+        dates.push(moment.utc(endDateforChart).format(viewDateFormat));
     }
 
     return dates;
@@ -98,14 +98,14 @@ function pickTimeLeft (surveys) {
 
             let dataPoints = surveyTypes[i].map((survey) => {
                 return calculateTimeLeft(
-                    moment(survey.StartTime),
-                    moment(survey.EndTime),
-                    moment(survey.ActualSubmissionTime)
+                    moment.utc(survey.StartTime),
+                    moment.utc(survey.EndTime),
+                    moment.utc(survey.ActualSubmissionTime)
                 );
             });
 
             let dates = surveyTypes[i].map((survey) => {
-                return moment(survey.EndTime).format(viewDateFormat);
+                return moment.utc(survey.ActualSubmissionTime).format(viewDateFormat);
             });
             let dataArr = {
                 label: '% Time left until ' + samplePoint.activityTitle + ' expired',
@@ -174,12 +174,12 @@ function calculateTimeLeft (openTime, endTime, completedTime) {
  */
 function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidResults) {
     let labels = surveys.map((survey) => {
-        return moment(survey.StartTime).format(viewDateFormat);
+        return moment.utc(survey.StartTime).format(viewDateFormat);
     });
     const numberOfDays = 1;
-    const endDateforChart = moment(labels[labels.length - 1],viewDateFormat).add(numberOfDays, 'day');
+    const endDateforChart = moment.utc(labels[labels.length - 1],viewDateFormat).add(numberOfDays, 'day');
 
-    labels.push(moment(endDateforChart).format(viewDateFormat));
+    labels.push(moment.utc(endDateforChart).format(viewDateFormat));
 
     let datasets = pickClinicianDataset(surveys, surveyDetails, bodyPainResults, opioidResults, labels);
 
@@ -395,7 +395,7 @@ function getPainIntensity (bodyPainResults, labels) {
             let date = new Date();
 
             singleBodyPainAnswer[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 if (isInt(answer.optionText)) {
                     bodyPainScore = parseInt(answer.optionText);
                 }

@@ -172,17 +172,17 @@ function patientView (request, reply) {
                 trial: currentTrial,
                 surveys: surveyInstances.map((surveyInstance) => {
                     const surveyInstanceCopy = Object.assign({}, surveyInstance);
+                    surveyInstanceCopy.startTime = moment.utc(surveyInstanceCopy.StartTime)
 
-                    surveyInstanceCopy.startTime = moment(surveyInstanceCopy.StartTime)
                         .format('MM-DD-YYYY');
-                    surveyInstanceCopy.endTime = moment(surveyInstanceCopy.EndTime)
+                    surveyInstanceCopy.endTime = moment.utc(surveyInstanceCopy.EndTime)
                         .format('MM-DD-YYYY');
                     if (surveyInstanceCopy.UserSubmissionTime) {
-                        surveyInstanceCopy.UserSubmissionTime = moment(surveyInstanceCopy.UserSubmissionTime)
+                        surveyInstanceCopy.UserSubmissionTime = moment.utc(surveyInstanceCopy.UserSubmissionTime)
                             .format('MM-DD-YYYY h:mma');
                     }
                     if (surveyInstanceCopy.ActualSubmissionTime) {
-                        surveyInstanceCopy.ActualSubmissionTime = moment(surveyInstanceCopy.ActualSubmissionTime)
+                        surveyInstanceCopy.ActualSubmissionTime = moment.utc(surveyInstanceCopy.ActualSubmissionTime)
                             .format('MM-DD-YYYY h:mma');
                     }
 

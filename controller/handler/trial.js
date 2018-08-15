@@ -20,7 +20,7 @@ const httpNotFound = 404;
  */
 function trialView (request, reply) {
     const trial = database.sequelize.model('trial');
-    const startDate = moment('2016-11-23');
+    const startDate = moment.utc('2016-11-23');
 
     Promise
         .all([
@@ -161,9 +161,9 @@ function trialView (request, reply) {
                 } else {
                     patient.status = 'Pending';
                 }
-                patient.DateStarted = moment(patient.DateStarted)
+                patient.DateStarted = moment.utc(patient.DateStarted)
                     .format('MM-DD-YYYY');
-                patient.DateCompleted = moment(patient.DateCompleted)
+                patient.DateCompleted = moment.utc(patient.DateCompleted)
                     .format('MM-DD-YYYY');
 
                 return patient;
