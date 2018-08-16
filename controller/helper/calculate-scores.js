@@ -248,6 +248,7 @@ function calculatePR_Anxiety (surveyResults) {
         }
     });
 
+      
     for (let activityInstanceId in singleSurveyBlock) {
         if (singleSurveyBlock.hasOwnProperty(activityInstanceId)) {
             let result = {
@@ -290,6 +291,104 @@ function calculatePR_Anxiety (surveyResults) {
 
     return [resultSet, maxVal];
 }
+
+function calculateCough (surveyResults,problemType) {
+    let singleSurveyBlock = {};
+    let instanceId = '';
+    let resultSet = [];
+    let maxVal = 6;
+
+    console.log(",,,, In calculate cough .....");
+  //  console.log(surveyResults.questionType);
+    surveyResults.forEach((result) => {
+        let temp = {
+            questionId: result.questionId,
+            optionId: result.optionId,
+            optionText: result.optionText,
+            questionType: result.questionType,
+            StartTime: result.StartTime,
+            likertScale: result.likertScale,
+            patientType: result.patientType
+        };
+
+        if (typeof singleSurveyBlock[result.id] === 'undefined') {
+            singleSurveyBlock[result.id] = [temp];
+        } else {
+            singleSurveyBlock[result.id].push(temp);
+        }
+    });
+
+       // console.log("singleSurveyBlock : : :  .... " );
+    for (let activityInstanceId in singleSurveyBlock) {
+        console.log("act ins id :  -------  : "+activityInstanceId);
+        if (singleSurveyBlock.hasOwnProperty(activityInstanceId)) {
+            let result = {
+                x: '',
+                y: 0
+            };
+            let score = 0;
+            let date = new Date();
+            let questionType = '';
+            let patientType = '';
+            let questionId = -1;
+
+            singleSurveyBlock[activityInstanceId].forEach((answer) => {
+                console.log("--------------------------------------------------------");
+
+           //     console.log(singleSurveyBlock[activityInstanceId]);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                questionId = answer.questionId;
+                questionType = answer.questionType;
+                patientType = answer.patientType;
+                console.log(questionType);
+                //console.log(answer.likertScale +"  --  " + questionId + "  --  " + problemType);
+                if (isInt(answer.likertScale) && questionId == 25 && questionType === 'Biweekly' && problemType === 'Cough') {
+                    console.log("in cough.......");
+                 //   if (questionType.includes('PR_Anxiety')) {
+                        score = parseInt(answer.likertScale);
+                   // }
+                }
+                if (isInt(answer.likertScale) && questionId == 40 && questionType === 'Daily' && problemType === 'CoughWithBlood' ) {
+                 //   if (questionType.includes('PR_Anxiety')) {
+                    console.log("in cough with blood.......");
+                        score = parseInt(answer.likertScale);
+                   // }
+                }
+                if (isInt(answer.likertScale) && questionId == 41 && questionType === 'Daily'  && problemType === 'BreathingProblem' ) {
+                 //   if (questionType.includes('PR_Anxiety')) {
+                    console.log("in BreathingProblem.......");
+                        score = parseInt(answer.likertScale);
+                   // }
+                }
+                if (isInt(answer.likertScale) && questionId == 42 && questionType === 'Daily' && problemType === 'ChestPain') {
+                 //   if (questionType.includes('PR_Anxiety')) {
+                    console.log("in chest pain.......");
+                        score = parseInt(answer.likertScale);
+                   // }
+                }
+            });
+
+            // score = (score * 10) / 6;
+            // score = Math.round(score);
+            // if (questionType === 'PR_Anxiety_Adlt') {
+            //     score = PR_Anxiety_TScore_Adult[score];
+            //     maxVal = calculateConversionFactor(PR_Anxiety_TScore_Adult);
+            // } else if (questionType === 'PR_Anxiety_Chld') {
+            //     score = PR_Anxiety_TScore_Pediatric[score];
+            //     maxVal = calculateConversionFactor(PR_Anxiety_TScore_Pediatric);
+            // } else {
+            //     score = PR_Anxiety_TScore_Parent[score];
+            //     maxVal = calculateConversionFactor(PR_Anxiety_TScore_Parent);
+            // }
+            result.x = date;
+            result.y = score;
+            resultSet.push(result);
+        }
+    }
+
+    return [resultSet, maxVal];
+}
+
 
 /**
  * A helper function that calculates physical function.
@@ -605,5 +704,6 @@ module.exports = {
     calculatePR_PhyFuncMob: calculatePR_PhyFuncMob,
     opioidResultsCalculation: opioidResultsCalculation,
     opioidThresholdCalculation: opioidThresholdCalculation,
-    calculatePR_PainInt: calculatePR_PainInt
+    calculatePR_PainInt: calculatePR_PainInt,
+    calculateCough: calculateCough
 };
