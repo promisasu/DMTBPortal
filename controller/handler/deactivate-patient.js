@@ -15,6 +15,7 @@ const moment = require('moment');
  * @returns {Null} Redirect
  */
 function deactivatePatient (request, reply) {
+
     if (Number(request.params.pin) < 3000) {
         Promise
       .all([
@@ -26,7 +27,7 @@ function deactivatePatient (request, reply) {
               replacements: [
                   'DEACTIVATED',
                   'pending',
-                  moment().format('YYYY-MM-DD HH:mm:ss'),
+                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                   request.params.pin
               ],
               plain: true
@@ -38,7 +39,7 @@ function deactivatePatient (request, reply) {
           `, {
               type: database.sequelize.QueryTypes.UPDATE,
               replacements: [
-                  moment().format('YYYY-MM-DD HH:mm:ss'),
+                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                   request.params.pin
               ],
               plain: true
@@ -48,12 +49,12 @@ function deactivatePatient (request, reply) {
               `
               DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
               AND PatientPinFk = ?
-              AND activityTitle = 'Sickle Cell Daily Survey'
+              AND activityTitle = 'DMTB Daily Survey'
               `, {
                   type: database.sequelize.QueryTypes.UPDATE,
                   replacements: [
                       'DEACTIVATED',
-                      moment().format('YYYY-MM-DD HH:mm:ss'),
+                      moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                       request.params.pin
                   ],
                   plain: true
@@ -63,12 +64,12 @@ function deactivatePatient (request, reply) {
               `
               DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
               AND PatientPinFk = ?
-              AND activityTitle = 'Sickle Cell Weekly Survey'
+              AND activityTitle = 'DMTB Biweekly Survey'
               `, {
                   type: database.sequelize.QueryTypes.UPDATE,
                   replacements: [
                       'DEACTIVATED',
-                      moment().format('YYYY-MM-DD HH:mm:ss'),
+                      moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                       request.params.pin
                   ],
                   plain: true
@@ -95,7 +96,7 @@ function deactivatePatient (request, reply) {
               replacements: [
                   'DEACTIVATED',
                   'pending',
-                  moment().format('YYYY-MM-DD HH:mm:ss'),
+                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                   request.params.pin,
                   request.params.pin
               ],
@@ -107,12 +108,12 @@ function deactivatePatient (request, reply) {
           DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
           AND PatientPinFk
           IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
-          AND activityTitle = 'Sickle Cell Daily Survey'
+          AND activityTitle = 'DMTB Daily Survey'
           `, {
               type: database.sequelize.QueryTypes.UPDATE,
               replacements: [
                   'DEACTIVATED',
-                  moment().format('YYYY-MM-DD HH:mm:ss'),
+                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                   request.params.pin,
                   request.params.pin
               ],
@@ -124,12 +125,12 @@ function deactivatePatient (request, reply) {
           DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
           AND PatientPinFk
           IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
-          AND activityTitle = 'Sickle Cell Weekly Survey'
+          AND activityTitle = 'DMTB Biweekly Survey'
           `, {
               type: database.sequelize.QueryTypes.UPDATE,
               replacements: [
                   'DEACTIVATED',
-                  moment().format('YYYY-MM-DD HH:mm:ss'),
+                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                   request.params.pin,
                   request.params.pin
               ],

@@ -65,7 +65,7 @@ function trialCSV (request, reply) {
                 key: 'State5',
                 default: ''
             }];
-        query = 'Sickle Cell Weekly Survey';
+        query = 'DMTB Biweekly Survey';
     } else if (dailyregex.test(request.path) === true) {
         configuration = [
             {
@@ -259,7 +259,7 @@ function trialCSV (request, reply) {
                 default: ''
             }
         ];
-        query = 'Sickle Cell Daily Survey';
+        query = 'DMTB Daily Survey';
     } else {
         query = 'Unknown';
     }

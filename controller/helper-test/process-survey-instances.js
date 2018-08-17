@@ -5,9 +5,9 @@ const moment = require('moment');
 const processSurveyInstances = require('../helper/process-survey-instances');
 
 test('when survey is completed in one day with two days allowed', (t) => {
-    const open = moment('2000-01-01');
-    const close = moment('2000-01-03');
-    const completed = moment('2000-01-02');
+    const open = moment.utc('2000-01-01');
+    const close = moment.utc('2000-01-03');
+    const completed = moment.utc('2000-01-02');
 
     const result = processSurveyInstances.calculateTimeLeft(open, close, completed);
 
@@ -15,9 +15,9 @@ test('when survey is completed in one day with two days allowed', (t) => {
 });
 
 test('when survey is completed at end time', (t) => {
-    const open = moment('2000-01-01');
-    const close = moment('2000-01-02');
-    const completed = moment('2000-01-02');
+    const open = moment.utc('2000-01-01');
+    const close = moment.utc('2000-01-02');
+    const completed = moment.utc('2000-01-02');
 
     const result = processSurveyInstances.calculateTimeLeft(open, close, completed);
 
@@ -25,9 +25,9 @@ test('when survey is completed at end time', (t) => {
 });
 
 test('when survey is completed after end time', (t) => {
-    const open = moment('2000-01-01');
-    const close = moment('2000-01-02');
-    const completed = moment('2000-01-03');
+    const open = moment.utc('2000-01-01');
+    const close = moment.utc('2000-01-02');
+    const completed = moment.utc('2000-01-03');
 
     const result = processSurveyInstances.calculateTimeLeft(open, close, completed);
 

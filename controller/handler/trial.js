@@ -20,7 +20,7 @@ const httpNotFound = 404;
  */
 function trialView (request, reply) {
     const trial = database.sequelize.model('trial');
-    const startDate = moment('2016-11-23');
+    const startDate = moment.utc('2016-11-23');
 
     Promise
         .all([
@@ -60,22 +60,22 @@ function trialView (request, reply) {
             database.sequelize.query(
                 `
                 SELECT pa.PatientPin,
-                SUM(si.State = 'expired' and si.activityTitle = 'Sickle Cell Weekly Survey') AS expiredWeeklyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'Sickle Cell Weekly Survey') AS completedWeeklyCount,
-                SUM(si.State = 'expired' and si.activityTitle = 'Sickle Cell Daily Survey') AS expiredDailyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'Sickle Cell Daily Survey') AS completedDailyCount,
+                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Biweekly Survey') AS expiredWeeklyCount,
+                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Biweekly Survey') AS completedWeeklyCount,
+                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Daily Survey') AS expiredDailyCount,
+                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Daily Survey') AS completedDailyCount,
                 SUM(si.State = 'pending') AS pendingCount,
                 SUM(si.State = 'DEACTIVATED') AS deactivatedCount,
-                SUM(si.State = 'expired' and si.activityTitle = 'Sickle Cell Weekly Survey'
+                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Biweekly Survey'
                     and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
                     and si.EndTime < now()) AS expiredTrendingWeeklyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'Sickle Cell Weekly Survey'
+                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Biweekly Survey'
                     and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
                     and si.EndTime < now()) AS completedTrendingWeeklyCount,
-                SUM(si.State = 'expired' and si.activityTitle = 'Sickle Cell Daily Survey'
+                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Daily Survey'
                     and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
                     and si.EndTime < now()) AS expiredTrendingDailyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'Sickle Cell Daily Survey'
+                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Daily Survey'
                     and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
                     and si.EndTime < now()) AS completedTrendingDailyCount
                 FROM activity_instance AS si
@@ -98,7 +98,7 @@ function trialView (request, reply) {
               `
               SELECT State, EndTime, PatientPinFK
               FROM activity_instance
-              WHERE activityTitle = 'Sickle Cell Weekly Survey'
+              WHERE activityTitle = 'DMTB Biweekly Survey'
               AND EndTime > DATE_SUB(now(),INTERVAL 8 DAY)
               AND EndTime <= now()
               AND State != 'pending'
@@ -143,7 +143,7 @@ function trialView (request, reply) {
                 } else {
                     patient.lastWeekly = ' ---- ';
                 }
-
+            
                 // collect the compliance status as well as expiredCount
                 if (patientStatus) {
                     patient.trialStatus = patientStatus.trialStatus;
@@ -161,9 +161,9 @@ function trialView (request, reply) {
                 } else {
                     patient.status = 'Pending';
                 }
-                patient.DateStarted = moment(patient.DateStarted)
+                patient.DateStarted = moment.utc(patient.DateStarted)
                     .format('MM-DD-YYYY');
-                patient.DateCompleted = moment(patient.DateCompleted)
+                patient.DateCompleted = moment.utc(patient.DateCompleted)
                     .format('MM-DD-YYYY');
 
                 return patient;
