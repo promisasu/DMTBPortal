@@ -8,6 +8,11 @@ const boom = require('boom');
 const database = require('../../model');
 const moment = require('moment');
 
+var propReader = require('properties-reader');
+var queryProp = propReader('query.properties');
+var parameterProp = propReader('parameter.properties');
+
+
 /**
  * Deactivates a patient
  * @param {Request} request - Hapi request
@@ -16,62 +21,30 @@ const moment = require('moment');
  */
 function deactivatePatient (request, reply) {
 
-    if (Number(request.params.pin) < 3000) {
+ //   if (Number(request.params.pin) < 3000) {
         Promise
       .all([
           database.sequelize.query(
-          `
-          UPDATE activity_instance SET State = ? WHERE State = ? AND EndTime >= ? AND PatientPinFk = ?
-          `, {
+          queryProp.get('sql.deacivatePatient')
+          , {
               type: database.sequelize.QueryTypes.UPDATE,
-              replacements: [
-                  'DEACTIVATED',
-                  'pending',
-                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                  request.params.pin
-              ],
+              replacements: [parameterProp.get('activity.deactivate'),parameterProp.get('activity.currentstate'),moment.utc().format('YYYY-MM-DD HH:mm:ss'),request.params.pin],
               plain: true
           }
         ),
           database.sequelize.query(
-          `
-          UPDATE patients SET DateCompleted = ? WHERE PatientPin = ?
-          `, {
+            queryProp.get('sql.setCompleteDate')
+          , {
               type: database.sequelize.QueryTypes.UPDATE,
-              replacements: [
-                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                  request.params.pin
-              ],
+              replacements: [moment.utc().format('YYYY-MM-DD HH:mm:ss'),request.params.pin],
               plain: true
           }
         ),
           database.sequelize.query(
-              `
-              DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
-              AND PatientPinFk = ?
-              AND activityTitle = 'DMTB Daily Survey'
-              `, {
+              queryProp.get('sql.deleteDeactivated')
+              , {
                   type: database.sequelize.QueryTypes.UPDATE,
-                  replacements: [
-                      'DEACTIVATED',
-                      moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                      request.params.pin
-                  ],
-                  plain: true
-              }
-        ),
-          database.sequelize.query(
-              `
-              DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
-              AND PatientPinFk = ?
-              AND activityTitle = 'DMTB Biweekly Survey'
-              `, {
-                  type: database.sequelize.QueryTypes.UPDATE,
-                  replacements: [
-                      'DEACTIVATED',
-                      moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                      request.params.pin
-                  ],
+                  replacements: [parameterProp.get('activity.deactivate'),moment.utc().format('YYYY-MM-DD HH:mm:ss'),request.params.pin,parameterProp.get('activity.biweekly'),parameterProp.get('activity.daily')],
                   plain: true
               }
         )
@@ -84,69 +57,6 @@ function deactivatePatient (request, reply) {
 
           return reply(boom.conflict());
       });
-    } else if (Number(request.params.pin) > 4000) {
-        Promise
-      .all([
-          database.sequelize.query(
-          `
-          UPDATE activity_instance SET State = ? WHERE State = ? AND EndTime >= ? AND PatientPinFk
-          IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?));
-          `, {
-              type: database.sequelize.QueryTypes.UPDATE,
-              replacements: [
-                  'DEACTIVATED',
-                  'pending',
-                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                  request.params.pin,
-                  request.params.pin
-              ],
-              plain: true
-          }
-      ),
-          database.sequelize.query(
-          `
-          DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
-          AND PatientPinFk
-          IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
-          AND activityTitle = 'DMTB Daily Survey'
-          `, {
-              type: database.sequelize.QueryTypes.UPDATE,
-              replacements: [
-                  'DEACTIVATED',
-                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                  request.params.pin,
-                  request.params.pin
-              ],
-              plain: true
-          }
-      ),
-          database.sequelize.query(
-          `
-          DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
-          AND PatientPinFk
-          IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
-          AND activityTitle = 'DMTB Biweekly Survey'
-          `, {
-              type: database.sequelize.QueryTypes.UPDATE,
-              replacements: [
-                  'DEACTIVATED',
-                  moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                  request.params.pin,
-                  request.params.pin
-              ],
-              plain: true
-          }
-      )
-      ])
-      .then(() => {
-          return reply();
-      }).catch((err) => {
-          request.log('error', err);
-          console.log(err);
-
-          return reply(boom.conflict());
-      });
-    }
 }
 
 module.exports = deactivatePatient;

@@ -9,6 +9,10 @@ const processSurveyInstances = require('../helper/process-survey-instances');
 const moment = require('moment');
 const httpNotFound = 404;
 
+var propReader = require('properties-reader');
+var queryProp = propReader('query.properties');
+var parameterProp = propReader('parameter.properties');
+
 
 /**
  * A dashboard with an overview of a specific patient.
@@ -17,17 +21,29 @@ const httpNotFound = 404;
  * @returns {View} Rendered page
  */
 function patientView (request, reply) {
-    console.log('patient js');
+  
     Promise
         .all([
             database.sequelize.query(
-                `
-                SELECT pa.PatientPin, pa.ParentPinFK, st.Name AS stage
-                FROM patients AS pa
-                JOIN stage AS st
-                ON st.StageId = pa.StageIdFK
-                WHERE pa.PatientPin = ?
-                `, {
+              queryProp.get('sql.currentPatient')
+              , {
+                    type: database.sequelize.QueryTypes.SELECT,
+                    replacements: [
+                        request.params.pin  
+                    ],
+                    plain: true
+                }
+            ),
+            database.sequelize.query(
+                queryProp.get('sql.surveyInstances')
+                , {
+                    type: database.sequelize.QueryTypes.SELECT,
+                    replacements: [request.params.pin,parameterProp.get('activity.game')]
+                }
+            ),
+            database.sequelize.query(
+                queryProp.get('sql.currentTrial')
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
                     replacements: [
                         request.params.pin
@@ -36,149 +52,31 @@ function patientView (request, reply) {
                 }
             ),
             database.sequelize.query(
-                `
-                SELECT pa.DateCompleted, si.ActivityInstanceId, si.StartTime, si.EndTime, si.UserSubmissionTime,
-                si.ActualSubmissionTime, si.activityTitle,si.State as state, st.Name AS stageName
-                FROM patients AS pa
-                JOIN activity_instance AS si
-                ON si.PatientPinFK = pa.PatientPin
-                JOIN stage AS st
-                ON st.StageId = pa.StageIdFK
-                WHERE pa.PatientPin = ? and si.activityTitle != 'Fruit Run'
-                ORDER BY si.StartTime
-                `, {
+              queryProp.get('sql.surveyResults')
+              , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [
-                        request.params.pin
-                    ]
+                    replacements: [ request.params.pin,parameterProp.get('activity.State.completed'),parameterProp.get('activity.biweekly')]
                 }
             ),
             database.sequelize.query(
-                `
-                SELECT tr.Name, tr.TrialId
-                FROM patients AS pa
-                JOIN stage AS st
-                ON st.StageId = pa.StageIdFK
-                JOIN trial AS tr
-                ON tr.TrialId = st.TrialId
-                WHERE pa.PatientPin = ?
-                `, {
+              queryProp.get('sql.opioidResults')
+           , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [
-                        request.params.pin
-                    ],
-                    plain: true
+                    replacements: [ request.params.pin,parameterProp.get('activity.State.completed'),parameterProp.get('activity.daily')]
                 }
             ),
             database.sequelize.query(
-                `
-                SELECT ai.PatientPinFK as pin, ai.activityTitle as name,
-                ai.UserSubmissionTime as date, act.ActivityInstanceIdFk as id,
-                act.questionIdFk as questionId, act.questionOptionIdFk as optionId,
-                ans.OptionText as optionText, que.SurveyBlockIdFk as questionType,
-                ai.StartTime as StartTime, ans.likertScale as likertScale, pi.type as patientType
-                FROM question_result act
-                JOIN questions que
-                ON act.questionIdFk = que.QuestionId
-                JOIN question_options ans
-                ON act.questionOptionIdFk = ans.QuestionOptionId
-                JOIN activity_instance ai
-                ON act.ActivityInstanceIdFk = ai.ActivityInstanceId
-                JOIN patients pi
-                ON ai.PatientPinFK = pi.PatientPin
-                WHERE act.ActivityInstanceIdFk
-                IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ?
-                and State='completed' and (activityTitle='DMTB Biweekly Survey' ));
-
-                `, {
+              queryProp.get('sql.bodyPainResults')
+              , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [
-                        request.params.pin
-                    ]
+                    replacements: [request.params.pin,parameterProp.get('activity.State.completed')]
                 }
             ),
             database.sequelize.query(
-              `
-              SELECT ai.PatientPinFK as pin, ai.activityTitle as name,
-               ai.UserSubmissionTime as date, act.ActivityInstanceIdFk as id,
-               act.questionIdFk as questionId, act.questionOptionIdFk as optionId,
-               ans.OptionText as optionText, act.dosage, que.SurveyBlockIdFk as questionType,
-               ai.StartTime as StartTime, ans.likertScale as likertScale,
-               pi.type as patientType, mi.prescribedDosage,
-               mi.noOfTablets as prescribedNoOfTablets
-               FROM question_result act
-               JOIN questions que
-               ON act.questionIdFk = que.QuestionId
-               JOIN question_options ans
-               ON act.questionOptionIdFk = ans.QuestionOptionId
-               JOIN activity_instance ai
-               ON act.ActivityInstanceIdFk = ai.ActivityInstanceId
-               JOIN patients pi
-               ON ai.PatientPinFK = pi.PatientPin
-               JOIN medication_information mi
-               ON mi.PatientPINFK = ai.PatientPinFK and mi.MedicationName = ans.optionText
-               WHERE act.ActivityInstanceIdFk
-               IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ?
-               and State='completed' and ai.activityTitle='DMTB Daily Survey');
-                `, {
+                queryProp.get('sql.dailySurvey')
+            , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [
-                        request.params.pin
-                    ]
-                }
-            ),
-            database.sequelize.query(
-                `
-                SELECT ai.PatientPinFK as pin, ai.activityTitle as name,
-                ai.UserSubmissionTime as date, act.ActivityInstanceIdFk as id,
-                act.questionIdFk as questionId, act.questionOptionIdFk as optionId,
-                ans.OptionText as optionText, que.SurveyBlockIdFk as questionType,
-                ai.StartTime as StartTime, ans.likertScale as likertScale, pi.type as patientType
-                FROM question_result act
-                JOIN questions que
-                ON act.questionIdFk = que.QuestionId
-                JOIN question_options ans
-                ON act.questionOptionIdFk = ans.QuestionOptionId
-                JOIN activity_instance ai
-                ON act.ActivityInstanceIdFk = ai.ActivityInstanceId
-                JOIN patients pi
-                ON ai.PatientPinFK = pi.PatientPin
-                WHERE act.ActivityInstanceIdFk
-                IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ?
-                and State='completed' and que.questionId IN (74));
-
-                `, {
-                    type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [
-                        request.params.pin
-                    ]
-                }
-            ),
-            database.sequelize.query(
-                `
-                SELECT ai.PatientPinFK as pin, ai.activityTitle as name,
-                ai.UserSubmissionTime as date, act.ActivityInstanceIdFk as id,
-                act.questionIdFk as questionId, act.questionOptionIdFk as optionId,
-                ans.OptionText as optionText, que.SurveyBlockIdFk as questionType,
-                ai.StartTime as StartTime, ans.likertScale as likertScale, pi.type as patientType
-                FROM question_result act
-                JOIN questions que
-                ON act.questionIdFk = que.QuestionId
-                JOIN question_options ans
-                ON act.questionOptionIdFk = ans.QuestionOptionId
-                JOIN activity_instance ai
-                ON act.ActivityInstanceIdFk = ai.ActivityInstanceId
-                JOIN patients pi
-                ON ai.PatientPinFK = pi.PatientPin
-                WHERE act.ActivityInstanceIdFk
-                IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ?
-                and State='completed' and (activityTitle='DMTB Daily Survey' ));
-
-                `, {
-                    type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [
-                        request.params.pin
-                    ]
+                    replacements: [request.params.pin,parameterProp.get('activity.State.completed'),parameterProp.get('activity.daily')]
                 }
             )
 
@@ -189,7 +87,6 @@ function patientView (request, reply) {
             if (!currentPatient) {
                 throw new Error('patient does not exist');
             }
-            console.log("Score chart ....");
             let clinicalValuesChart = processSurveyInstances.processClinicanData(
                 surveyInstances, surveyResults, bodyPainResults, opioidResults,dailySurvey
                 );

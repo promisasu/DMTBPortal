@@ -13,7 +13,7 @@
 function deduplicate (rows, properties) {
     const current = {};
     const copyOfRows = Object.assign([], rows);
-
+  
     return copyOfRows.map((row) => {
         for (const property of properties) {
             if (property === 'date') {
@@ -24,7 +24,6 @@ function deduplicate (rows, properties) {
             if(row[property] === 'null'){
                 row[property]='';
                 current[property]='';
-                console.log("---------- In deduplicate --- NULLLLL -------------");
             }
             if (row[property] === current[property]) {
                 row[property] = '';
