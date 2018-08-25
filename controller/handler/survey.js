@@ -71,11 +71,11 @@ const configuration = [
  */
 function surveyCSV (request, reply) {
     database.sequelize.query(
-      queryProp.get('sql.csvSurvey')
-      ,
+        queryProp.get('sql.csvSurvey')
+        ,
         {
             type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin,request.params.activityInstanceId,parameterProp.get('activity.State.completed') ]
+            replacements: [request.params.pin,request.params.activityInstanceId,parameterProp.get('activity.State.completed')]
         }
     )
     .then((optionsWithAnswers) => {

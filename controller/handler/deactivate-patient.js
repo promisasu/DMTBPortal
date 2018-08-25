@@ -21,7 +21,6 @@ var parameterProp = propReader('parameter.properties');
  */
 function deactivatePatient (request, reply) {
 
- //   if (Number(request.params.pin) < 3000) {
         Promise
       .all([
           database.sequelize.query(
