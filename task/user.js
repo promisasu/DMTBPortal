@@ -20,60 +20,60 @@ const newUser = {};
 read({
     prompt: 'username:'
 })
-.then((username) => {
-    newUser.username = username;
+    .then((username) => {
+        newUser.username = username;
 
-    return read({
-        prompt: 'role:',
-        default: 'admin'
+        return read({
+            prompt: 'role:',
+            default: 'admin'
+        });
+    })
+    .then((role) => {
+        newUser.role = role;
+
+        console.log('');
+        console.log('password must have:');
+        console.log('at least 1 uppercase letter');
+        console.log('at least 1 lower letter');
+        console.log('at least 1 number or special character');
+        console.log('at least 8 characters in total length');
+        console.log('');
+
+        return read({
+            prompt: 'password:'
+        });
+    })
+    .then((password) => {
+        newUser.password = password;
+
+        return read({
+            prompt: 'repeat password:'
+        });
+    })
+    .then((password) => {
+        return new Promise((resolve, reject) => {
+            if (password === newUser.password) {
+                resolve();
+            } else {
+                reject('passwords did not match');
+            }
+        });
+    })
+    .then(() => {
+        var x = userModel.create(newUser);
+        console.log(x);
+        return x;
+    })
+    .then(() => {
+        console.log('');
+        console.log('user added');
+
+        return database.sequelize.close();
+    })
+    .catch((err) => {
+        console.error('');
+        console.error('/n', 'user could not be created because:');
+        console.error(err);
+
+        return database.sequelize.close();
     });
-})
-.then((role) => {
-    newUser.role = role;
-
-    console.log('');
-    console.log('password must have:');
-    console.log('at least 1 uppercase letter');
-    console.log('at least 1 lower letter');
-    console.log('at least 1 number or special character');
-    console.log('at least 8 characters in total length');
-    console.log('');
-
-    return read({
-        prompt: 'password:'
-    });
-})
-.then((password) => {
-    newUser.password = password;
-
-    return read({
-        prompt: 'repeat password:'
-    });
-})
-.then((password) => {
-    return new Promise((resolve, reject) => {
-        if (password === newUser.password) {
-            resolve();
-        } else {
-            reject('passwords did not match');
-        }
-    });
-})
-.then(() => {
-    var x = userModel.create(newUser);
-    console.log(x);
-    return x;
-})
-.then(() => {
-    console.log('');
-    console.log('user added');
-
-    return database.sequelize.close();
-})
-.catch((err) => {
-    console.error('');
-    console.error('/n', 'user could not be created because:');
-    console.error(err);
-
-    return database.sequelize.close();
-});

@@ -23,7 +23,7 @@ console.log('');
 
 var myArgs = process.argv.slice(2);
 
-try{
+try {
 
     config.environment = myArgs[0];
     config.dashboard = {};
@@ -36,10 +36,10 @@ try{
     config.database.password = myArgs[6];
     config.database.dialect = myArgs[7];
 
-    var salt=bcrypt.genSaltSync(numberOfHashIterations); 
-    
-    if(salt){
-    config.database.salt = salt;
+    var salt = bcrypt.genSaltSync(numberOfHashIterations);
+
+    if (salt) {
+        config.database.salt = salt;
     }
 
     config.webFormPostUrl = myArgs[8];
@@ -57,7 +57,7 @@ try{
     config.api.port = 3001;
 
     return writeFile(path.resolve(__dirname, '..', 'config.json'), JSON.stringify(config, null, jsonIndent));
-}catch(error){
+} catch (error) {
     console.error(error);
 }
 

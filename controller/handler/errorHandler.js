@@ -4,7 +4,7 @@
  * @module controller/handler/errorHandler
  */
 
- /**
+/**
   * An error page.
   * @param {Request} request - Hapi request
   * @param {Reply} reply - Hapi Reply

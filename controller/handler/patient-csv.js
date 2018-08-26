@@ -62,17 +62,17 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientCSV (request, reply) {
+function patientCSV(request, reply) {
     database.sequelize.query(
-        `SELECT ai.PatientPinFK AS pin, ai.activityTitle AS name, ai.UserSubmissionTime AS date, ai.ActivityInstanceId AS id,
-       act.questionIdFk AS questionId, que.QuestionText AS questionText, act.questionOptionIdFk AS optionId, ans.OptionText AS optionText,
-       act.dosage, act.value FROM activity_instance ai
+        `SELECT ai.PatientPinFK AS pin, ai.activityTitle AS name, ai.UserSubmissionTime AS date, ai.ActivityInstanceId 
+       AS id, act.questionIdFk AS questionId, que.QuestionText AS questionText, act.questionOptionIdFk AS optionId,
+       ans.OptionText AS optionText, act.dosage, act.value FROM activity_instance ai
        LEFT JOIN question_result act ON act.ActivityInstanceIdFk = ai.ActivityInstanceId
        LEFT JOIN questions que ON act.questionIdFk = que.QuestionId
        LEFT JOIN question_options ans ON act.questionOptionIdFk = ans.QuestionOptionId
        WHERE ai.ActivityInstanceId
-       IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ? AND (State ='completed' OR State ='expired') AND activityTitle != 'Fruit Run')
-       ORDER BY id;
+       IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ? AND (State ='completed' OR 
+       State ='expired') AND activityTitle != 'Fruit Run') ORDER BY id;
         `,
         {
             type: database.sequelize.QueryTypes.SELECT,
@@ -81,19 +81,19 @@ function patientCSV (request, reply) {
             ]
         }
     )
-    .then((optionsWithAnswers) => {
-        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-        const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+        .then((optionsWithAnswers) => {
+            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
 
-        return convertJsonToCsv(uniqueAnswers, configuration);
-    })
-    .then((csv) => {
-        return reply(csv).type('text/csv');
-    })
-    .catch((err) => {
-        console.log('error', err);
-        reply(boom.notFound('patient data not found'));
-    });
+            return convertJsonToCsv(uniqueAnswers, configuration);
+        })
+        .then((csv) => {
+            return reply(csv).type('text/csv');
+        })
+        .catch((err) => {
+            console.log('error', err);
+            reply(boom.notFound('patient data not found'));
+        });
 }
 
 module.exports = patientCSV;

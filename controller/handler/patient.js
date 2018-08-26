@@ -9,19 +9,18 @@ const processSurveyInstances = require('../helper/process-survey-instances');
 const moment = require('moment');
 const httpNotFound = 404;
 
-
 /**
  * A dashboard with an overview of a specific patient.
  * @param {Request} request - Hapi request
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientView (request, reply) {
+function patientView(request, reply) {
     console.log('patient js');
     Promise
         .all([
             database.sequelize.query(
-                `
+                    `
                 SELECT pa.PatientPin, pa.ParentPinFK, st.Name AS stage
                 FROM patients AS pa
                 JOIN stage AS st
@@ -36,7 +35,7 @@ function patientView (request, reply) {
                 }
             ),
             database.sequelize.query(
-                `
+                    `
                 SELECT pa.DateCompleted, si.ActivityInstanceId, si.StartTime, si.EndTime, si.UserSubmissionTime,
                 si.ActualSubmissionTime, si.activityTitle,si.State as state, st.Name AS stageName
                 FROM patients AS pa
@@ -98,7 +97,7 @@ function patientView (request, reply) {
                 }
             ),
             database.sequelize.query(
-              `
+                `
               SELECT ai.PatientPinFK as pin, ai.activityTitle as name,
                ai.UserSubmissionTime as date, act.ActivityInstanceIdFk as id,
                act.questionIdFk as questionId, act.questionOptionIdFk as optionId,
@@ -183,7 +182,8 @@ function patientView (request, reply) {
             )
 
         ])
-        .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,dailySurvey]) => {
+        .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,
+                   dailySurvey]) => {
             let dataChart = processSurveyInstances(surveyInstances);
 
             if (!currentPatient) {
@@ -191,8 +191,8 @@ function patientView (request, reply) {
             }
             console.log("Score chart ....");
             let clinicalValuesChart = processSurveyInstances.processClinicanData(
-                surveyInstances, surveyResults, bodyPainResults, opioidResults,dailySurvey
-                );
+                surveyInstances, surveyResults, bodyPainResults, opioidResults, dailySurvey
+            );
 
             return reply.view('patient', {
                 title: 'Pain Reporting Portal',

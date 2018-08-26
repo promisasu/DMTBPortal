@@ -8,36 +8,36 @@ test('when survey can be created', (t) => {
     const model = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        findOne () {
-            return {
-                addSurvey_instance () {
-                    return Promise.resolve();
-                }
-            };
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            findOne() {
+                return {
+                    addSurvey_instance() {
+                        return Promise.resolve();
+                    }
+                };
+            }
+        });
 
     model
-    .withArgs('survey_template')
-    .returns({
-        findById () {
-            return {
-                addSurvey_instance () {
-                    return Promise.resolve();
-                }
-            };
-        }
-    });
+        .withArgs('survey_template')
+        .returns({
+            findById() {
+                return {
+                    addSurvey_instance() {
+                        return Promise.resolve();
+                    }
+                };
+            }
+        });
 
     model
-    .withArgs('survey_instance')
-    .returns({
-        create () {
-            return Promise.resolve();
-        }
-    });
+        .withArgs('survey_instance')
+        .returns({
+            create() {
+                return Promise.resolve();
+            }
+        });
 
     const createSurveyInstance = proxyquire('../helper/create-survey-instance', {
         '../../model': {
@@ -56,28 +56,28 @@ test('when patient is invalid', (t) => {
     const model = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        findOne () {
-            return Promise.resolve(null);
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            findOne() {
+                return Promise.resolve(null);
+            }
+        });
 
     model
-    .withArgs('survey_template')
-    .returns({
-        findById () {
-            return Promise.resolve();
-        }
-    });
+        .withArgs('survey_template')
+        .returns({
+            findById() {
+                return Promise.resolve();
+            }
+        });
 
     model
-    .withArgs('survey_instance')
-    .returns({
-        create () {
-            return Promise.resolve();
-        }
-    });
+        .withArgs('survey_instance')
+        .returns({
+            create() {
+                return Promise.resolve();
+            }
+        });
 
     const createSurveyInstance = proxyquire('../helper/create-survey-instance', {
         '../../model': {
@@ -98,28 +98,28 @@ test('when survey template is invalid', (t) => {
     const model = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        findOne () {
-            return Promise.resolve({});
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            findOne() {
+                return Promise.resolve({});
+            }
+        });
 
     model
-    .withArgs('survey_template')
-    .returns({
-        findById () {
-            return Promise.resolve(null);
-        }
-    });
+        .withArgs('survey_template')
+        .returns({
+            findById() {
+                return Promise.resolve(null);
+            }
+        });
 
     model
-    .withArgs('survey_instance')
-    .returns({
-        create () {
-            return Promise.resolve({});
-        }
-    });
+        .withArgs('survey_instance')
+        .returns({
+            create() {
+                return Promise.resolve({});
+            }
+        });
 
     const createSurveyInstance = proxyquire('../helper/create-survey-instance', {
         '../../model': {

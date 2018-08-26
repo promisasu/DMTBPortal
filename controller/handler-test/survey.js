@@ -149,12 +149,12 @@ test.cb('when survey does not exist', (t) => {
     });
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve([]));
+        .onFirstCall()
+        .returns(Promise.resolve([]));
 
     query
-    .onSecondCall()
-    .returns(Promise.resolve(null));
+        .onSecondCall()
+        .returns(Promise.resolve(null));
 
     const survey = proxyquire('../handler/survey', {
         '../../model': {

@@ -1,5 +1,5 @@
 'use strict';
-(function patient () {
+(function patient() {
     var isNewPatient = window.location.search;
     var isNewPatientRegex = /newPatient=true/;
 
@@ -62,7 +62,7 @@
         }
     };
 
-    function redirect () {
+    function redirect() {
         var element = document.getElementById('deactivate-patient');
         var patientPin = element.getAttribute('data-patient-pin');
         var redirectUrl = '/';
@@ -73,7 +73,7 @@
         window.location = redirectUrl;
     }
 
-    function warningMessage () {
+    function warningMessage() {
         alert('patient could not be deactivated');
     }
 
@@ -83,14 +83,14 @@
     }
 
     document.getElementById('deactivate-patient')
-    .addEventListener('click', function deactivate () {
-        $.ajax({
-            url: window.location.pathname,
-            type: 'DELETE'
-        })
-        .done(redirect)
-        .fail(warningMessage);
-    });
+        .addEventListener('click', function deactivate() {
+            $.ajax({
+                url: window.location.pathname,
+                type: 'DELETE'
+            })
+                .done(redirect)
+                .fail(warningMessage);
+        });
 
     if (isNewPatientRegex.test(isNewPatient)) {
         $('#remember-patient-dialog').modal('show');

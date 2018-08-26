@@ -9,13 +9,13 @@ const database = require('../model');
 
 database.setup(require('../config.json').database);
 database
-.sequelize
-.sync({force: true})
-.then(() => {
-    return database.sequelize.close();
-})
-.catch((err) => {
-    console.error(err);
+    .sequelize
+    .sync({force: true})
+    .then(() => {
+        return database.sequelize.close();
+    })
+    .catch((err) => {
+        console.error(err);
 
-    return database.sequelize.close();
-});
+        return database.sequelize.close();
+    });

@@ -38,18 +38,18 @@ if (now < afterMidnight || now > beforeMidnight) {
     database.setup(configuration.database);
 
     expireSurveyInstances()
-    .then((data) => {
-        return console.log(data[0], 'survey instances expired');
-    })
-    .catch((err) => {
-        console.error(err);
-    });
+        .then((data) => {
+            return console.log(data[0], 'survey instances expired');
+        })
+        .catch((err) => {
+            console.error(err);
+        });
 
     runSurveyRules()
-    .then(() => {
-        return console.log('survey instances created on:', new Date());
-    })
-    .catch((err) => {
-        console.error(err);
-    });
+        .then(() => {
+            return console.log('survey instances created on:', new Date());
+        })
+        .catch((err) => {
+            console.error(err);
+        });
 }

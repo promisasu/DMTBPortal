@@ -16,7 +16,7 @@ const CustomMap = require('hashmap');
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function trialCSV (request, reply) {
+function trialCSV(request, reply) {
     const formatSpecifier = '%a %b %d %Y %T';
     let dailyregex = new RegExp('/trial/.-daily.csv', 'g');
     let weeklyregex = new RegExp('/trial/.-weekly.csv', 'g');
@@ -267,7 +267,7 @@ function trialCSV (request, reply) {
     // AND a.state IN ('completed','expired')
 
     database.sequelize.query(
-            `
+        `
         SELECT a.State, a.StartTime, p.DateStarted, p.PatientPin
         FROM activity_instance a
         JOIN patients p
@@ -303,12 +303,13 @@ function trialCSV (request, reply) {
             reply(boom.notFound('patient data not found'));
         });
 }
+
 /**
  * Forms a result set for the csv.
  * @param {Array} optionsWithAnswers - all options with answers.
  * @returns {Array} A result set.
  */
-function formatData (optionsWithAnswers) {
+function formatData(optionsWithAnswers) {
     let map = new CustomMap();
     let resultSet = [];
 
@@ -475,7 +476,6 @@ function formatData (optionsWithAnswers) {
                         case 35:
                             resultObject.State35 = determineStatus(innerRow.State);
                             break;
-
                     }
                 }
             }
@@ -514,7 +514,7 @@ function formatData (optionsWithAnswers) {
  * @param {string} status as a string.
  * @returns {string} status in terms of required csv format.
  */
-function determineStatus (status) {
+function determineStatus(status) {
     if (status === 'completed') {
         return 'Y';
     } else if (status === 'pending') {
