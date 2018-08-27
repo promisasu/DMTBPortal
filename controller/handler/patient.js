@@ -15,12 +15,12 @@ const httpNotFound = 404;
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientView(request, reply) {
+function patientView (request, reply) {
     console.log('patient js');
     Promise
         .all([
             database.sequelize.query(
-                    `
+                `
                 SELECT pa.PatientPin, pa.ParentPinFK, st.Name AS stage
                 FROM patients AS pa
                 JOIN stage AS st
@@ -35,7 +35,7 @@ function patientView(request, reply) {
                 }
             ),
             database.sequelize.query(
-                    `
+                `
                 SELECT pa.DateCompleted, si.ActivityInstanceId, si.StartTime, si.EndTime, si.UserSubmissionTime,
                 si.ActualSubmissionTime, si.activityTitle,si.State as state, st.Name AS stageName
                 FROM patients AS pa
@@ -183,13 +183,13 @@ function patientView(request, reply) {
 
         ])
         .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,
-                   dailySurvey]) => {
+            dailySurvey]) => {
             let dataChart = processSurveyInstances(surveyInstances);
 
             if (!currentPatient) {
                 throw new Error('patient does not exist');
             }
-            console.log("Score chart ....");
+            
             let clinicalValuesChart = processSurveyInstances.processClinicanData(
                 surveyInstances, surveyResults, bodyPainResults, opioidResults, dailySurvey
             );

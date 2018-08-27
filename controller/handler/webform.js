@@ -13,7 +13,7 @@ const configuration = require('../../config.json');
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function webform(request, reply) {
+function webform (request, reply) {
     return reply.view('webform', {
         title: 'Add a new Patient',
         webFormPostUrl: configuration.webFormPostUrl,

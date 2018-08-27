@@ -62,7 +62,7 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientCSV(request, reply) {
+function patientCSV (request, reply) {
     database.sequelize.query(
         `SELECT ai.PatientPinFK AS pin, ai.activityTitle AS name, ai.UserSubmissionTime AS date, ai.ActivityInstanceId 
        AS id, act.questionIdFk AS questionId, que.QuestionText AS questionText, act.questionOptionIdFk AS optionId,

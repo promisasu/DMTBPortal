@@ -18,7 +18,7 @@ const httpNotFound = 404;
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function trialView(request, reply) {
+function trialView (request, reply) {
     const trial = database.sequelize.model('trial');
     const startDate = moment.utc('2016-11-23');
 

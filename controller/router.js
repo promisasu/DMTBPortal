@@ -14,7 +14,6 @@ const patientCSV = require('./handler/patient-csv');
 const trialCSV = require('./handler/trial-csv');
 const surveyPresenter = require('./handler/survey');
 const webFormPresenter = require('./handler/webform');
-const testPresenter = require('./handler/test');
 const webFormPresenterPost = require('./handler/webformPost');
 const errorHandler = require('./handler/errorHandler');
 const minimumNameLength = 3;
