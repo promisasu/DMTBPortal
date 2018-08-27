@@ -33,10 +33,10 @@ user.then(() => {
 
     return database.sequelize.close();
 })
-.catch((err) => {
-    console.error('');
-    console.error('/n', 'user could not be created because:');
-    console.error(err);
+    .catch((err) => {
+        console.error('');
+        console.error('/n', 'user could not be created because:');
+        console.error(err);
 
-    return database.sequelize.close();
-});
+        return database.sequelize.close();
+    });

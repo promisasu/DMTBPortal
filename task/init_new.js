@@ -23,7 +23,6 @@ console.log('');
 
 const myArgs = process.argv.slice(2);
 
-try {
     config.environment = myArgs[0];
     config.dashboard = {};
     config.dashboard.hostname = myArgs[1];
@@ -56,7 +55,4 @@ try {
     config.api.port = 3001;
 
     return writeFile(path.resolve(__dirname, '..', 'config.json'), JSON.stringify(config, null, jsonIndent));
-} catch (error) {
-    console.error(error);
-}
 

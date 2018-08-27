@@ -273,8 +273,7 @@ function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidRe
  * @returns {Array<Object>} data for the chart
  */
 function getCoughScore (surveyDetails, labels, problemType) {
-    let promisScores = calculateScores.calculateCough(surveyDetails, problemType);
-        
+    let promisScores = calculateScores.calculateCough(surveyDetails, problemType);    
     return createMultiLinePoints(promisScores[0], labels, 1);
 }
 
