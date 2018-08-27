@@ -19,30 +19,24 @@ const myArgs = process.argv.slice(2);
 
 const newUser = {};
 
-try {
-    newUser.username = myArgs[0];
-    newUser.role = myArgs[1];
-    newUser.password = myArgs[2];
+newUser.username = myArgs[0];
+newUser.role = myArgs[1];
+newUser.password = myArgs[2];
 
-    const user = new Promise(function (resolve, reject) {
-        resolve(userModel.create(newUser));
-    });
+const user = new Promise((resolve, reject) => {
+    resolve(userModel.create(newUser));
+});
 
-    user.then(() => {
-        console.log('');
-        console.log('user added');
+user.then(() => {
+    console.log('');
+    console.log('user added');
 
-        return database.sequelize.close();
-    }).then(() => {
-        console.log('');
-
-        process.exit(0);
-    });
-
-} catch (error) {
+    return database.sequelize.close();
+})
+.catch((err) => {
     console.error('');
     console.error('/n', 'user could not be created because:');
-    console.error(error);
-    
+    console.error(err);
+
     return database.sequelize.close();
-}
+});

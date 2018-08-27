@@ -267,13 +267,14 @@ function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidRe
 
 /**
  * Takes in a Survey Instances and processes to get opioid equivalence
- * @param {Array<Object>} opioidResults - list of survey instances
+ * @param {Array<Object>} surveyDetails - details of the survey
  * @param {Array<Object>} labels - labels for the chart
+ * @param {Array<Object>} problemType - category of the score
  * @returns {Array<Object>} data for the chart
  */
 function getCoughScore (surveyDetails, labels, problemType) {
     let promisScores = calculateScores.calculateCough(surveyDetails, problemType);
-    
+        
     return createMultiLinePoints(promisScores[0], labels, 1);
 }
 
