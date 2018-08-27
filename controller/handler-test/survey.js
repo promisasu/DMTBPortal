@@ -141,12 +141,12 @@ test.cb('when survey does not exist', (t) => {
     const query = sinon.stub();
 
     model
-    .withArgs('survey_instance')
-    .returns({
-        findById () {
-            return Promise.resolve(null);
-        }
-    });
+        .withArgs('survey_instance')
+        .returns({
+            findById () {
+     		    return Promise.resolve(null);
+            }
+        });
 
     query
         .onFirstCall()
