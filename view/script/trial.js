@@ -1,5 +1,5 @@
 'use strict';
-(function trial() {
+(function trial () {
     var data = {
         labels: [
             'Non-compliant',
@@ -28,7 +28,7 @@
     patientsTable.draw();
 
     document.getElementById('add-patient-btn')
-        .addEventListener('click', function addNewPatient() {
+        .addEventListener('click', function addNewPatient () {
             var element = document.getElementById('add-patient-btn');
             var trialId = element.getAttribute('data-trial-id');
 

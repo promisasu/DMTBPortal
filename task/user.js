@@ -60,8 +60,10 @@ read({
         });
     })
     .then(() => {
-        var x = userModel.create(newUser);
+        const x = userModel.create(newUser);
+
         console.log(x);
+        
         return x;
     })
     .then(() => {
