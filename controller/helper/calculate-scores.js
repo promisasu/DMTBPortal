@@ -70,7 +70,7 @@ const config = require('../../config.json');
  * @param {Array<Object>} surveyResults - Array of Weekly surveyResults
  * @returns {Array<Object>} - Processed result set containing PROMIS scores
  */
-function calculatePromisScores(surveyResults) {
+function calculatePromisScores (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -142,7 +142,7 @@ function calculatePromisScores(surveyResults) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with fatigue scores
  */
-function calculatePR_Fatigue(surveyResults) {
+function calculatePR_Fatigue (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -215,7 +215,7 @@ function calculatePR_Fatigue(surveyResults) {
  * @param {Array<Object>} data - set of scores
  * @returns {Number} - conversion factor
  */
-function calculateConversionFactor(data) {
+function calculateConversionFactor (data) {
     return 100 / data[data.length - 1];
 }
 
@@ -224,7 +224,7 @@ function calculateConversionFactor(data) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with anxiety scores
  */
-function calculatePR_Anxiety(surveyResults) {
+function calculatePR_Anxiety (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -291,14 +291,18 @@ function calculatePR_Anxiety(surveyResults) {
     return [resultSet, maxVal];
 }
 
-function calculateCough(surveyResults, problemType) {
+/**
+ * A helper function that calculates cough scores.
+ * @param {Array<Object>} surveyResults - set of questions responses
+ * @param {Array<Object>} problemType - set of score categories 
+ * @returns {Array<Object>} - array of results with cough scores
+ */
+function calculateCough (surveyResults, problemType) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
     let maxVal = 6;
 
-    console.log(",,,, In calculate cough .....");
-    //  console.log(surveyResults.questionType);
     surveyResults.forEach((result) => {
         let temp = {
             questionId: result.questionId,
@@ -317,9 +321,7 @@ function calculateCough(surveyResults, problemType) {
         }
     });
 
-    // console.log("singleSurveyBlock : : :  .... " );
     for (let activityInstanceId in singleSurveyBlock) {
-        console.log("act ins id :  -------  : " + activityInstanceId);
         if (singleSurveyBlock.hasOwnProperty(activityInstanceId)) {
             let result = {
                 x: '',
@@ -332,53 +334,25 @@ function calculateCough(surveyResults, problemType) {
             let questionId = -1;
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                console.log("--------------------------------------------------------");
-
-                //     console.log(singleSurveyBlock[activityInstanceId]);
                 date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionId = answer.questionId;
                 questionType = answer.questionType;
                 patientType = answer.patientType;
-                console.log(questionType);
-                //console.log(answer.likertScale +"  --  " + questionId + "  --  " + problemType);
+            
                 if (isInt(answer.likertScale) && questionId == 25 && questionType === 'Biweekly' && problemType === 'Cough') {
-                    console.log("in cough.......");
-                    //   if (questionType.includes('PR_Anxiety')) {
                     score = parseInt(answer.likertScale);
-                    // }
                 }
                 if (isInt(answer.likertScale) && questionId == 40 && questionType === 'Daily' && problemType === 'CoughWithBlood') {
-                    //   if (questionType.includes('PR_Anxiety')) {
-                    console.log("in cough with blood.......");
                     score = parseInt(answer.likertScale);
-                    // }
                 }
                 if (isInt(answer.likertScale) && questionId == 41 && questionType === 'Daily' && problemType === 'BreathingProblem') {
-                    //   if (questionType.includes('PR_Anxiety')) {
-                    console.log("in BreathingProblem.......");
                     score = parseInt(answer.likertScale);
-                    // }
                 }
                 if (isInt(answer.likertScale) && questionId == 42 && questionType === 'Daily' && problemType === 'ChestPain') {
-                    //   if (questionType.includes('PR_Anxiety')) {
-                    console.log("in chest pain.......");
                     score = parseInt(answer.likertScale);
-                    // }
                 }
             });
 
-            // score = (score * 10) / 6;
-            // score = Math.round(score);
-            // if (questionType === 'PR_Anxiety_Adlt') {
-            //     score = PR_Anxiety_TScore_Adult[score];
-            //     maxVal = calculateConversionFactor(PR_Anxiety_TScore_Adult);
-            // } else if (questionType === 'PR_Anxiety_Chld') {
-            //     score = PR_Anxiety_TScore_Pediatric[score];
-            //     maxVal = calculateConversionFactor(PR_Anxiety_TScore_Pediatric);
-            // } else {
-            //     score = PR_Anxiety_TScore_Parent[score];
-            //     maxVal = calculateConversionFactor(PR_Anxiety_TScore_Parent);
-            // }
             result.x = date;
             result.y = score;
             resultSet.push(result);
@@ -394,7 +368,7 @@ function calculateCough(surveyResults, problemType) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with physical func scores
  */
-function calculatePR_PhyFuncMob(surveyResults) {
+function calculatePR_PhyFuncMob (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -466,7 +440,7 @@ function calculatePR_PhyFuncMob(surveyResults) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with pain intensity scores
  */
-function calculatePR_PainInt(surveyResults) {
+function calculatePR_PainInt (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -538,7 +512,7 @@ function calculatePR_PainInt(surveyResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function opioidResultsCalculation(opioidResults) {
+function opioidResultsCalculation (opioidResults) {
     let returnArr = getOpioidActualValuesCalculated(opioidResults);
     let tempMax = 0;
     let i = 0;
@@ -569,7 +543,7 @@ function opioidResultsCalculation(opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function opioidThresholdCalculation(opioidResults) {
+function opioidThresholdCalculation (opioidResults) {
     let opioidVal = getOpioidTHresholdActualValue(opioidResults);
     let opioid = 0;
     let tempMax = 0;
@@ -598,7 +572,7 @@ function opioidThresholdCalculation(opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function getOpioidTHresholdActualValue(opioidResults) {
+function getOpioidTHresholdActualValue (opioidResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let oxy = 0;
@@ -629,7 +603,7 @@ function getOpioidTHresholdActualValue(opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function getOpioidActualValuesCalculated(opioidResults) {
+function getOpioidActualValuesCalculated (opioidResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -690,7 +664,7 @@ function getOpioidActualValuesCalculated(opioidResults) {
  * @param {Number} value - to be checked if a number
  * @returns {Boolean} - boolean value which returns if the value is a number or not
  */
-function isInt(value) {
+function isInt (value) {
     return !isNaN(value) && ((x) => {
         return (x | 0) === x;
     })(parseFloat(value));
