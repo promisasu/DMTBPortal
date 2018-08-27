@@ -274,7 +274,7 @@ function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidRe
  */
 function getCoughScore (surveyDetails, labels, problemType) {
     let promisScores = calculateScores.calculateCough(surveyDetails, problemType);
-  
+
     return createMultiLinePoints(promisScores[0], labels, 1);
 }
 
