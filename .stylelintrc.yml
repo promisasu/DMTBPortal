@@ -38,7 +38,7 @@ rules:
     declaration-block-no-duplicate-properties: true
     #declaration-block-no-ignored-properties: true
     declaration-block-no-shorthand-property-overrides: true
-    declaration-block-properties-order: alphabetical
+    #declaration-block-properties-order: alphabetical
     declaration-block-semicolon-newline-after: always
     declaration-block-semicolon-newline-before: null
     declaration-block-semicolon-space-after: null
@@ -51,7 +51,7 @@ rules:
     block-closing-brace-space-after: null
     block-closing-brace-space-before: null
     block-no-empty: true
-    block-no-single-line: true
+    #block-no-single-line: true
     block-opening-brace-newline-after: always
     block-opening-brace-newline-before: null
     block-opening-brace-space-after: null
