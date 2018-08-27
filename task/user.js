@@ -62,8 +62,6 @@ read({
     .then(() => {
         const x = userModel.create(newUser);
 
-        console.log(x);
-        
         return x;
     })
     .then(() => {

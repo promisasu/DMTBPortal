@@ -15,7 +15,7 @@ const userModel = database.sequelize.model('user');
 console.log('This utility will walk you through creating a new user.');
 console.log('');
 
-var myArgs = process.argv.slice(2);
+const myArgs = process.argv.slice(2);
 
 const newUser = {};
 
@@ -24,12 +24,11 @@ try {
     newUser.role = myArgs[1];
     newUser.password = myArgs[2];
 
-    var promise1 = new Promise(function (resolve, reject) {
-        console.log("Sucessssssss");
+    const user = new Promise(function (resolve, reject) {
         resolve(userModel.create(newUser));
     });
 
-    promise1.then(() => {
+    user.then(() => {
         console.log('');
         console.log('user added');
 
@@ -44,5 +43,6 @@ try {
     console.error('');
     console.error('/n', 'user could not be created because:');
     console.error(error);
+    
     return database.sequelize.close();
 }

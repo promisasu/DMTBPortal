@@ -42,7 +42,6 @@ function processSurveyInstances (surveys) {
 
     labels.push(moment.utc(endDateforChart).format(viewDateFormat));
 
-
     return {
         labels: labels,
         datasets: datasets
@@ -178,7 +177,6 @@ function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidRes
     let labels = surveys.map((survey) => {
         return moment.utc(survey.StartTime).format(viewDateFormat);
     });
-    
     const numberOfDays = 1;
     const endDateforChart = moment.utc(labels[labels.length - 1], viewDateFormat).add(numberOfDays, 'day');
 
@@ -273,12 +271,9 @@ function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidRe
  * @param {Array<Object>} labels - labels for the chart
  * @returns {Array<Object>} data for the chart
  */
-
 function getCoughScore (surveyDetails, labels, problemType) {
     let promisScores = calculateScores.calculateCough(surveyDetails, problemType);
-    console.log("============= getCoughScore =============== ");
-    // console.log(promisScores);
-
+    
     return createMultiLinePoints(promisScores[0], labels, 1);
 }
 
@@ -336,14 +331,6 @@ function normalizeValues (data, conversionFactor = -1) {
     }
 
     return data;
-}
-
-/**
- * Takes in a Survey Instances and processes to compute PROMIS score
- * @param {Array<Object>} surveys - list of survey instances
- * @returns {Array<Object>} data for the chart
- */
-function calculatePromisScore (surveys) {
 }
 
 /**

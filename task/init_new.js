@@ -5,7 +5,7 @@
  * Writes a server configuration file.
  */
 
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const path = require('path');
 const read = require('./helper/read-promise');
 const writeFile = require('./helper/write-file-promise');
@@ -21,10 +21,9 @@ console.log('');
 console.log('general setup for project');
 console.log('');
 
-var myArgs = process.argv.slice(2);
+const myArgs = process.argv.slice(2);
 
 try {
-
     config.environment = myArgs[0];
     config.dashboard = {};
     config.dashboard.hostname = myArgs[1];
@@ -36,7 +35,7 @@ try {
     config.database.password = myArgs[6];
     config.database.dialect = myArgs[7];
 
-    var salt = bcrypt.genSaltSync(numberOfHashIterations);
+    const salt = bcrypt.genSaltSync(numberOfHashIterations);
 
     if (salt) {
         config.database.salt = salt;
