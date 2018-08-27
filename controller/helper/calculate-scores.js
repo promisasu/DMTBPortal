@@ -294,7 +294,7 @@ function calculatePR_Anxiety (surveyResults) {
 /**
  * A helper function that calculates cough scores.
  * @param {Array<Object>} surveyResults - set of questions responses
- * @param {Array<Object>} problemType - set of score categories 
+ * @param {Array<Object>} problemType - set of score categories
  * @returns {Array<Object>} - array of results with cough scores
  */
 function calculateCough (surveyResults, problemType) {
@@ -338,21 +338,20 @@ function calculateCough (surveyResults, problemType) {
                 questionId = answer.questionId;
                 questionType = answer.questionType;
                 patientType = answer.patientType;
-            
-                if (isInt(answer.likertScale) && questionId === 25 && questionType === 'Biweekly' && 
-                    problemType === 'Cough') {
+                if (isInt(answer.likertScale) && questionId === 25 && questionType === 'Biweekly'
+                    && problemType === 'Cough') {
                     score = parseInt(answer.likertScale);
                 }
-                if (isInt(answer.likertScale) && questionId === 40 && questionType === 'Daily' && 
-                    problemType === 'CoughWithBlood') {
+                if (isInt(answer.likertScale) && questionId === 40 && questionType === 'Daily'
+                    && problemType === 'CoughWithBlood') {
                     score = parseInt(answer.likertScale);
                 }
-                if (isInt(answer.likertScale) && questionId === 41 && questionType === 'Daily' && 
-                    problemType === 'BreathingProblem') {
+                if (isInt(answer.likertScale) && questionId === 41 && questionType === 'Daily'
+                    && problemType === 'BreathingProblem') {
                     score = parseInt(answer.likertScale);
                 }
-                if (isInt(answer.likertScale) && questionId === 42 && questionType === 'Daily' && 
-                    problemType === 'ChestPain') {
+                if (isInt(answer.likertScale) && questionId === 42 && questionType === 'Daily'
+                    && problemType === 'ChestPain') {
                     score = parseInt(answer.likertScale);
                 }
             });
@@ -365,7 +364,6 @@ function calculateCough (surveyResults, problemType) {
 
     return [resultSet, maxVal];
 }
-
 
 /**
  * A helper function that calculates physical function.

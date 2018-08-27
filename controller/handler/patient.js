@@ -189,7 +189,6 @@ function patientView (request, reply) {
             if (!currentPatient) {
                 throw new Error('patient does not exist');
             }
-            
             let clinicalValuesChart = processSurveyInstances.processClinicanData(
                 surveyInstances, surveyResults, bodyPainResults, opioidResults, dailySurvey
             );
