@@ -14,13 +14,13 @@ const moment = require('moment');
  * @param {Reply} reply - Hapi Reply
  * @returns {Null} Redirect
  */
-function deactivatePatient(request, reply) {
+function deactivatePatient (request, reply) {
 
     if (Number(request.params.pin) < 3000) {
         Promise
             .all([
                 database.sequelize.query(
-                        `
+                    `
               UPDATE activity_instance SET State = ? WHERE State = ? AND EndTime >= ? AND PatientPinFk = ?
               `, {
                         type: database.sequelize.QueryTypes.UPDATE,
@@ -34,7 +34,7 @@ function deactivatePatient(request, reply) {
                     }
                 ),
                 database.sequelize.query(
-                        `
+                    `
               UPDATE patients SET DateCompleted = ? WHERE PatientPin = ?
               `, {
                         type: database.sequelize.QueryTypes.UPDATE,
@@ -46,7 +46,7 @@ function deactivatePatient(request, reply) {
                     }
                 ),
                 database.sequelize.query(
-                        `
+                    `
                   DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
                   AND PatientPinFk = ?
                   AND activityTitle = 'DMTB Daily Survey'
@@ -61,7 +61,7 @@ function deactivatePatient(request, reply) {
                     }
                 ),
                 database.sequelize.query(
-                        `
+                    `
                   DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
                   AND PatientPinFk = ?
                   AND activityTitle = 'DMTB Biweekly Survey'
@@ -79,16 +79,16 @@ function deactivatePatient(request, reply) {
             .then(() => {
                 return reply();
             }).catch((err) => {
-            request.log('error', err);
-            console.log(err);
+                request.log('error', err);
+                console.log(err);
 
-            return reply(boom.conflict());
-        });
+                return reply(boom.conflict());
+            });
     } else if (Number(request.params.pin) > 4000) {
         Promise
             .all([
                 database.sequelize.query(
-                        `
+                    `
               UPDATE activity_instance SET State = ? WHERE State = ? AND EndTime >= ? AND PatientPinFk
               IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?));
               `, {
@@ -104,7 +104,7 @@ function deactivatePatient(request, reply) {
                     }
                 ),
                 database.sequelize.query(
-                        `
+                    `
               DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
               AND PatientPinFk
               IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
@@ -121,7 +121,7 @@ function deactivatePatient(request, reply) {
                     }
                 ),
                 database.sequelize.query(
-                        `
+                    `
               DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
               AND PatientPinFk
               IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
@@ -141,11 +141,11 @@ function deactivatePatient(request, reply) {
             .then(() => {
                 return reply();
             }).catch((err) => {
-            request.log('error', err);
-            console.log(err);
+                request.log('error', err);
+                console.log(err);
 
-            return reply(boom.conflict());
-        });
+                return reply(boom.conflict());
+            });
     }
 }
 
