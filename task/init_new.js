@@ -23,36 +23,36 @@ console.log('');
 
 const myArgs = process.argv.slice(2);
 
-    config.environment = myArgs[0];
-    config.dashboard = {};
-    config.dashboard.hostname = myArgs[1];
-    config.dashboard.port = parseInt(myArgs[2]);
-    config.database = {};
-    config.database.hostname = myArgs[3];
-    config.database.name = myArgs[4];
-    config.database.username = myArgs[5];
-    config.database.password = myArgs[6];
-    config.database.dialect = myArgs[7];
+config.environment = myArgs[0];
+config.dashboard = {};
+config.dashboard.hostname = myArgs[1];
+config.dashboard.port = parseInt(myArgs[2]);
+config.database = {};
+config.database.hostname = myArgs[3];
+config.database.name = myArgs[4];
+config.database.username = myArgs[5];
+config.database.password = myArgs[6];
+config.database.dialect = myArgs[7];
 
-    const salt = bcrypt.genSaltSync(numberOfHashIterations);
+const salt = bcrypt.genSaltSync(numberOfHashIterations);
 
-    if (salt) {
-        config.database.salt = salt;
-    }
+if (salt) {
+    config.database.salt = salt;
+}
 
-    config.webFormPostUrl = myArgs[8];
-    config.apiURL = myArgs[9];
+config.webFormPostUrl = myArgs[8];
+config.apiURL = myArgs[9];
 
-    config.opioid = {};
-    config.opioid.Tramadol = parseFloat(myArgs[10]);
-    config.opioid.Oxycodone = parseFloat(myArgs[11]);
+config.opioid = {};
+config.opioid.Tramadol = parseFloat(myArgs[10]);
+config.opioid.Oxycodone = parseFloat(myArgs[11]);
 
-    config.opioid.Dilaudid = parseFloat(myArgs[12]);
+config.opioid.Dilaudid = parseFloat(myArgs[12]);
 
-    // Gotta get rid of these dependencies in the near future
-    config.api = {};
-    config.api.hostname = 'localhost';
-    config.api.port = 3001;
+// Gotta get rid of these dependencies in the near future
+config.api = {};
+config.api.hostname = 'localhost';
+config.api.port = 3001;
 
-    return writeFile(path.resolve(__dirname, '..', 'config.json'), JSON.stringify(config, null, jsonIndent));
+return writeFile(path.resolve(__dirname, '..', 'config.json'), JSON.stringify(config, null, jsonIndent));
 
