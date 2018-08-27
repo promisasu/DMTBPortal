@@ -15,7 +15,6 @@ const moment = require('moment');
  * @returns {Null} Redirect
  */
 function deactivatePatient (request, reply) {
-
     if (Number(request.params.pin) < 3000) {
         Promise
             .all([

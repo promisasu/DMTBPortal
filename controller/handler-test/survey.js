@@ -144,7 +144,7 @@ test.cb('when survey does not exist', (t) => {
         .withArgs('survey_instance')
         .returns({
             findById () {
-     		    return Promise.resolve(null);
+                return Promise.resolve(null);
             }
         });
 
