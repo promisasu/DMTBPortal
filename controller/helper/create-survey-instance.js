@@ -17,7 +17,7 @@ const database = require('../../model');
  * @param {Transaction} transaction - DB transaction to group operations
  * @returns {Null} Returns when completed
  */
-function createSurveyInstance(patientPin, surveyTemplateId, startDate, openForDuration, openForUnit, transaction) {
+function createSurveyInstance (patientPin, surveyTemplateId, startDate, openForDuration, openForUnit, transaction) {
     const patient = database.sequelize.model('patient');
     const surveyTemplate = database.sequelize.model('survey_template');
     const surveyInstance = database.sequelize.model('survey_instance');
