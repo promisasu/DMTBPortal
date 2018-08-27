@@ -24,7 +24,7 @@ const validate = require('./helper/validate');
  * @param {Object} configuration - server options
  * @returns {Object} Hapi server instance
  */
-function dashboardServer(configuration) {
+function dashboardServer (configuration) {
     const server = new hapi.Server();
     const connectionOptions = {
         port: configuration.dashboard.port,

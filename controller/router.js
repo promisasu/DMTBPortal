@@ -137,34 +137,6 @@ module.exports = [
         }
     },
     {
-        method: 'POST',
-        path: '/patient',
-        handler: testPresenter
-        // config: {
-        //     validate: {
-        //         payload: {
-        //             stageId: Joi
-        //                 .number()
-        //                 .integer()
-        //                 .positive(),
-        //             trialId: Joi
-        //                 .number()
-        //                 .integer()
-        //                 .positive(),
-        //             startDate: Joi
-        //                 .date()
-        //                 .format('MM-DD-YYYY')
-        //                 .min(moment().startOf('day').toDate()),
-        //             endDate: Joi
-        //                 .date()
-        //                 .format('MM-DD-YYYY')
-        //                 .min(Joi.ref('startDate'))
-        //         }
-        //     }
-        // }
-
-    },
-    {
         method: 'GET',
         path: '/patient/{pin}',
         handler: patientPresenter,
