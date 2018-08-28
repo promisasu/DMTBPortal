@@ -18,7 +18,7 @@ const parameterProp = propReader('parameter.properties');
  * @param {Reply} reply - Hapi Reply
  * @returns {Null} Redirect
  */
-function deactivatePatient (request, reply){
+function deactivatePatient(request, reply) {
 
     Promise
         .all([
@@ -26,7 +26,7 @@ function deactivatePatient (request, reply){
                 queryProp.get('sql.deacivatePatient')
                 , {
                     type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [parameterProp.get('activity.deactivate'),parameterProp.get('activity.currentstate'),moment.utc().format('YYYY-MM-DD HH:mm:ss'),request.params.pin],
+                    replacements: [parameterProp.get('activity.deactivate'), parameterProp.get('activity.currentstate'), moment.utc().format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
                     plain: true
                 }
             ),
@@ -34,7 +34,7 @@ function deactivatePatient (request, reply){
                 queryProp.get('sql.setCompleteDate')
                 , {
                     type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [moment.utc().format('YYYY-MM-DD HH:mm:ss'),request.params.pin],
+                    replacements: [moment.utc().format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
                     plain: true
                 }
             ),
@@ -42,7 +42,7 @@ function deactivatePatient (request, reply){
                 queryProp.get('sql.deleteDeactivated')
                 , {
                     type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [parameterProp.get('activity.deactivate'),moment.utc().format('YYYY-MM-DD HH:mm:ss'),request.params.pin,parameterProp.get('activity.biweekly'),parameterProp.get('activity.daily')],
+                    replacements: [parameterProp.get('activity.deactivate'), moment.utc().format('YYYY-MM-DD HH:mm:ss'), request.params.pin, parameterProp.get('activity.biweekly'), parameterProp.get('activity.daily')],
                     plain: true
                 }
             )
@@ -50,11 +50,11 @@ function deactivatePatient (request, reply){
         .then(() => {
             return reply();
         }).catch((err) => {
-            request.log('error', err);
-            console.log(err);
+        request.log('error', err);
+        console.log(err);
 
-            return reply(boom.conflict());
-        });
+        return reply(boom.conflict());
+    });
 }
 
 module.exports = deactivatePatient;

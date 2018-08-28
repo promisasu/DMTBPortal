@@ -14,12 +14,12 @@ test.cb('when user exists and password is correct', (t) => {
     };
 
     model
-    .withArgs('user')
-    .returns({
-        find () {
-            return Promise.resolve(user);
-        }
-    });
+        .withArgs('user')
+        .returns({
+            find() {
+                return Promise.resolve(user);
+            }
+        });
 
     compare.returns(Promise.resolve(true));
 
@@ -53,12 +53,12 @@ test.cb('when user exists and password is incorrect', (t) => {
     };
 
     model
-    .withArgs('user')
-    .returns({
-        find () {
-            return Promise.resolve(user);
-        }
-    });
+        .withArgs('user')
+        .returns({
+            find() {
+                return Promise.resolve(user);
+            }
+        });
 
     compare.returns(Promise.resolve(false));
 
@@ -86,12 +86,12 @@ test.cb('when user does not exist', (t) => {
     const model = sinon.stub();
 
     model
-    .withArgs('user')
-    .returns({
-        find () {
-            return Promise.resolve(null);
-        }
-    });
+        .withArgs('user')
+        .returns({
+            find() {
+                return Promise.resolve(null);
+            }
+        });
 
     const validate = proxyquire('../helper/validate', {
         '../../model': {

@@ -13,8 +13,8 @@ const PR_Anxiety_TScore_Parent = [34.0, 38.0, 41.0, 40, 44, 46.0, 48.0, 49.0,
     76, 77, 79, 80, 82, 84, 86, 88
 ];
 const PR_Anxiety_TScore_Adult = [37.1, 43.2, 45.9, 47.8, 49.4, 50.8, 52.1, 53.2,
-54.3, 55.4, 56.4, 57.4, 58.4, 59.4, 60.4, 61.4, 62.5, 63.5, 64.5, 65.6, 66.6,
-67.7, 68.7, 69.8, 70.8, 71.9, 73.0, 74.1, 75.4, 76.7, 78.2, 80.0, 83.1];
+    54.3, 55.4, 56.4, 57.4, 58.4, 59.4, 60.4, 61.4, 62.5, 63.5, 64.5, 65.6, 66.6,
+    67.7, 68.7, 69.8, 70.8, 71.9, 73.0, 74.1, 75.4, 76.7, 78.2, 80.0, 83.1];
 const PR_Fatigue_TScore_Pediatric = [30.3, 34.3, 36.9, 39, 40.9, 42.5, 44, 45.4, 46.7,
     47.9, 49.1, 50.2, 51.3, 52.4, 53.5, 54.5,
     55.6, 56.6, 57.6, 58.6, 59.6, 60.6, 61.6,
@@ -27,8 +27,8 @@ const PR_Fatigue_TScore_Parent = [34, 39, 42, 44, 45, 47, 48, 49, 50, 51, 52,
     72, 72, 73, 74, 75, 76, 77, 79, 80, 82, 85
 ];
 const PR_Fatigue_TScore_Adult = [33.1, 38.5, 41.0, 42.8, 44.3, 45.6, 46.9,
-48.1, 49.2, 50.4, 51.5, 52.5, 53.6, 54.6, 55.6, 56.6, 57.5, 58.5, 59.4, 60.4,
-61.3, 62.3, 63.3, 64.3, 65.3, 66.4, 67.5, 68.6, 69.8, 71.0, 72.4, 74.2, 77.8];
+    48.1, 49.2, 50.4, 51.5, 52.5, 53.6, 54.6, 55.6, 56.6, 57.5, 58.5, 59.4, 60.4,
+    61.3, 62.3, 63.3, 64.3, 65.3, 66.4, 67.5, 68.6, 69.8, 71.0, 72.4, 74.2, 77.8];
 const PR_PhyFuncMob_TScore_Pediatric = [
     12.6, 13.6, 14.7, 15.7, 16.8, 17.9, 18.9, 19.9, 20.8, 21.7, 22.6, 23.5,
     24.4, 25.3, 26.1, 27.0, 27.9, 28.8, 29.8, 30.8, 31.8, 32.9, 34.1, 35.4,
@@ -70,7 +70,7 @@ const config = require('../../config.json');
  * @param {Array<Object>} surveyResults - Array of Weekly surveyResults
  * @returns {Array<Object>} - Processed result set containing PROMIS scores
  */
-function calculatePromisScores (surveyResults) {
+function calculatePromisScores(surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -142,7 +142,7 @@ function calculatePromisScores (surveyResults) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with fatigue scores
  */
-function calculatePR_Fatigue (surveyResults) {
+function calculatePR_Fatigue(surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -215,7 +215,7 @@ function calculatePR_Fatigue (surveyResults) {
  * @param {Array<Object>} data - set of scores
  * @returns {Number} - conversion factor
  */
-function calculateConversionFactor (data) {
+function calculateConversionFactor(data) {
     return 100 / data[data.length - 1];
 }
 
@@ -224,7 +224,7 @@ function calculateConversionFactor (data) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with anxiety scores
  */
-function calculatePR_Anxiety (surveyResults) {
+function calculatePR_Anxiety(surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -248,7 +248,6 @@ function calculatePR_Anxiety (surveyResults) {
         }
     });
 
-      
     for (let activityInstanceId in singleSurveyBlock) {
         if (singleSurveyBlock.hasOwnProperty(activityInstanceId)) {
             let result = {
@@ -292,7 +291,7 @@ function calculatePR_Anxiety (surveyResults) {
     return [resultSet, maxVal];
 }
 
-function calculateCough (surveyResults,problemType) {
+function calculateCough(surveyResults, problemType) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -317,7 +316,7 @@ function calculateCough (surveyResults,problemType) {
     });
 
     for (let activityInstanceId in singleSurveyBlock) {
-       
+
         if (singleSurveyBlock.hasOwnProperty(activityInstanceId)) {
             let result = {
                 x: '',
@@ -330,23 +329,27 @@ function calculateCough (surveyResults,problemType) {
             let questionId = -1;
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-       
+
                 date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionId = answer.questionId;
                 questionType = answer.questionType;
                 patientType = answer.patientType;
-                
-                if (isInt(answer.likertScale) && questionId == 25 && questionType === 'Biweekly' && problemType === 'Cough') {
-                        score = parseInt(answer.likertScale);
+
+                if (isInt(answer.likertScale) && questionId === 25 && questionType === 'Biweekly'
+                    && problemType === 'Cough') {
+                    score = parseInt(answer.likertScale);
                 }
-                if (isInt(answer.likertScale) && questionId == 40 && questionType === 'Daily' && problemType === 'CoughWithBlood' ) {
-                        score = parseInt(answer.likertScale);
+                if (isInt(answer.likertScale) && questionId === 40 && questionType === 'Daily'
+                    && problemType === 'CoughWithBlood') {
+                    score = parseInt(answer.likertScale);
                 }
-                if (isInt(answer.likertScale) && questionId == 41 && questionType === 'Daily'  && problemType === 'BreathingProblem' ) {
-                        score = parseInt(answer.likertScale);
+                if (isInt(answer.likertScale) && questionId === 41 && questionType === 'Daily'
+                    && problemType === 'BreathingProblem') {
+                    score = parseInt(answer.likertScale);
                 }
-                if (isInt(answer.likertScale) && questionId == 42 && questionType === 'Daily' && problemType === 'ChestPain') {
-                        score = parseInt(answer.likertScale);
+                if (isInt(answer.likertScale) && questionId === 42 && questionType === 'Daily'
+                    && problemType === 'ChestPain') {
+                    score = parseInt(answer.likertScale);
                 }
             });
             result.x = date;
@@ -364,7 +367,7 @@ function calculateCough (surveyResults,problemType) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with physical func scores
  */
-function calculatePR_PhyFuncMob (surveyResults) {
+function calculatePR_PhyFuncMob(surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -436,7 +439,7 @@ function calculatePR_PhyFuncMob (surveyResults) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with pain intensity scores
  */
-function calculatePR_PainInt (surveyResults) {
+function calculatePR_PainInt(surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -508,7 +511,7 @@ function calculatePR_PainInt (surveyResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function opioidResultsCalculation (opioidResults) {
+function opioidResultsCalculation(opioidResults) {
     let returnArr = getOpioidActualValuesCalculated(opioidResults);
     let tempMax = 0;
     let i = 0;
@@ -539,7 +542,7 @@ function opioidResultsCalculation (opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function opioidThresholdCalculation (opioidResults) {
+function opioidThresholdCalculation(opioidResults) {
     let opioidVal = getOpioidTHresholdActualValue(opioidResults);
     let opioid = 0;
     let tempMax = 0;
@@ -568,7 +571,7 @@ function opioidThresholdCalculation (opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function getOpioidTHresholdActualValue (opioidResults) {
+function getOpioidTHresholdActualValue(opioidResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let oxy = 0;
@@ -599,7 +602,7 @@ function getOpioidTHresholdActualValue (opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function getOpioidActualValuesCalculated (opioidResults) {
+function getOpioidActualValuesCalculated(opioidResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -644,7 +647,7 @@ function getOpioidActualValuesCalculated (opioidResults) {
                 survey.dosage = survey.dosage.replace(' ', '');
                 survey.dosage = survey.dosage.replace('*', '');
                 returnDict[date] += parseFloat(survey.dosage) * config.opioid[survey.optionText]
-                                    * parseFloat(survey.prescribedDosage);
+                    * parseFloat(survey.prescribedDosage);
             });
             result.y = returnDict[date];
             result.x = date;
@@ -660,7 +663,7 @@ function getOpioidActualValuesCalculated (opioidResults) {
  * @param {Number} value - to be checked if a number
  * @returns {Boolean} - boolean value which returns if the value is a number or not
  */
-function isInt (value) {
+function isInt(value) {
     return !isNaN(value) && ((x) => {
         return (x | 0) === x;
     })(parseFloat(value));

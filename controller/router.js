@@ -189,9 +189,9 @@ module.exports = [
             validate: {
                 params: {
                     id: Joi
-                      .number()
-                      .integer()
-                      .positive()
+                        .number()
+                        .integer()
+                        .positive()
                 }
             }
         }
@@ -204,9 +204,9 @@ module.exports = [
             validate: {
                 params: {
                     id: Joi
-                      .number()
-                      .integer()
-                      .positive()
+                        .number()
+                        .integer()
+                        .positive()
                 }
             }
         }

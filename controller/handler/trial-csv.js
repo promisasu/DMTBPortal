@@ -10,9 +10,9 @@ const boom = require('boom');
 const deduplicate = require('../helper/deduplicate');
 const CustomMap = require('hashmap');
 
-var propReader = require('properties-reader');
-var queryProp = propReader('query.properties');
-var parameterProp = propReader('parameter.properties');
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
 
 /**
  * Create a Comma Seperate Value export of the data of all the patient's that are enrolled in a trial.
@@ -20,7 +20,7 @@ var parameterProp = propReader('parameter.properties');
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function trialCSV (request, reply) {
+function trialCSV(request, reply) {
     const formatSpecifier = '%a %b %d %Y %T';
     let dailyregex = new RegExp('/trial/.-daily.csv', 'g');
     let weeklyregex = new RegExp('/trial/.-weekly.csv', 'g');
@@ -271,8 +271,8 @@ function trialCSV (request, reply) {
     // AND a.state IN ('completed','expired')
 
     database.sequelize.query(
-            queryProp.get('sql.csvTrial')
-            , {
+        queryProp.get('sql.csvTrial')
+        , {
             type: database.sequelize.QueryTypes.SELECT,
             replacements: [
                 query,
@@ -301,12 +301,13 @@ function trialCSV (request, reply) {
             reply(boom.notFound('patient data not found'));
         });
 }
+
 /**
  * Forms a result set for the csv.
  * @param {Array} optionsWithAnswers - all options with answers.
  * @returns {Array} A result set.
  */
-function formatData (optionsWithAnswers) {
+function formatData(optionsWithAnswers) {
     let map = new CustomMap();
     let resultSet = [];
 
@@ -500,7 +501,7 @@ function formatData (optionsWithAnswers) {
     map.forEach((value, key) => {
         resultSet.push(JSON.parse(value));
     });
-   
+
     return resultSet;
 }
 
@@ -509,7 +510,7 @@ function formatData (optionsWithAnswers) {
  * @param {string} status as a string.
  * @returns {string} status in terms of required csv format.
  */
-function determineStatus (status) {
+function determineStatus(status) {
     if (status === 'completed') {
         return 'Y';
     } else if (status === 'pending') {

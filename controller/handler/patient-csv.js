@@ -67,19 +67,19 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientCSV (request, reply) {
+function patientCSV(request, reply) {
     database.sequelize.query(
         queryProp.get('sql.csvPatient')
         , {
             type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin, parameterProp.get('activity.State.completed'), 
+            replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
                 parameterProp.get('activity.State.expired'), parameterProp.get('activity.game')]
         }
     )
         .then((optionsWithAnswers) => {
             const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
             const uniqueAnswers = deduplicate(optionsWithAnswers, property);
-   
+
             return convertJsonToCsv(uniqueAnswers, configuration);
         })
         .then((csv) => {

@@ -11,9 +11,9 @@ const convertJsonToCsv = require('../helper/convert-json-to-csv');
 const boom = require('boom');
 const deduplicate = require('../helper/deduplicate');
 
-var propReader = require('properties-reader');
-var queryProp = propReader('query.properties');
-var parameterProp = propReader('parameter.properties');
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
 
 const configuration = [
     {
@@ -69,32 +69,33 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function surveyCSV (request, reply) {
+function surveyCSV(request, reply) {
     database.sequelize.query(
         queryProp.get('sql.csvSurvey')
         ,
         {
             type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin,request.params.activityInstanceId,parameterProp.get('activity.State.completed')]
+            replacements: [request.params.pin, request.params.activityInstanceId,
+                parameterProp.get('activity.State.completed')]
         }
     )
-    .then((optionsWithAnswers) => {
-        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-        const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+        .then((optionsWithAnswers) => {
+            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
 
-        return convertJsonToCsv(uniqueAnswers, configuration);
-    })
-    .then((csv) => {
-        return reply(csv).type('text/csv');
-    })
-    .catch((err) => {
-        console.log('error', err);
-        reply
-            .view('404', {
-                title: 'Not Found'
-            })
-            .code(httpNotFound);
-    });
+            return convertJsonToCsv(uniqueAnswers, configuration);
+        })
+        .then((csv) => {
+            return reply(csv).type('text/csv');
+        })
+        .catch((err) => {
+            console.log('error', err);
+            reply
+                .view('404', {
+                    title: 'Not Found'
+                })
+                .code(httpNotFound);
+        });
 }
 
 module.exports = surveyCSV;

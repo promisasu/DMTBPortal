@@ -19,7 +19,7 @@ function runSurveyRules() {
     return database
         .sequelize
         .query(
-                `
+            `
        SELECT pa.id, pa.dateStarted, jss.surveyTemplateId, jss.rule
        FROM active_patients AS pa
        JOIN stage AS st

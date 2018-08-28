@@ -9,9 +9,9 @@ const processSurveyInstances = require('../helper/process-survey-instances');
 const moment = require('moment');
 const httpNotFound = 404;
 
-var propReader = require('properties-reader');
-var queryProp = propReader('query.properties');
-var parameterProp = propReader('parameter.properties');
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
 
 
 /**
@@ -20,16 +20,16 @@ var parameterProp = propReader('parameter.properties');
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientView (request, reply) {
-  
+function patientView(request, reply) {
+
     Promise
         .all([
             database.sequelize.query(
-              queryProp.get('sql.currentPatient')
-              , {
+                queryProp.get('sql.currentPatient')
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
                     replacements: [
-                        request.params.pin  
+                        request.params.pin
                     ],
                     plain: true
                 }
@@ -38,7 +38,7 @@ function patientView (request, reply) {
                 queryProp.get('sql.surveyInstances')
                 , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [request.params.pin,parameterProp.get('activity.game')]
+                    replacements: [request.params.pin, parameterProp.get('activity.game')]
                 }
             ),
             database.sequelize.query(
@@ -52,44 +52,48 @@ function patientView (request, reply) {
                 }
             ),
             database.sequelize.query(
-              queryProp.get('sql.surveyResults')
-              , {
+                queryProp.get('sql.surveyResults')
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [ request.params.pin,parameterProp.get('activity.State.completed'),parameterProp.get('activity.biweekly')]
+                    replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
+                        parameterProp.get('activity.biweekly')]
                 }
             ),
             database.sequelize.query(
-              queryProp.get('sql.opioidResults')
-           , {
+                queryProp.get('sql.opioidResults')
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [ request.params.pin,parameterProp.get('activity.State.completed'),parameterProp.get('activity.daily')]
+                    replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
+                        parameterProp.get('activity.daily')]
                 }
             ),
             database.sequelize.query(
-              queryProp.get('sql.bodyPainResults')
-              , {
+                queryProp.get('sql.bodyPainResults')
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [request.params.pin,parameterProp.get('activity.State.completed')]
+                    replacements: [request.params.pin, parameterProp.get('activity.State.completed')]
                 }
             ),
             database.sequelize.query(
                 queryProp.get('sql.dailySurvey')
-            , {
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [request.params.pin,parameterProp.get('activity.State.completed'),parameterProp.get('activity.daily')]
+                    replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
+                        parameterProp.get('activity.daily')]
                 }
             )
 
         ])
-        .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,dailySurvey]) => {
+        .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,
+                   dailySurvey]) => {
             let dataChart = processSurveyInstances(surveyInstances);
 
             if (!currentPatient) {
                 throw new Error('patient does not exist');
             }
             let clinicalValuesChart = processSurveyInstances.processClinicanData(
-                surveyInstances, surveyResults, bodyPainResults, opioidResults,dailySurvey
-                );
+                surveyInstances, surveyResults, bodyPainResults, opioidResults, dailySurvey
+            );
 
             return reply.view('patient', {
                 title: 'Pain Reporting Portal',

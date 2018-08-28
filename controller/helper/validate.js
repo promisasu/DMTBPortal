@@ -15,38 +15,38 @@ const database = require('../../model');
  * @param {Function} callback - alerts Hapi if login is valid or not
  * @returns {Null} nothing
  */
-function validate (request, username, password, callback) {
+function validate(request, username, password, callback) {
     const user = database.sequelize.model('user');
     let selectedUser = null;
 
     // search for selected user
     user
-    .find({
-        where: {
-            username
-        }
-    })
-    // if user does not exist error out
-    .then((currentUser) => {
-        selectedUser = currentUser;
+        .find({
+            where: {
+                username
+            }
+        })
+        // if user does not exist error out
+        .then((currentUser) => {
+            selectedUser = currentUser;
 
-        if (!selectedUser) {
-            throw new Error('invalid login');
-        }
+            if (!selectedUser) {
+                throw new Error('invalid login');
+            }
 
-        return;
-    })
-    // test that the password given matches the password stored
-    .then(() => {
-        return compare(password, selectedUser.passwordHash);
-    })
-    .then((isValid) => {
-        return callback(null, isValid, selectedUser);
-    })
-    .catch((err) => {
-        request.log('error', err);
-        callback(null, false, null);
-    });
+            return;
+        })
+        // test that the password given matches the password stored
+        .then(() => {
+            return compare(password, selectedUser.passwordHash);
+        })
+        .then((isValid) => {
+            return callback(null, isValid, selectedUser);
+        })
+        .catch((err) => {
+            request.log('error', err);
+            callback(null, false, null);
+        });
 }
 
 module.exports = validate;
