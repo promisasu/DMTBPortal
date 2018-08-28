@@ -96,10 +96,10 @@ function pickTimeLeft (surveys) {
             let samplePoint = surveyTypes[i][0];
 
             let dataPoints = surveyTypes[i].map((survey) => {
-                return  calculateTimeLeft( moment.utc(survey.StartTime),
+                return calculateTimeLeft(moment.utc(survey.StartTime),
                     moment.utc(survey.EndTime),
                     moment.utc(survey.ActualSubmissionTime)
-                    );
+                );
             });
 
             let dates = surveyTypes[i].map((survey) => {
