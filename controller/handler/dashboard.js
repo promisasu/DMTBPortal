@@ -7,9 +7,8 @@
 const processTrial = require('../helper/process-trial');
 const database = require('../../model');
 const httpNotFound = 404;
-
-var propReader = require('properties-reader');
-var queryProp = propReader('query.properties');
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
 /**
  * A dashboard view with overview of all trials and patients.
  * @param {Request} request - Hapi request
@@ -20,8 +19,8 @@ function dashboardView (request, reply) {
     const currentDate = new Date();
 
     database.sequelize.query(
-       queryProp.get('sql.trials')
-       ,
+        queryProp.get('sql.trials')
+        ,
         {
             type: database.sequelize.QueryTypes.SELECT,
             replacements: [
@@ -29,7 +28,7 @@ function dashboardView (request, reply) {
                 currentDate.toISOString()
             ]
         }
-        )
+    )
         .then((trials) => {
             // Process data into format expected in view
             const trialData = trials.map(processTrial);
@@ -45,10 +44,10 @@ function dashboardView (request, reply) {
             console.log('error', err);
 
             reply
-            .view('404', {
-                title: 'Not Found'
-            })
-            .code(httpNotFound);
+                .view('404', {
+                    title: 'Not Found'
+                })
+                .code(httpNotFound);
         });
 }
 

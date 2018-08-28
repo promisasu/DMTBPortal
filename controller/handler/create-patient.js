@@ -25,82 +25,82 @@ function createPatient (request, reply) {
     let pin = null;
 
     database
-    .sequelize
-    .transaction()
-    .then((newTransaction) => {
-        transaction = newTransaction;
+        .sequelize
+        .transaction()
+        .then((newTransaction) => {
+            transaction = newTransaction;
 
-        // Get Trial the patient will be added to
-        return trial.findById(request.payload.trialId, {transaction});
-    })
+            // Get Trial the patient will be added to
+            return trial.findById(request.payload.trialId, {transaction});
+        })
     // Get next availible Patient Pin
-    .then((currentTrial) => {
-        pin = currentTrial.id * trialOffset + currentTrial.patientPinCounter;
+        .then((currentTrial) => {
+            pin = currentTrial.id * trialOffset + currentTrial.patientPinCounter;
 
-        return currentTrial.increment({patientPinCounter: 1}, {transaction});
-    })
+            return currentTrial.increment({patientPinCounter: 1}, {transaction});
+        })
     // Create the new Patient
-    .then(() => {
-        const dateStarted = request.payload.startDate;
-        const dateCompleted = request.payload.endDate;
+        .then(() => {
+            const dateStarted = request.payload.startDate;
+            const dateCompleted = request.payload.endDate;
 
-        return patient.create({pin, dateStarted, dateCompleted}, {transaction});
-    })
+            return patient.create({pin, dateStarted, dateCompleted}, {transaction});
+        })
     // Get stage that patient belongs to
-    .then((tempPatient) => {
-        newPatient = tempPatient;
+        .then((tempPatient) => {
+            newPatient = tempPatient;
 
-        return stage.findById(request.payload.stageId, {transaction});
-    })
+            return stage.findById(request.payload.stageId, {transaction});
+        })
     // Add patient to stage
-    .then((currentStage) => {
-        return currentStage.addPatient(newPatient, {transaction});
-    })
+        .then((currentStage) => {
+            return currentStage.addPatient(newPatient, {transaction});
+        })
     // Collect the surveyTemplateId for the stage associated to the patient
-    .then(() => {
-        return joinStageSurveys.findOne(
-            {
-                where: {
-                    stageId: request.payload.stageId,
-                    stagePriority: 0
-                },
-                transaction
-            }
-        );
-    })
+        .then(() => {
+            return joinStageSurveys.findOne(
+                {
+                    where: {
+                        stageId: request.payload.stageId,
+                        stagePriority: 0
+                    },
+                    transaction
+                }
+            );
+        })
     // Create first survey instance as per the surveyTemplateId for the patient
-    .then((data) => {
-        const startDate = request.payload.startDate;
-        const openUnit = 'day';
-        let openFor = null;
+        .then((data) => {
+            const startDate = request.payload.startDate;
+            const openUnit = 'day';
+            let openFor = null;
 
-        if (data.rule === 'daily') {
-            openFor = 1;
-        } else {
-            openFor = 2;
-        }
+            if (data.rule === 'daily') {
+                openFor = 1;
+            } else {
+                openFor = 2;
+            }
 
-        return createSurvey(
-            pin,
-            data.surveyTemplateId,
-            startDate,
-            openFor,
-            openUnit,
-            transaction
-        );
-    })
+            return createSurvey(
+                pin,
+                data.surveyTemplateId,
+                startDate,
+                openFor,
+                openUnit,
+                transaction
+            );
+        })
     // Commit the transaction
-    .then(() => {
-        return transaction.commit();
-    })
-    .then(() => {
-        return reply.redirect(`/patient/${newPatient.pin}?newPatient=true`);
-    })
-    .catch((err) => {
-        transaction.rollback();
-        request.log('error', err);
-        reply(boom.badRequest('Patient could not be created'));
-    });
+        .then(() => {
+            return transaction.commit();
+        })
+        .then(() => {
+            return reply.redirect(`/patient/${newPatient.pin}?newPatient=true`);
+        })
+        .catch((err) => {
+            transaction.rollback();
+            request.log('error', err);
+            reply(boom.badRequest('Patient could not be created'));
+        });
 }
 
 module.exports = createPatient;
