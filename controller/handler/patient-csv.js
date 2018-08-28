@@ -9,9 +9,9 @@ const convertJsonToCsv = require('../helper/convert-json-to-csv');
 const boom = require('boom');
 const deduplicate = require('../helper/deduplicate');
 
-var propReader = require('properties-reader');
-var queryProp = propReader('query.properties');
-var parameterProp = propReader('parameter.properties');
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
 
 const configuration = [
     {
@@ -68,27 +68,27 @@ const configuration = [
  * @returns {View} Rendered page
  */
 function patientCSV (request, reply) {
-
     database.sequelize.query(
-              queryProp.get('sql.csvPatient')
-              , {
-                    type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [ request.params.pin,parameterProp.get('activity.State.completed'),parameterProp.get('activity.State.expired'),parameterProp.get('activity.game')],
-                }
+        queryProp.get('sql.csvPatient')
+        , {
+            type: database.sequelize.QueryTypes.SELECT,
+            replacements: [request.params.pin, parameterProp.get('activity.State.completed'), 
+                parameterProp.get('activity.State.expired'), parameterProp.get('activity.game')]
+        }
     )
-    .then((optionsWithAnswers) => {
-        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-        const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+        .then((optionsWithAnswers) => {
+            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
    
-        return convertJsonToCsv(uniqueAnswers, configuration);
-    })
-    .then((csv) => {
-        return reply(csv).type('text/csv');
-    })
-    .catch((err) => {
-        console.log('error', err);
-        reply(boom.notFound('patient data not found'));
-    });
+            return convertJsonToCsv(uniqueAnswers, configuration);
+        })
+        .then((csv) => {
+            return reply(csv).type('text/csv');
+        })
+        .catch((err) => {
+            console.log('error', err);
+            reply(boom.notFound('patient data not found'));
+        });
 }
 
 module.exports = patientCSV;

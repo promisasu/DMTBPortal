@@ -9,6 +9,7 @@ const database = require('../../model');
 const httpNotFound = 404;
 const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
+
 /**
  * A dashboard view with overview of all trials and patients.
  * @param {Request} request - Hapi request
