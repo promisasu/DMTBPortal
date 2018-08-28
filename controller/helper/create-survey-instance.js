@@ -41,20 +41,20 @@ function createSurveyInstance (patientPin, surveyTemplateId, startDate, openForD
         )
     ])
     // Link SurveyInstance to Patient and SurveyTemplate
-    .then(([currentPatient, currentSurveyTemplate, newSurveyInstance]) => {
-        if (!currentPatient) {
-            throw new Error('patient does not exist');
-        }
+        .then(([currentPatient, currentSurveyTemplate, newSurveyInstance]) => {
+            if (!currentPatient) {
+                throw new Error('patient does not exist');
+            }
 
-        if (!currentSurveyTemplate) {
-            throw new Error('survey template does not exist');
-        }
+            if (!currentSurveyTemplate) {
+                throw new Error('survey template does not exist');
+            }
 
-        return Promise.all([
-            currentSurveyTemplate.addSurvey_instance(newSurveyInstance, {transaction}),
-            currentPatient.addSurvey_instance(newSurveyInstance, {transaction})
-        ]);
-    });
+            return Promise.all([
+                currentSurveyTemplate.addSurvey_instance(newSurveyInstance, {transaction}),
+                currentPatient.addSurvey_instance(newSurveyInstance, {transaction})
+            ]);
+        });
 }
 
 module.exports = createSurveyInstance;

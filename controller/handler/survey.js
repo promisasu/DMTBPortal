@@ -89,23 +89,23 @@ function surveyCSV (request, reply) {
             ]
         }
     )
-    .then((optionsWithAnswers) => {
-        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-        const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+        .then((optionsWithAnswers) => {
+            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
 
-        return convertJsonToCsv(uniqueAnswers, configuration);
-    })
-    .then((csv) => {
-        return reply(csv).type('text/csv');
-    })
-    .catch((err) => {
-        console.log('error', err);
-        reply
-            .view('404', {
-                title: 'Not Found'
-            })
-            .code(httpNotFound);
-    });
+            return convertJsonToCsv(uniqueAnswers, configuration);
+        })
+        .then((csv) => {
+            return reply(csv).type('text/csv');
+        })
+        .catch((err) => {
+            console.log('error', err);
+            reply
+                .view('404', {
+                    title: 'Not Found'
+                })
+                .code(httpNotFound);
+        });
 }
 
 module.exports = surveyCSV;

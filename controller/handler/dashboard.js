@@ -32,7 +32,7 @@ function dashboardView (request, reply) {
                 currentDate.toISOString()
             ]
         }
-        )
+    )
         .then((trials) => {
             // Process data into format expected in view
             const trialData = trials.map(processTrial);
@@ -48,10 +48,10 @@ function dashboardView (request, reply) {
             console.log('error', err);
 
             reply
-            .view('404', {
-                title: 'Not Found'
-            })
-            .code(httpNotFound);
+                .view('404', {
+                    title: 'Not Found'
+                })
+                .code(httpNotFound);
         });
 }
 

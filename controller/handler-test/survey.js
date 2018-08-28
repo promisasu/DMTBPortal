@@ -141,20 +141,20 @@ test.cb('when survey does not exist', (t) => {
     const query = sinon.stub();
 
     model
-    .withArgs('survey_instance')
-    .returns({
-        findById () {
-            return Promise.resolve(null);
-        }
-    });
+        .withArgs('survey_instance')
+        .returns({
+            findById () {
+                return Promise.resolve(null);
+            }
+        });
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve([]));
+        .onFirstCall()
+        .returns(Promise.resolve([]));
 
     query
-    .onSecondCall()
-    .returns(Promise.resolve(null));
+        .onSecondCall()
+        .returns(Promise.resolve(null));
 
     const survey = proxyquire('../handler/survey', {
         '../../model': {

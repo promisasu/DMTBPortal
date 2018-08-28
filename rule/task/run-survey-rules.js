@@ -17,9 +17,9 @@ const one = 1;
  */
 function runSurveyRules () {
     return database
-    .sequelize
-    .query(
-       `
+        .sequelize
+        .query(
+            `
        SELECT pa.id, pa.dateStarted, jss.surveyTemplateId, jss.rule
        FROM active_patients AS pa
        JOIN stage AS st
@@ -29,21 +29,21 @@ function runSurveyRules () {
        WHERE ? BETWEEN pa.dateStarted AND pa.dateCompleted
        ORDER BY pa.id, jss.stagePriority
        `,
-        {
-            type: database.sequelize.QueryTypes.SELECT,
-            replacements: [
-                currentDate
-            ]
-        }
-    )
-    .then((rules) => {
-        const surveyInstances = rules.filter(activeRules).map(toSurveyInstanceData);
+            {
+                type: database.sequelize.QueryTypes.SELECT,
+                replacements: [
+                    currentDate
+                ]
+            }
+        )
+        .then((rules) => {
+            const surveyInstances = rules.filter(activeRules).map(toSurveyInstanceData);
 
-        return database
-              .sequelize
-              .model('survey_instance')
-              .bulkCreate(surveyInstances);
-    });
+            return database
+                .sequelize
+                .model('survey_instance')
+                .bulkCreate(surveyInstances);
+        });
 }
 
 module.exports = runSurveyRules;

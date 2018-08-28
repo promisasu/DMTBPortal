@@ -95,7 +95,7 @@ function trialView (request, reply) {
                 }
             ),
             database.sequelize.query(
-              `
+                `
               SELECT State, EndTime, PatientPinFK
               FROM activity_instance
               WHERE activityTitle = 'DMTB Biweekly Survey'
@@ -143,7 +143,6 @@ function trialView (request, reply) {
                 } else {
                     patient.lastWeekly = ' ---- ';
                 }
-            
                 // collect the compliance status as well as expiredCount
                 if (patientStatus) {
                     patient.trialStatus = patientStatus.trialStatus;
@@ -194,10 +193,10 @@ function trialView (request, reply) {
             request.log('error', err);
 
             reply
-            .view('404', {
-                title: 'Not Found'
-            })
-            .code(httpNotFound);
+                .view('404', {
+                    title: 'Not Found'
+                })
+                .code(httpNotFound);
         });
 }
 

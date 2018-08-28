@@ -12,40 +12,40 @@ test.cb('when there are no patients', (t) => {
     const query = sinon.stub();
 
     model
-    .withArgs('trial')
-    .returns({
-        findById () {
-            return Promise.resolve({
-                name: 'example',
-                description: 'example',
-                IRBID: 1,
-                IRBStart: new Date(),
-                IRBEnd: new Date(),
-                targetCount: 1,
-                patientPinCounter: 1
-            });
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            findById () {
+                return Promise.resolve({
+                    name: 'example',
+                    description: 'example',
+                    IRBID: 1,
+                    IRBStart: new Date(),
+                    IRBEnd: new Date(),
+                    targetCount: 1,
+                    patientPinCounter: 1
+                });
+            }
+        });
 
     model
-    .withArgs('stage')
-    .returns({
-        findAll () {
-            return Promise.resolve([]);
-        }
-    });
+        .withArgs('stage')
+        .returns({
+            findAll () {
+                return Promise.resolve([]);
+            }
+        });
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve([]));
+        .onFirstCall()
+        .returns(Promise.resolve([]));
 
     query
-    .onSecondCall()
-    .returns(Promise.resolve([]));
+        .onSecondCall()
+        .returns(Promise.resolve([]));
 
     query
-    .onThirdCall()
-    .returns(Promise.resolve([]));
+        .onThirdCall()
+        .returns(Promise.resolve([]));
 
     const trial = proxyquire('../handler/trial', {
         '../../model': {
@@ -79,52 +79,52 @@ test.cb('when there is one patient', (t) => {
     const query = sinon.stub();
 
     model
-    .withArgs('trial')
-    .returns({
-        findById () {
-            return Promise.resolve({
-                name: 'example',
-                description: 'example',
-                IRBID: 1,
-                IRBStart: new Date(),
-                IRBEnd: new Date(),
-                targetCount: 1,
-                patientPinCounter: 1
-            });
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            findById () {
+                return Promise.resolve({
+                    name: 'example',
+                    description: 'example',
+                    IRBID: 1,
+                    IRBStart: new Date(),
+                    IRBEnd: new Date(),
+                    targetCount: 1,
+                    patientPinCounter: 1
+                });
+            }
+        });
 
     model
-    .withArgs('stage')
-    .returns({
-        findAll () {
-            return Promise.resolve([]);
-        }
-    });
+        .withArgs('stage')
+        .returns({
+            findAll () {
+                return Promise.resolve([]);
+            }
+        });
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve([
-        {
-            pin: 1,
-            name: 'example'
-        }
-    ]));
+        .onFirstCall()
+        .returns(Promise.resolve([
+            {
+                pin: 1,
+                name: 'example'
+            }
+        ]));
 
     query
-    .onSecondCall()
-    .returns(Promise.resolve([
-        {
-            id: 1,
-            pin: 1001,
-            completedCount: 1,
-            expiredCount: 0
-        }
-    ]));
+        .onSecondCall()
+        .returns(Promise.resolve([
+            {
+                id: 1,
+                pin: 1001,
+                completedCount: 1,
+                expiredCount: 0
+            }
+        ]));
 
     query
-    .onThirdCall()
-    .returns(Promise.resolve([]));
+        .onThirdCall()
+        .returns(Promise.resolve([]));
 
     const trial = proxyquire('../handler/trial', {
         '../../model': {
@@ -158,32 +158,32 @@ test.cb('when trial does not exist', (t) => {
     const query = sinon.stub();
 
     model
-    .withArgs('trial')
-    .returns({
-        findById () {
-            return Promise.resolve(null);
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            findById () {
+                return Promise.resolve(null);
+            }
+        });
 
     model
-    .withArgs('stage')
-    .returns({
-        findAll () {
-            return Promise.resolve([]);
-        }
-    });
+        .withArgs('stage')
+        .returns({
+            findAll () {
+                return Promise.resolve([]);
+            }
+        });
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve([]));
+        .onFirstCall()
+        .returns(Promise.resolve([]));
 
     query
-    .onSecondCall()
-    .returns(Promise.resolve([]));
+        .onSecondCall()
+        .returns(Promise.resolve([]));
 
     query
-    .onThirdCall()
-    .returns(Promise.resolve([]));
+        .onThirdCall()
+        .returns(Promise.resolve([]));
 
     const trial = proxyquire('../handler/trial', {
         '../../model': {

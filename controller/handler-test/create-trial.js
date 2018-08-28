@@ -14,31 +14,31 @@ function mockSequelize () {
     const transaction = sinon.stub();
 
     model
-    .withArgs('trial')
-    .returns({
-        find () {
-            return Promise.resolve({});
-        },
-        create () {
-            return Promise.resolve({
-                id: 1,
-                addStages () {
-                    return Promise.resolve();
-                }
-            });
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            find () {
+                return Promise.resolve({});
+            },
+            create () {
+                return Promise.resolve({
+                    id: 1,
+                    addStages () {
+                        return Promise.resolve();
+                    }
+                });
+            }
+        });
 
     model
-    .withArgs('stage')
-    .returns({
-        find () {
-            return Promise.resolve({});
-        },
-        create () {
-            return Promise.resolve();
-        }
-    });
+        .withArgs('stage')
+        .returns({
+            find () {
+                return Promise.resolve({});
+            },
+            create () {
+                return Promise.resolve();
+            }
+        });
 
     transaction.returns(Promise.resolve({
         commit: sinon.stub(),

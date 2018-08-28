@@ -9,16 +9,16 @@ test.cb('when patient exists', (t) => {
     const transaction = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        findOne () {
-            return {
-                destroy () {
-                    return;
-                }
-            };
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            findOne () {
+                return {
+                    destroy () {
+                        return;
+                    }
+                };
+            }
+        });
 
     transaction.returns(Promise.resolve({
         commit () {
@@ -55,12 +55,12 @@ test.cb('when patient does not exist', (t) => {
     const transaction = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        findOne () {
-            return null;
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            findOne () {
+                return null;
+            }
+        });
 
     transaction.returns(Promise.resolve({
         rollback () {
@@ -97,12 +97,12 @@ test.cb('when there is a conflict', (t) => {
     const transaction = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        findOne () {
-            return Promise.reject();
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            findOne () {
+                return Promise.reject();
+            }
+        });
 
     transaction.returns(Promise.resolve({
         rollback () {

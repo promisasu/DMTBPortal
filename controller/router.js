@@ -14,7 +14,6 @@ const patientCSV = require('./handler/patient-csv');
 const trialCSV = require('./handler/trial-csv');
 const surveyPresenter = require('./handler/survey');
 const webFormPresenter = require('./handler/webform');
-const testPresenter = require('./handler/test');
 const webFormPresenterPost = require('./handler/webformPost');
 const errorHandler = require('./handler/errorHandler');
 const minimumNameLength = 3;
@@ -138,34 +137,6 @@ module.exports = [
         }
     },
     {
-        method: 'POST',
-        path: '/patient',
-        handler: testPresenter
-        // config: {
-        //     validate: {
-        //         payload: {
-        //             stageId: Joi
-        //                 .number()
-        //                 .integer()
-        //                 .positive(),
-        //             trialId: Joi
-        //                 .number()
-        //                 .integer()
-        //                 .positive(),
-        //             startDate: Joi
-        //                 .date()
-        //                 .format('MM-DD-YYYY')
-        //                 .min(moment().startOf('day').toDate()),
-        //             endDate: Joi
-        //                 .date()
-        //                 .format('MM-DD-YYYY')
-        //                 .min(Joi.ref('startDate'))
-        //         }
-        //     }
-        // }
-
-    },
-    {
         method: 'GET',
         path: '/patient/{pin}',
         handler: patientPresenter,
@@ -218,9 +189,9 @@ module.exports = [
             validate: {
                 params: {
                     id: Joi
-                      .number()
-                      .integer()
-                      .positive()
+                        .number()
+                        .integer()
+                        .positive()
                 }
             }
         }
@@ -233,9 +204,9 @@ module.exports = [
             validate: {
                 params: {
                     id: Joi
-                      .number()
-                      .integer()
-                      .positive()
+                        .number()
+                        .integer()
+                        .positive()
                 }
             }
         }
