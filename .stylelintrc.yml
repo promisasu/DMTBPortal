@@ -24,10 +24,7 @@
     #time-min-milliseconds: 100
     # Unit
     unit-case: lower,
-    unit-whitelist:
-        - px
-        - "%"
-        - rem,
+    unit-whitelist: ["px","%","rem"],
     # Shorthand Property
     shorthand-property-no-redundant-values: true,
     # Declaration
