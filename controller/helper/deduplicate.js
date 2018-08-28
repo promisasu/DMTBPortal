@@ -10,7 +10,7 @@
  * @param {Array<Strings>} properties whose duplicacy to be removed
  * @returns {Array<Object>} returns the rows with duplicacy removed
  */
-function deduplicate(rows, properties) {
+function deduplicate (rows, properties) {
     const current = {};
     const copyOfRows = Object.assign([], rows);
 

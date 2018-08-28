@@ -15,11 +15,11 @@ const one = 1;
  * Rules will generate Survey Instances that open the same day the rule engine is run.
  * @returns {Promise} resolves when completed
  */
-function runSurveyRules() {
+function runSurveyRules () {
     return database
         .sequelize
         .query(
-            `
+                `
        SELECT pa.id, pa.dateStarted, jss.surveyTemplateId, jss.rule
        FROM active_patients AS pa
        JOIN stage AS st
@@ -37,7 +37,8 @@ function runSurveyRules() {
             }
         )
         .then((rules) => {
-            const surveyInstances = rules.filter(activeRules).map(toSurveyInstanceData);
+            const surveyInstances = rules.filter(activeRules)
+                .map(toSurveyInstanceData);
 
             return database
                 .sequelize
@@ -56,7 +57,7 @@ module.exports = runSurveyRules;
  * @param {Array<Object>} rules - list all of the rule records
  * @returns {Boolean} true to keep record, false to remove
  */
-function activeRules(current, index, rules) {
+function activeRules (current, index, rules) {
     if (index > zero) {
         const previous = rules[index - one];
 
@@ -76,8 +77,10 @@ function activeRules(current, index, rules) {
  * @param {Object} rule - rule to check
  * @returns {Boolean} true for active, false for inactive
  */
-function isActive(rule) {
-    return rule.rule === 'daily' || rule.rule === 'weekly' && moment(rule.dateStarted).day() === moment().day();
+function isActive (rule) {
+    return rule.rule === 'daily' || rule.rule === 'weekly' && moment(rule.dateStarted)
+        .day() === moment()
+        .day();
 }
 
 /**
@@ -86,7 +89,7 @@ function isActive(rule) {
  * @param {Object} second - second rule
  * @returns {Boolean} true for same, false for different
  */
-function isSamePatient(first, second) {
+function isSamePatient (first, second) {
     return first.id === second.id;
 }
 
@@ -95,7 +98,7 @@ function isSamePatient(first, second) {
  * @param {Object} row - a single record
  * @returns {Object} a template for survey_instance creation.
  */
-function toSurveyInstanceData(row) {
+function toSurveyInstanceData (row) {
     let amount = null;
 
     if (row.rule === 'daily') {

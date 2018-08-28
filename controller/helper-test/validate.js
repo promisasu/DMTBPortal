@@ -16,7 +16,7 @@ test.cb('when user exists and password is correct', (t) => {
     model
         .withArgs('user')
         .returns({
-            find() {
+            find () {
                 return Promise.resolve(user);
             }
         });
@@ -55,7 +55,7 @@ test.cb('when user exists and password is incorrect', (t) => {
     model
         .withArgs('user')
         .returns({
-            find() {
+            find () {
                 return Promise.resolve(user);
             }
         });
@@ -88,7 +88,7 @@ test.cb('when user does not exist', (t) => {
     model
         .withArgs('user')
         .returns({
-            find() {
+            find () {
                 return Promise.resolve(null);
             }
         });

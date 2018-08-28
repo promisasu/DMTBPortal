@@ -10,9 +10,9 @@ test('when survey can be created', (t) => {
     model
         .withArgs('patient')
         .returns({
-            findOne() {
+            findOne () {
                 return {
-                    addSurvey_instance() {
+                    addSurvey_instance () {
                         return Promise.resolve();
                     }
                 };
@@ -22,9 +22,9 @@ test('when survey can be created', (t) => {
     model
         .withArgs('survey_template')
         .returns({
-            findById() {
+            findById () {
                 return {
-                    addSurvey_instance() {
+                    addSurvey_instance () {
                         return Promise.resolve();
                     }
                 };
@@ -34,7 +34,7 @@ test('when survey can be created', (t) => {
     model
         .withArgs('survey_instance')
         .returns({
-            create() {
+            create () {
                 return Promise.resolve();
             }
         });
@@ -58,7 +58,7 @@ test('when patient is invalid', (t) => {
     model
         .withArgs('patient')
         .returns({
-            findOne() {
+            findOne () {
                 return Promise.resolve(null);
             }
         });
@@ -66,7 +66,7 @@ test('when patient is invalid', (t) => {
     model
         .withArgs('survey_template')
         .returns({
-            findById() {
+            findById () {
                 return Promise.resolve();
             }
         });
@@ -74,7 +74,7 @@ test('when patient is invalid', (t) => {
     model
         .withArgs('survey_instance')
         .returns({
-            create() {
+            create () {
                 return Promise.resolve();
             }
         });
@@ -100,7 +100,7 @@ test('when survey template is invalid', (t) => {
     model
         .withArgs('patient')
         .returns({
-            findOne() {
+            findOne () {
                 return Promise.resolve({});
             }
         });
@@ -108,7 +108,7 @@ test('when survey template is invalid', (t) => {
     model
         .withArgs('survey_template')
         .returns({
-            findById() {
+            findById () {
                 return Promise.resolve(null);
             }
         });
@@ -116,7 +116,7 @@ test('when survey template is invalid', (t) => {
     model
         .withArgs('survey_instance')
         .returns({
-            create() {
+            create () {
                 return Promise.resolve({});
             }
         });

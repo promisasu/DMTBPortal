@@ -14,7 +14,7 @@
  * @param {Array<ConversionOption>} configuration - options to configure output
  * @returns {String} results of transform
  */
-function convertJsonToCsv(data, configuration) {
+function convertJsonToCsv (data, configuration) {
     // create the spreadsheet header from the labels
     const header = configuration
         .map((item) => {

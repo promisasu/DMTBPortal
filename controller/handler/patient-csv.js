@@ -67,7 +67,7 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientCSV(request, reply) {
+function patientCSV (request, reply) {
     database.sequelize.query(
         queryProp.get('sql.csvPatient')
         , {
@@ -83,7 +83,8 @@ function patientCSV(request, reply) {
             return convertJsonToCsv(uniqueAnswers, configuration);
         })
         .then((csv) => {
-            return reply(csv).type('text/csv');
+            return reply(csv)
+                .type('text/csv');
         })
         .catch((err) => {
             console.log('error', err);

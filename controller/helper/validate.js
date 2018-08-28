@@ -15,7 +15,7 @@ const database = require('../../model');
  * @param {Function} callback - alerts Hapi if login is valid or not
  * @returns {Null} nothing
  */
-function validate(request, username, password, callback) {
+function validate (request, username, password, callback) {
     const user = database.sequelize.model('user');
     let selectedUser = null;
 

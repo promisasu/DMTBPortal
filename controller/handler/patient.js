@@ -13,15 +13,13 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
-
 /**
  * A dashboard with an overview of a specific patient.
  * @param {Request} request - Hapi request
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientView(request, reply) {
-
+function patientView (request, reply) {
     Promise
         .all([
             database.sequelize.query(

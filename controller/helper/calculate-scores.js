@@ -70,7 +70,7 @@ const config = require('../../config.json');
  * @param {Array<Object>} surveyResults - Array of Weekly surveyResults
  * @returns {Array<Object>} - Processed result set containing PROMIS scores
  */
-function calculatePromisScores(surveyResults) {
+function calculatePromisScores (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -108,7 +108,8 @@ function calculatePromisScores(surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -142,7 +143,7 @@ function calculatePromisScores(surveyResults) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with fatigue scores
  */
-function calculatePR_Fatigue(surveyResults) {
+function calculatePR_Fatigue (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -178,7 +179,8 @@ function calculatePR_Fatigue(surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -215,7 +217,7 @@ function calculatePR_Fatigue(surveyResults) {
  * @param {Array<Object>} data - set of scores
  * @returns {Number} - conversion factor
  */
-function calculateConversionFactor(data) {
+function calculateConversionFactor (data) {
     return 100 / data[data.length - 1];
 }
 
@@ -224,7 +226,7 @@ function calculateConversionFactor(data) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with anxiety scores
  */
-function calculatePR_Anxiety(surveyResults) {
+function calculatePR_Anxiety (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -260,7 +262,8 @@ function calculatePR_Anxiety(surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -291,7 +294,7 @@ function calculatePR_Anxiety(surveyResults) {
     return [resultSet, maxVal];
 }
 
-function calculateCough(surveyResults, problemType) {
+function calculateCough (surveyResults, problemType) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -330,7 +333,8 @@ function calculateCough(surveyResults, problemType) {
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
 
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionId = answer.questionId;
                 questionType = answer.questionType;
                 patientType = answer.patientType;
@@ -361,13 +365,12 @@ function calculateCough(surveyResults, problemType) {
     return [resultSet, maxVal];
 }
 
-
 /**
  * A helper function that calculates physical function.
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with physical func scores
  */
-function calculatePR_PhyFuncMob(surveyResults) {
+function calculatePR_PhyFuncMob (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -403,7 +406,8 @@ function calculatePR_PhyFuncMob(surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -439,7 +443,7 @@ function calculatePR_PhyFuncMob(surveyResults) {
  * @param {Array<Object>} surveyResults - set of questions responses
  * @returns {Array<Object>} - array of results with pain intensity scores
  */
-function calculatePR_PainInt(surveyResults) {
+function calculatePR_PainInt (surveyResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -475,7 +479,8 @@ function calculatePR_PainInt(surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -511,7 +516,7 @@ function calculatePR_PainInt(surveyResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function opioidResultsCalculation(opioidResults) {
+function opioidResultsCalculation (opioidResults) {
     let returnArr = getOpioidActualValuesCalculated(opioidResults);
     let tempMax = 0;
     let i = 0;
@@ -542,7 +547,7 @@ function opioidResultsCalculation(opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function opioidThresholdCalculation(opioidResults) {
+function opioidThresholdCalculation (opioidResults) {
     let opioidVal = getOpioidTHresholdActualValue(opioidResults);
     let opioid = 0;
     let tempMax = 0;
@@ -571,7 +576,7 @@ function opioidThresholdCalculation(opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function getOpioidTHresholdActualValue(opioidResults) {
+function getOpioidTHresholdActualValue (opioidResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let oxy = 0;
@@ -602,7 +607,7 @@ function getOpioidTHresholdActualValue(opioidResults) {
  * @param {Array<Object>} opioidResults - set of opioid questions responses
  * @returns {Array<Object>} - array of results with opioid scores
  */
-function getOpioidActualValuesCalculated(opioidResults) {
+function getOpioidActualValuesCalculated (opioidResults) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
@@ -641,7 +646,8 @@ function getOpioidActualValuesCalculated(opioidResults) {
                 y: 0
             };
 
-            date = moment.utc(singleSurveyBlock[key][0].StartTime).format(viewDateFormat);
+            date = moment.utc(singleSurveyBlock[key][0].StartTime)
+                .format(viewDateFormat);
             returnDict[date] = 0;
             singleSurveyBlock[key].forEach((survey) => {
                 survey.dosage = survey.dosage.replace(' ', '');
@@ -663,7 +669,7 @@ function getOpioidActualValuesCalculated(opioidResults) {
  * @param {Number} value - to be checked if a number
  * @returns {Boolean} - boolean value which returns if the value is a number or not
  */
-function isInt(value) {
+function isInt (value) {
     return !isNaN(value) && ((x) => {
         return (x | 0) === x;
     })(parseFloat(value));
