@@ -10,51 +10,51 @@ test.cb('when patient is created', (t) => {
     const createSurveyInstance = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        create () {
-            return {
-                pin: 1001
-            };
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            create () {
+                return {
+                    pin: 1001
+                };
+            }
+        });
 
     model
-    .withArgs('trial')
-    .returns({
-        findById () {
-            return {
-                id: 1,
-                patientPinCounter: 1,
-                increment () {
-                    return Promise.resolve();
-                }
-            };
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            findById () {
+                return {
+                    id: 1,
+                    patientPinCounter: 1,
+                    increment () {
+                        return Promise.resolve();
+                    }
+                };
+            }
+        });
 
     model
-    .withArgs('stage')
-    .returns({
-        findById () {
-            return {
-                addPatient () {
-                    return Promise.resolve();
-                }
-            };
-        }
-    });
+        .withArgs('stage')
+        .returns({
+            findById () {
+                return {
+                    addPatient () {
+                        return Promise.resolve();
+                    }
+                };
+            }
+        });
 
     model
-    .withArgs('join_stages_and_surveys')
-    .returns({
-        findOne () {
-            return {
-                rule: 'weekly',
-                surveyTemplateId: 1
-            };
-        }
-    });
+        .withArgs('join_stages_and_surveys')
+        .returns({
+            findOne () {
+                return {
+                    rule: 'weekly',
+                    surveyTemplateId: 1
+                };
+            }
+        });
 
     transaction.returns(Promise.resolve({
         commit () {
@@ -101,12 +101,12 @@ test.cb('when trial does not exist', (t) => {
     model.withArgs('patient').returns();
 
     model
-    .withArgs('trial')
-    .returns({
-        findById () {
-            return Promise.reject();
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            findById () {
+                return Promise.reject();
+            }
+        });
 
     model.withArgs('stage').returns();
 
@@ -151,36 +151,36 @@ test.cb('when stage does not exist', (t) => {
     const createSurveyInstance = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        create () {
-            return {
-                pin: 1001
-            };
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            create () {
+                return {
+                    pin: 1001
+                };
+            }
+        });
 
     model
-    .withArgs('trial')
-    .returns({
-        findById () {
-            return {
-                id: 1,
-                patientPinCounter: 1,
-                increment () {
-                    return Promise.resolve();
-                }
-            };
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            findById () {
+                return {
+                    id: 1,
+                    patientPinCounter: 1,
+                    increment () {
+                        return Promise.resolve();
+                    }
+                };
+            }
+        });
 
     model
-    .withArgs('stage')
-    .returns({
-        findById () {
-            return Promise.reject();
-        }
-    });
+        .withArgs('stage')
+        .returns({
+            findById () {
+                return Promise.reject();
+            }
+        });
 
     model.withArgs('join_stages_and_surveys').returns();
 
@@ -225,51 +225,51 @@ test.cb('when no initial survey is availible for stage', (t) => {
     const createSurveyInstance = sinon.stub();
 
     model
-    .withArgs('patient')
-    .returns({
-        create () {
-            return {
-                pin: 1001
-            };
-        }
-    });
+        .withArgs('patient')
+        .returns({
+            create () {
+                return {
+                    pin: 1001
+                };
+            }
+        });
 
     model
-    .withArgs('trial')
-    .returns({
-        findById () {
-            return {
-                id: 1,
-                patientPinCounter: 1,
-                increment () {
-                    return Promise.resolve();
-                }
-            };
-        }
-    });
+        .withArgs('trial')
+        .returns({
+            findById () {
+                return {
+                    id: 1,
+                    patientPinCounter: 1,
+                    increment () {
+                        return Promise.resolve();
+                    }
+                };
+            }
+        });
 
     model
-    .withArgs('stage')
-    .returns({
-        findById () {
-            return {
-                addPatient () {
-                    return Promise.resolve();
-                }
-            };
-        }
-    });
+        .withArgs('stage')
+        .returns({
+            findById () {
+                return {
+                    addPatient () {
+                        return Promise.resolve();
+                    }
+                };
+            }
+        });
 
     model
-    .withArgs('join_stages_and_surveys')
-    .returns({
-        findOne () {
-            return {
-                rule: 'weekly',
-                surveyTemplateId: 1
-            };
-        }
-    });
+        .withArgs('join_stages_and_surveys')
+        .returns({
+            findOne () {
+                return {
+                    rule: 'weekly',
+                    surveyTemplateId: 1
+                };
+            }
+        });
 
     transaction.returns(Promise.resolve({
         rollback () {
