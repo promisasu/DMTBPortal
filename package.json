@@ -94,7 +94,9 @@
     "remark-preset-lint-markdown-style-guide": "^2.1.2",
     "remark-validate-links": "^7.0.0",
     "sinon": "^6.0.1",
-    "stylelint": "^9.3.0"
+    "stylelint": "^9.5.0",
+    "stylelint-config-recommended": "^2.1.0",
+    "stylelint-order": "^1.0.0"
   },
   "engines": {
     "node": ">=6.0.0",
