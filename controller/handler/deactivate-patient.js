@@ -19,7 +19,6 @@ const parameterProp = propReader('parameter.properties');
  * @returns {Null} Redirect
  */
 function deactivatePatient (request, reply) {
-
     Promise
         .all([
             database.sequelize.query(

@@ -319,7 +319,6 @@ function calculateCough (surveyResults, problemType) {
     });
 
     for (let activityInstanceId in singleSurveyBlock) {
-
         if (singleSurveyBlock.hasOwnProperty(activityInstanceId)) {
             let result = {
                 x: '',
@@ -332,7 +331,6 @@ function calculateCough (surveyResults, problemType) {
             let questionId = -1;
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-
                 date = moment.utc(answer.StartTime)
                     .format(viewDateFormat);
                 questionId = answer.questionId;
