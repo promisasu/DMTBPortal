@@ -28,13 +28,13 @@
     patientsTable.draw();
 
     document.getElementById('add-patient-btn')
-    .addEventListener('click', function addNewPatient () {
-        var element = document.getElementById('add-patient-btn');
-        var trialId = element.getAttribute('data-trial-id');
+        .addEventListener('click', function addNewPatient () {
+            var element = document.getElementById('add-patient-btn');
+            var trialId = element.getAttribute('data-trial-id');
 
-        //window.location = '/enroll/' + trialId;
-        window.location = '/patient';
-    });
+            //window.location = '/enroll/' + trialId;
+            window.location = '/patient';
+        });
 
     new Chart(ctx, {
         type: 'doughnut',

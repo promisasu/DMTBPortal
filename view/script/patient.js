@@ -83,14 +83,14 @@
     }
 
     document.getElementById('deactivate-patient')
-    .addEventListener('click', function deactivate () {
-        $.ajax({
-            url: window.location.pathname,
-            type: 'DELETE'
-        })
-        .done(redirect)
-        .fail(warningMessage);
-    });
+        .addEventListener('click', function deactivate () {
+            $.ajax({
+                url: window.location.pathname,
+                type: 'DELETE'
+            })
+                .done(redirect)
+                .fail(warningMessage);
+        });
 
     if (isNewPatientRegex.test(isNewPatient)) {
         $('#remember-patient-dialog').modal('show');
