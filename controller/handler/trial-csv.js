@@ -65,7 +65,7 @@ function trialCSV (request, reply) {
                 key: 'State5',
                 default: ''
             }];
-        query = 'Sickle Cell Weekly Survey';
+        query = 'DMTB Biweekly Survey';
     } else if (dailyregex.test(request.path) === true) {
         configuration = [
             {
@@ -259,15 +259,13 @@ function trialCSV (request, reply) {
                 default: ''
             }
         ];
-        query = 'Sickle Cell Daily Survey';
+        query = 'DMTB Daily Survey';
     } else {
         query = 'Unknown';
     }
 
-    // AND a.state IN ('completed','expired')
-
     database.sequelize.query(
-            `
+        `
         SELECT a.State, a.StartTime, p.DateStarted, p.PatientPin
         FROM activity_instance a
         JOIN patients p
@@ -303,6 +301,7 @@ function trialCSV (request, reply) {
             reply(boom.notFound('patient data not found'));
         });
 }
+
 /**
  * Forms a result set for the csv.
  * @param {Array} optionsWithAnswers - all options with answers.
@@ -475,7 +474,6 @@ function formatData (optionsWithAnswers) {
                         case 35:
                             resultObject.State35 = determineStatus(innerRow.State);
                             break;
-
                     }
                 }
             }

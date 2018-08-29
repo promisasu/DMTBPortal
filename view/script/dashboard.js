@@ -41,19 +41,19 @@
     }
 
     $
-    .fn
-    .dataTable
-    .ext
-    .search
-    .push(
-        function testRow (settings, rowContent) {
-            var startDate = moment(rowContent[3], 'MM-DD-YYYY');
-            var endDate = moment(rowContent[4], 'MM-DD-YYYY');
+        .fn
+        .dataTable
+        .ext
+        .search
+        .push(
+            function testRow (settings, rowContent) {
+                var startDate = moment(rowContent[3], 'MM-DD-YYYY');
+                var endDate = moment(rowContent[4], 'MM-DD-YYYY');
 
-            // compare today to dates to see if trial should be displayed
-            return strategy(startDate, endDate);
-        }
-    );
+                // compare today to dates to see if trial should be displayed
+                return strategy(startDate, endDate);
+            }
+        );
 
     $('.dropdown-menu').on('click', 'div', function selectItem () {
         // update strategy

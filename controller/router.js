@@ -1,6 +1,7 @@
 'use strict';
-
-const Joi = require('joi');
+const BaseJoi = require('joi');
+const Extension = require('joi-date-extensions');
+const Joi = BaseJoi.extend(Extension);
 const moment = require('moment');
 
 const createTrial = require('./handler/create-trial');
@@ -136,33 +137,6 @@ module.exports = [
         }
     },
     {
-        method: 'POST',
-        path: '/patient',
-        handler: createPatient,
-        config: {
-            validate: {
-                payload: {
-                    stageId: Joi
-                        .number()
-                        .integer()
-                        .positive(),
-                    trialId: Joi
-                        .number()
-                        .integer()
-                        .positive(),
-                    startDate: Joi
-                        .date()
-                        .format('MM-DD-YYYY')
-                        .min(moment().startOf('day').toDate()),
-                    endDate: Joi
-                        .date()
-                        .format('MM-DD-YYYY')
-                        .min(Joi.ref('startDate'))
-                }
-            }
-        }
-    },
-    {
         method: 'GET',
         path: '/patient/{pin}',
         handler: patientPresenter,
@@ -215,9 +189,9 @@ module.exports = [
             validate: {
                 params: {
                     id: Joi
-                      .number()
-                      .integer()
-                      .positive()
+                        .number()
+                        .integer()
+                        .positive()
                 }
             }
         }
@@ -230,9 +204,9 @@ module.exports = [
             validate: {
                 params: {
                     id: Joi
-                      .number()
-                      .integer()
-                      .positive()
+                        .number()
+                        .integer()
+                        .positive()
                 }
             }
         }

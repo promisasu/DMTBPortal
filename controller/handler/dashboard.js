@@ -20,7 +20,9 @@ function dashboardView (request, reply) {
     database.sequelize.query(
         `
         SELECT t.*, s.StageId, count(1) as recruitedCount from trial t, stage s
-        INNER JOIN patients pa ON s.StageId = pa.StageIdFK  WHERE t.TrialId = s.trialId;
+        INNER JOIN patients pa ON s.StageId = pa.StageIdFK  WHERE t.TrialId = s.trialId
+        GROUP BY t.TrialId, t.Name, t.Description , t.IRBID, t.IRBStart, t.IRBEnd, t.TargetCount, 
+        t.PatientPinCounter, t.CreatedAt, t.UpdatedAt, t.DeletedAt, t.Duration, s.StageId;
 
         `,
         {
@@ -30,7 +32,7 @@ function dashboardView (request, reply) {
                 currentDate.toISOString()
             ]
         }
-        )
+    )
         .then((trials) => {
             // Process data into format expected in view
             const trialData = trials.map(processTrial);
@@ -46,10 +48,10 @@ function dashboardView (request, reply) {
             console.log('error', err);
 
             reply
-            .view('404', {
-                title: 'Not Found'
-            })
-            .code(httpNotFound);
+                .view('404', {
+                    title: 'Not Found'
+                })
+                .code(httpNotFound);
         });
 }
 

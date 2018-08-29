@@ -9,7 +9,6 @@ const processSurveyInstances = require('../helper/process-survey-instances');
 const moment = require('moment');
 const httpNotFound = 404;
 
-
 /**
  * A dashboard with an overview of a specific patient.
  * @param {Request} request - Hapi request
@@ -44,7 +43,7 @@ function patientView (request, reply) {
                 ON si.PatientPinFK = pa.PatientPin
                 JOIN stage AS st
                 ON st.StageId = pa.StageIdFK
-                WHERE pa.PatientPin = ?
+                WHERE pa.PatientPin = ? and si.activityTitle != 'Fruit Run'
                 ORDER BY si.StartTime
                 `, {
                     type: database.sequelize.QueryTypes.SELECT,
@@ -88,7 +87,7 @@ function patientView (request, reply) {
                 ON ai.PatientPinFK = pi.PatientPin
                 WHERE act.ActivityInstanceIdFk
                 IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ?
-                and State='completed' and ai.activityTitle='Sickle Cell Weekly Survey');
+                and State='completed' and (activityTitle='DMTB Biweekly Survey' ));
 
                 `, {
                     type: database.sequelize.QueryTypes.SELECT,
@@ -98,7 +97,7 @@ function patientView (request, reply) {
                 }
             ),
             database.sequelize.query(
-              `
+                `
               SELECT ai.PatientPinFK as pin, ai.activityTitle as name,
                ai.UserSubmissionTime as date, act.ActivityInstanceIdFk as id,
                act.questionIdFk as questionId, act.questionOptionIdFk as optionId,
@@ -119,7 +118,7 @@ function patientView (request, reply) {
                ON mi.PatientPINFK = ai.PatientPinFK and mi.MedicationName = ans.optionText
                WHERE act.ActivityInstanceIdFk
                IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ?
-               and State='completed' and ai.activityTitle='Sickle Cell Daily Survey');
+               and State='completed' and ai.activityTitle='DMTB Daily Survey');
                 `, {
                     type: database.sequelize.QueryTypes.SELECT,
                     replacements: [
@@ -153,18 +152,46 @@ function patientView (request, reply) {
                         request.params.pin
                     ]
                 }
+            ),
+            database.sequelize.query(
+                `
+                SELECT ai.PatientPinFK as pin, ai.activityTitle as name,
+                ai.UserSubmissionTime as date, act.ActivityInstanceIdFk as id,
+                act.questionIdFk as questionId, act.questionOptionIdFk as optionId,
+                ans.OptionText as optionText, que.SurveyBlockIdFk as questionType,
+                ai.StartTime as StartTime, ans.likertScale as likertScale, pi.type as patientType
+                FROM question_result act
+                JOIN questions que
+                ON act.questionIdFk = que.QuestionId
+                JOIN question_options ans
+                ON act.questionOptionIdFk = ans.QuestionOptionId
+                JOIN activity_instance ai
+                ON act.ActivityInstanceIdFk = ai.ActivityInstanceId
+                JOIN patients pi
+                ON ai.PatientPinFK = pi.PatientPin
+                WHERE act.ActivityInstanceIdFk
+                IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ?
+                and State='completed' and (activityTitle='DMTB Daily Survey' ));
+
+                `, {
+                    type: database.sequelize.QueryTypes.SELECT,
+                    replacements: [
+                        request.params.pin
+                    ]
+                }
             )
 
         ])
-        .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults]) => {
+        .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,
+            dailySurvey]) => {
             let dataChart = processSurveyInstances(surveyInstances);
 
             if (!currentPatient) {
                 throw new Error('patient does not exist');
             }
             let clinicalValuesChart = processSurveyInstances.processClinicanData(
-                surveyInstances, surveyResults, bodyPainResults, opioidResults
-                );
+                surveyInstances, surveyResults, bodyPainResults, opioidResults, dailySurvey
+            );
 
             return reply.view('patient', {
                 title: 'Pain Reporting Portal',
@@ -173,16 +200,16 @@ function patientView (request, reply) {
                 surveys: surveyInstances.map((surveyInstance) => {
                     const surveyInstanceCopy = Object.assign({}, surveyInstance);
 
-                    surveyInstanceCopy.startTime = moment(surveyInstanceCopy.StartTime)
+                    surveyInstanceCopy.startTime = moment.utc(surveyInstanceCopy.StartTime)
                         .format('MM-DD-YYYY');
-                    surveyInstanceCopy.endTime = moment(surveyInstanceCopy.EndTime)
+                    surveyInstanceCopy.endTime = moment.utc(surveyInstanceCopy.EndTime)
                         .format('MM-DD-YYYY');
                     if (surveyInstanceCopy.UserSubmissionTime) {
-                        surveyInstanceCopy.UserSubmissionTime = moment(surveyInstanceCopy.UserSubmissionTime)
+                        surveyInstanceCopy.UserSubmissionTime = moment.utc(surveyInstanceCopy.UserSubmissionTime)
                             .format('MM-DD-YYYY h:mma');
                     }
                     if (surveyInstanceCopy.ActualSubmissionTime) {
-                        surveyInstanceCopy.ActualSubmissionTime = moment(surveyInstanceCopy.ActualSubmissionTime)
+                        surveyInstanceCopy.ActualSubmissionTime = moment.utc(surveyInstanceCopy.ActualSubmissionTime)
                             .format('MM-DD-YYYY h:mma');
                     }
 

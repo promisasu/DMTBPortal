@@ -11,51 +11,51 @@ test.cb('when patient has one survey', (t) => {
     const query = sinon.stub();
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve({
-        pin: 1,
-        stage: 'example'
-    }));
-
-    query
-    .onSecondCall()
-    .returns(Promise.resolve([
-        {
-            id: 1,
-            startTime: new Date(),
-            endTime: new Date(),
-            userSubmissionTime: new Date(),
-            state: 'completed',
-            surveyTemplateId: 1,
-            stageName: 'example',
-            surveyTemplateName: 'example'
-        }
-    ]));
-
-    query
-    .onThirdCall()
-    .returns(Promise.resolve({
-        id: 1,
-        name: 'example'
-    }));
-
-    query
-    .onFourthCall()
-    .returns(Promise.resolve([
-        {
+        .onFirstCall()
+        .returns(Promise.resolve({
             pin: 1,
-            name: 'example',
-            date: new Date(),
+            stage: 'example'
+        }));
+
+    query
+        .onSecondCall()
+        .returns(Promise.resolve([
+            {
+                id: 1,
+                startTime: new Date(),
+                endTime: new Date(),
+                userSubmissionTime: new Date(),
+                state: 'completed',
+                surveyTemplateId: 1,
+                stageName: 'example',
+                surveyTemplateName: 'example'
+            }
+        ]));
+
+    query
+        .onThirdCall()
+        .returns(Promise.resolve({
             id: 1,
-            questionId: 74,
-            optionId: 12,
-            optionText: '2',
-            questionType: 'bodyPain_daily',
-            StartTime: new Date(),
-            likertScale: null,
-            patientType: 'adult'
-        }
-    ]));
+            name: 'example'
+        }));
+
+    query
+        .onFourthCall()
+        .returns(Promise.resolve([
+            {
+                pin: 1,
+                name: 'example',
+                date: new Date(),
+                id: 1,
+                questionId: 74,
+                optionId: 12,
+                optionText: '2',
+                questionType: 'bodyPain_daily',
+                StartTime: new Date(),
+                likertScale: null,
+                patientType: 'adult'
+            }
+        ]));
 
     const patientCSV = proxyquire('../handler/patient', {
         '../../model': {
@@ -92,40 +92,40 @@ test.cb('when patient has no surveys', (t) => {
     const query = sinon.stub();
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve({
-        pin: 1,
-        stage: 'example'
-    }));
-
-    query
-    .onSecondCall()
-    .returns(Promise.resolve([]));
-
-    query
-    .onThirdCall()
-    .returns(Promise.resolve({
-        id: 1,
-        name: 'example'
-    }));
-
-    query
-    .onFourthCall()
-    .returns(Promise.resolve([
-        {
+        .onFirstCall()
+        .returns(Promise.resolve({
             pin: 1,
-            name: 'example',
-            date: new Date(),
+            stage: 'example'
+        }));
+
+    query
+        .onSecondCall()
+        .returns(Promise.resolve([]));
+
+    query
+        .onThirdCall()
+        .returns(Promise.resolve({
             id: 1,
-            questionId: 74,
-            optionId: 12,
-            optionText: '2',
-            questionType: 'bodyPain_daily',
-            StartTime: new Date(),
-            likertScale: null,
-            patientType: 'adult'
-        }
-    ]));
+            name: 'example'
+        }));
+
+    query
+        .onFourthCall()
+        .returns(Promise.resolve([
+            {
+                pin: 1,
+                name: 'example',
+                date: new Date(),
+                id: 1,
+                questionId: 74,
+                optionId: 12,
+                optionText: '2',
+                questionType: 'bodyPain_daily',
+                StartTime: new Date(),
+                likertScale: null,
+                patientType: 'adult'
+            }
+        ]));
 
     const patientCSV = proxyquire('../handler/patient', {
         '../../model': {
@@ -161,16 +161,16 @@ test.cb('when patient does not exist', (t) => {
     const query = sinon.stub();
 
     query
-    .onFirstCall()
-    .returns(Promise.resolve(null));
+        .onFirstCall()
+        .returns(Promise.resolve(null));
 
     query
-    .onSecondCall()
-    .returns(Promise.resolve([]));
+        .onSecondCall()
+        .returns(Promise.resolve([]));
 
     query
-    .onThirdCall()
-    .returns(Promise.resolve(null));
+        .onThirdCall()
+        .returns(Promise.resolve(null));
 
     const patientCSV = proxyquire('../handler/patient', {
         '../../model': {

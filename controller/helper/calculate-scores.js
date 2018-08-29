@@ -13,8 +13,8 @@ const PR_Anxiety_TScore_Parent = [34.0, 38.0, 41.0, 40, 44, 46.0, 48.0, 49.0,
     76, 77, 79, 80, 82, 84, 86, 88
 ];
 const PR_Anxiety_TScore_Adult = [37.1, 43.2, 45.9, 47.8, 49.4, 50.8, 52.1, 53.2,
-54.3, 55.4, 56.4, 57.4, 58.4, 59.4, 60.4, 61.4, 62.5, 63.5, 64.5, 65.6, 66.6,
-67.7, 68.7, 69.8, 70.8, 71.9, 73.0, 74.1, 75.4, 76.7, 78.2, 80.0, 83.1];
+    54.3, 55.4, 56.4, 57.4, 58.4, 59.4, 60.4, 61.4, 62.5, 63.5, 64.5, 65.6, 66.6,
+    67.7, 68.7, 69.8, 70.8, 71.9, 73.0, 74.1, 75.4, 76.7, 78.2, 80.0, 83.1];
 const PR_Fatigue_TScore_Pediatric = [30.3, 34.3, 36.9, 39, 40.9, 42.5, 44, 45.4, 46.7,
     47.9, 49.1, 50.2, 51.3, 52.4, 53.5, 54.5,
     55.6, 56.6, 57.6, 58.6, 59.6, 60.6, 61.6,
@@ -27,8 +27,8 @@ const PR_Fatigue_TScore_Parent = [34, 39, 42, 44, 45, 47, 48, 49, 50, 51, 52,
     72, 72, 73, 74, 75, 76, 77, 79, 80, 82, 85
 ];
 const PR_Fatigue_TScore_Adult = [33.1, 38.5, 41.0, 42.8, 44.3, 45.6, 46.9,
-48.1, 49.2, 50.4, 51.5, 52.5, 53.6, 54.6, 55.6, 56.6, 57.5, 58.5, 59.4, 60.4,
-61.3, 62.3, 63.3, 64.3, 65.3, 66.4, 67.5, 68.6, 69.8, 71.0, 72.4, 74.2, 77.8];
+    48.1, 49.2, 50.4, 51.5, 52.5, 53.6, 54.6, 55.6, 56.6, 57.5, 58.5, 59.4, 60.4,
+    61.3, 62.3, 63.3, 64.3, 65.3, 66.4, 67.5, 68.6, 69.8, 71.0, 72.4, 74.2, 77.8];
 const PR_PhyFuncMob_TScore_Pediatric = [
     12.6, 13.6, 14.7, 15.7, 16.8, 17.9, 18.9, 19.9, 20.8, 21.7, 22.6, 23.5,
     24.4, 25.3, 26.1, 27.0, 27.9, 28.8, 29.8, 30.8, 31.8, 32.9, 34.1, 35.4,
@@ -108,7 +108,7 @@ function calculatePromisScores (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -178,7 +178,7 @@ function calculatePR_Fatigue (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -260,7 +260,7 @@ function calculatePR_Anxiety (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -282,6 +282,80 @@ function calculatePR_Anxiety (surveyResults) {
                 score = PR_Anxiety_TScore_Parent[score];
                 maxVal = calculateConversionFactor(PR_Anxiety_TScore_Parent);
             }
+            result.x = date;
+            result.y = score;
+            resultSet.push(result);
+        }
+    }
+
+    return [resultSet, maxVal];
+}
+
+/**
+ * A helper function that calculates cough scores.
+ * @param {Array<Object>} surveyResults - set of questions responses
+ * @param {Array<Object>} problemType - set of score categories
+ * @returns {Array<Object>} - array of results with cough scores
+ */
+function calculateCough (surveyResults, problemType) {
+    let singleSurveyBlock = {};
+    let instanceId = '';
+    let resultSet = [];
+    let maxVal = 6;
+
+    surveyResults.forEach((result) => {
+        let temp = {
+            questionId: result.questionId,
+            optionId: result.optionId,
+            optionText: result.optionText,
+            questionType: result.questionType,
+            StartTime: result.StartTime,
+            likertScale: result.likertScale,
+            patientType: result.patientType
+        };
+
+        if (typeof singleSurveyBlock[result.id] === 'undefined') {
+            singleSurveyBlock[result.id] = [temp];
+        } else {
+            singleSurveyBlock[result.id].push(temp);
+        }
+    });
+
+    for (let activityInstanceId in singleSurveyBlock) {
+        if (singleSurveyBlock.hasOwnProperty(activityInstanceId)) {
+            let result = {
+                x: '',
+                y: 0
+            };
+            let score = 0;
+            let date = new Date();
+            let questionType = '';
+            let patientType = '';
+            let questionId = -1;
+
+            singleSurveyBlock[activityInstanceId].forEach((answer) => {
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                questionId = answer.questionId;
+                questionType = answer.questionType;
+                patientType = answer.patientType;
+                if (isInt(answer.likertScale) && questionId === 25 && questionType === 'Biweekly'
+                    && problemType === 'Cough') {
+                    score = parseInt(answer.likertScale);
+                }
+                if (isInt(answer.likertScale) && questionId === 40 && questionType === 'Daily'
+                    && problemType === 'CoughWithBlood') {
+                    score = parseInt(answer.likertScale);
+                }
+                if (isInt(answer.likertScale) && questionId === 41 && questionType === 'Daily'
+                    && problemType === 'BreathingProblem') {
+                    score = parseInt(answer.likertScale);
+                }
+                if (isInt(answer.likertScale) && questionId === 42 && questionType === 'Daily'
+                    && problemType === 'ChestPain') {
+                    score = parseInt(answer.likertScale);
+                }
+            });
+
             result.x = date;
             result.y = score;
             resultSet.push(result);
@@ -332,7 +406,7 @@ function calculatePR_PhyFuncMob (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -404,7 +478,7 @@ function calculatePR_PainInt (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime).format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -570,13 +644,13 @@ function getOpioidActualValuesCalculated (opioidResults) {
                 y: 0
             };
 
-            date = moment(singleSurveyBlock[key][0].StartTime).format(viewDateFormat);
+            date = moment.utc(singleSurveyBlock[key][0].StartTime).format(viewDateFormat);
             returnDict[date] = 0;
             singleSurveyBlock[key].forEach((survey) => {
                 survey.dosage = survey.dosage.replace(' ', '');
                 survey.dosage = survey.dosage.replace('*', '');
                 returnDict[date] += parseFloat(survey.dosage) * config.opioid[survey.optionText]
-                                    * parseFloat(survey.prescribedDosage);
+                    * parseFloat(survey.prescribedDosage);
             });
             result.y = returnDict[date];
             result.x = date;
@@ -605,5 +679,6 @@ module.exports = {
     calculatePR_PhyFuncMob: calculatePR_PhyFuncMob,
     opioidResultsCalculation: opioidResultsCalculation,
     opioidThresholdCalculation: opioidThresholdCalculation,
-    calculatePR_PainInt: calculatePR_PainInt
+    calculatePR_PainInt: calculatePR_PainInt,
+    calculateCough: calculateCough
 };
