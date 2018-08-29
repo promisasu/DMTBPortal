@@ -134,7 +134,8 @@ function callAjax (formData) {
     let postURL = formPostElement.dataset.webformpost;
     let formDataJSON = JSON.stringify(formData);
 
-    console.log('postURL' + postURL);
+    console.log('postURL');
+    console.log(postURL);
     console.log('JSON before sending::' + formDataJSON);
     $.ajax({
         headers: {

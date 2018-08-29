@@ -19,7 +19,7 @@ function runSurveyRules () {
     return database
         .sequelize
         .query(
-                `
+            `
        SELECT pa.id, pa.dateStarted, jss.surveyTemplateId, jss.rule
        FROM active_patients AS pa
        JOIN stage AS st
@@ -37,8 +37,7 @@ function runSurveyRules () {
             }
         )
         .then((rules) => {
-            const surveyInstances = rules.filter(activeRules)
-                .map(toSurveyInstanceData);
+            const surveyInstances = rules.filter(activeRules).map(toSurveyInstanceData);
 
             return database
                 .sequelize
@@ -78,9 +77,7 @@ function activeRules (current, index, rules) {
  * @returns {Boolean} true for active, false for inactive
  */
 function isActive (rule) {
-    return rule.rule === 'daily' || rule.rule === 'weekly' && moment(rule.dateStarted)
-        .day() === moment()
-        .day();
+    return rule.rule === 'daily' || rule.rule === 'weekly' && moment(rule.dateStarted).day() === moment().day();
 }
 
 /**

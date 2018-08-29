@@ -294,6 +294,12 @@ function calculatePR_Anxiety (surveyResults) {
     return [resultSet, maxVal];
 }
 
+/**
+ * A helper function that calculates cough scores.
+ * @param {Array<Object>} surveyResults - set of questions responses
+ * @param {Array<Object>} problemType - set of score categories
+ * @returns {Array<Object>} - array of results with cough scores
+ */
 function calculateCough (surveyResults, problemType) {
     let singleSurveyBlock = {};
     let instanceId = '';

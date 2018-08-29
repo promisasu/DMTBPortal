@@ -126,6 +126,7 @@ function pickTimeLeft (surveys) {
             returnArray.push(dataArr);
         }
     }
+
     return returnArray;
 }
 
@@ -175,6 +176,7 @@ function calculateTimeLeft (openTime, endTime, completedTime) {
  * @param {Array<Object>} surveyDetails - list of survey instances
  * @param {Array<Object>} bodyPainResults - list of body pain questions answered
  * @param {Array<Object>} opioidResults - list of survey instances
+ * @param {Array<Object>} dailySurvey - daily Survey Activity
  * @returns {Array<Object>} data for the chart
  */
 function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidResults, dailySurvey) {
@@ -215,6 +217,7 @@ let violet = 'rgba(119,65,119, 1)';
  * @param {Array<Object>} bodyPainResults - list of body pain answers
  * @param {Array<Object>} opioidResults - list of survey instances
  * @param {Array<Object>} labels - labels for the chart
+ * @param {Array<Object>} dailySurvey - daily Survey Activity
  * @returns {Array<Object>} data for the chart
  */
 function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidResults, labels, dailySurvey) {
@@ -274,13 +277,14 @@ function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidRe
 
 /**
  * Takes in a Survey Instances and processes to get opioid equivalence
- * @param {Array<Object>} opioidResults - list of survey instances
+ * @param {Array<Object>} surveyDetails - list of survey instances
  * @param {Array<Object>} labels - labels for the chart
+ * @param {String} problemType - category of the score
  * @returns {Array<Object>} data for the chart
  */
-
 function getDMTBScore (surveyDetails, labels, problemType) {
     let promisScores = calculateScores.calculateCough(surveyDetails, problemType);
+
     return createMultiLinePoints(promisScores[0], labels, 1);
 }
 

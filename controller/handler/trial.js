@@ -26,7 +26,7 @@ function trialView (request, reply) {
         .all([
             trial.findById(request.params.id),
             database.sequelize.query(
-                    `
+                `
                 SELECT StageId, Name, CreatedAt, UpdatedAt, DeletedAt, TrialId
                 FROM stage AS stage
                 WHERE stage.DeletedAt IS NULL
@@ -40,7 +40,7 @@ function trialView (request, reply) {
                 }
             ),
             database.sequelize.query(
-                    `
+                `
                 SELECT tr.*, pa.PatientPin, pa.DateStarted, pa.DateCompleted, st.Name AS stage
                 FROM trial AS tr
                 JOIN stage AS st
@@ -58,7 +58,7 @@ function trialView (request, reply) {
                 }
             ),
             database.sequelize.query(
-                    `
+                `
                 SELECT pa.PatientPin,
                 SUM(si.State = 'expired' and si.activityTitle = 'DMTB Biweekly Survey') AS expiredWeeklyCount,
                 SUM(si.State = 'completed' and si.activityTitle = 'DMTB Biweekly Survey') AS completedWeeklyCount,
@@ -95,7 +95,7 @@ function trialView (request, reply) {
                 }
             ),
             database.sequelize.query(
-                    `
+                `
               SELECT State, EndTime, PatientPinFK
               FROM activity_instance
               WHERE activityTitle = 'DMTB Biweekly Survey'

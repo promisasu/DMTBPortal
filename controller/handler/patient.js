@@ -83,7 +83,7 @@ function patientView (request, reply) {
 
         ])
         .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,
-                   dailySurvey]) => {
+            dailySurvey]) => {
             let dataChart = processSurveyInstances(surveyInstances);
 
             if (!currentPatient) {

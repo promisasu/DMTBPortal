@@ -2,34 +2,27 @@
     background: #d9534f;
     color: #d9534f;
 }
-
 .progress-good-and-bad::-webkit-progress-bar {
     background: #d9534f !important;
 }
-
 .progress-good-and-bad::-webkit-progress-value {
     background-color: #5cb85c !important;
 }
-
 .progress-good-and-bad::-moz-progress-bar {
     background-color: #5cb85c;
 }
-
 .progress-good-and-bad > .progress-bar {
     background-color: #5cb85c;
 }
-
 input[type='date'] {
     color: #55595c !important;
 }
-
 .bear-background {
     background: url('/static/image/bear.svg');
     background-position: left;
     background-repeat: no-repeat;
     height: 300px;
 }
-
 .custom-btn {
     padding-bottom: 0.47rem;
     padding-top: 0.47rem;

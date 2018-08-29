@@ -55,3 +55,4 @@ config.api.hostname = 'localhost';
 config.api.port = 3001;
 
 return writeFile(path.resolve(__dirname, '..', 'config.json'), JSON.stringify(config, null, jsonIndent));
+
