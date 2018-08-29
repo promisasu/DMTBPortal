@@ -13,6 +13,8 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
+const json = parameterProp.get('score.catagory');
+
 /**
  * A dashboard with an overview of a specific patient.
  * @param {Request} request - Hapi request
@@ -20,6 +22,14 @@ const parameterProp = propReader('parameter.properties');
  * @returns {View} Rendered page
  */
 function patientView (request, reply) {
+    let parsedJson = JSON.parse(json);
+    let listOfQuestionScore = [];
+
+    for (let i = 0; i < parsedJson.score_type.length; i++) {
+        for (let j = 0; j < parsedJson.score_type[i].questionID.length; j++) {
+            listOfQuestionScore.push(parsedJson.score_type[i].questionID[j]);
+        }
+    }
     Promise
         .all([
             database.sequelize.query(
@@ -79,18 +89,25 @@ function patientView (request, reply) {
                     replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
                         parameterProp.get('activity.daily')]
                 }
+            ),
+            database.sequelize.query(
+                queryProp.get('sql.getScoreData')
+                , {
+                    type: database.sequelize.QueryTypes.SELECT,
+                    replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
+                        listOfQuestionScore]
+                }
             )
-
         ])
         .then(([currentPatient, surveyInstances, currentTrial, surveyResults, opioidResults, bodyPainResults,
-            dailySurvey]) => {
+            dailySurvey, scoreValue]) => {
             let dataChart = processSurveyInstances(surveyInstances);
 
             if (!currentPatient) {
                 throw new Error('patient does not exist');
             }
             let clinicalValuesChart = processSurveyInstances.processClinicanData(
-                surveyInstances, surveyResults, bodyPainResults, opioidResults, dailySurvey
+                surveyInstances, surveyResults, bodyPainResults, opioidResults, scoreValue
             );
 
             return reply.view('patient', {

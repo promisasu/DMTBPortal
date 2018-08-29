@@ -65,6 +65,9 @@ const moment = require('moment');
 const viewDateFormat = 'MM-DD-YYYY HH:mm';
 const config = require('../../config.json');
 
+const propReader = require('properties-reader');
+const parameterProp = propReader('parameter.properties');
+
 /**
  * A helper function that calculates promise aggragate score.
  * @param {Array<Object>} surveyResults - Array of Weekly surveyResults
@@ -300,11 +303,11 @@ function calculatePR_Anxiety (surveyResults) {
  * @param {Array<Object>} problemType - set of score categories
  * @returns {Array<Object>} - array of results with cough scores
  */
-function calculateCough (surveyResults, problemType) {
+function calculateDMTBScore (surveyResults, problemType) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
-    let maxVal = 6;
+    let maxVal = parameterProp.get('score.maxvalue');
 
     surveyResults.forEach((result) => {
         let temp = {
@@ -343,22 +346,7 @@ function calculateCough (surveyResults, problemType) {
                 questionType = answer.questionType;
                 patientType = answer.patientType;
 
-                if (isInt(answer.likertScale) && questionId === 25 && questionType === 'Biweekly'
-                    && problemType === 'Cough') {
-                    score = parseInt(answer.likertScale);
-                }
-                if (isInt(answer.likertScale) && questionId === 40 && questionType === 'Daily'
-                    && problemType === 'CoughWithBlood') {
-                    score = parseInt(answer.likertScale);
-                }
-                if (isInt(answer.likertScale) && questionId === 41 && questionType === 'Daily'
-                    && problemType === 'BreathingProblem') {
-                    score = parseInt(answer.likertScale);
-                }
-                if (isInt(answer.likertScale) && questionId === 42 && questionType === 'Daily'
-                    && problemType === 'ChestPain') {
-                    score = parseInt(answer.likertScale);
-                }
+                score += parseInt(answer.likertScale);
             });
             result.x = date;
             result.y = score;
@@ -687,5 +675,5 @@ module.exports = {
     opioidResultsCalculation: opioidResultsCalculation,
     opioidThresholdCalculation: opioidThresholdCalculation,
     calculatePR_PainInt: calculatePR_PainInt,
-    calculateCough: calculateCough
+    calculateDMTBScore: calculateDMTBScore
 };
