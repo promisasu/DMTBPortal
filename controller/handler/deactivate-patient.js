@@ -22,10 +22,11 @@ function deactivatePatient (request, reply) {
     Promise
         .all([
             database.sequelize.query(
-                queryProp.get('sql.deacivatePatient')
+                queryProp.get('sql.deactivatePatient')
                 , {
                     type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [parameterProp.get('activity.deactivate'), parameterProp.get('activity.currentstate'),
+                    replacements: [parameterProp.get('activity.State.deactivate'),
+                        parameterProp.get('activity.currentstate'),
                         moment.utc()
                             .format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
                     plain: true
@@ -44,7 +45,7 @@ function deactivatePatient (request, reply) {
                 queryProp.get('sql.deleteDeactivated')
                 , {
                     type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [parameterProp.get('activity.deactivate'),
+                    replacements: [parameterProp.get('activity.State.deactivate'),
                         moment.utc()
                             .format('YYYY-MM-DD HH:mm:ss'),
                         request.params.pin, parameterProp.get('activity.biweekly'),

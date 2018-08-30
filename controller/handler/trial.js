@@ -12,6 +12,10 @@ const processRules = require('../helper/process-rules');
 const processPatientStatus = require('../helper/process-patient-status');
 const httpNotFound = 404;
 
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
+
 /**
  * A dashboard with an overview of a specific trial.
  * @param {Request} request - Hapi request
@@ -26,13 +30,15 @@ function trialView (request, reply) {
         .all([
             trial.findById(request.params.id),
             database.sequelize.query(
-                `
-                SELECT StageId, Name, CreatedAt, UpdatedAt, DeletedAt, TrialId
-                FROM stage AS stage
-                WHERE stage.DeletedAt IS NULL
-                AND stage.TrialId = ?
-                `,
-                {
+                queryProp.get('sql.trialData')
+                , {
+                    type: database.sequelize.QueryTypes.SELECT,
+                    replacements: [request.params.id]
+                }
+            ),
+            database.sequelize.query(
+                queryProp.get('sql.trialCompliance')
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
                     replacements: [
                         request.params.id
@@ -40,73 +46,38 @@ function trialView (request, reply) {
                 }
             ),
             database.sequelize.query(
-                `
-                SELECT tr.*, pa.PatientPin, pa.DateStarted, pa.DateCompleted, st.Name AS stage
-                FROM trial AS tr
-                JOIN stage AS st
-                ON st.TrialId = tr.TrialId
-                JOIN patients AS pa
-                ON pa.StageIdFK = st.StageId
-                WHERE tr.TrialId = ?
-                ORDER BY pa.DateCompleted DESC
-                `,
-                {
+                queryProp.get('sql.complianceData')
+                , {
                     type: database.sequelize.QueryTypes.SELECT,
                     replacements: [
-                        request.params.id
-                    ]
-                }
-            ),
-            database.sequelize.query(
-                `
-                SELECT pa.PatientPin,
-                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Biweekly Survey') AS expiredWeeklyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Biweekly Survey') AS completedWeeklyCount,
-                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Daily Survey') AS expiredDailyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Daily Survey') AS completedDailyCount,
-                SUM(si.State = 'pending') AS pendingCount,
-                SUM(si.State = 'DEACTIVATED') AS deactivatedCount,
-                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Biweekly Survey'
-                    and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
-                    and si.EndTime < now()) AS expiredTrendingWeeklyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Biweekly Survey'
-                    and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
-                    and si.EndTime < now()) AS completedTrendingWeeklyCount,
-                SUM(si.State = 'expired' and si.activityTitle = 'DMTB Daily Survey'
-                    and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
-                    and si.EndTime < now()) AS expiredTrendingDailyCount,
-                SUM(si.State = 'completed' and si.activityTitle = 'DMTB Daily Survey'
-                    and si.EndTime > DATE_SUB(now(), INTERVAL 8 DAY)
-                    and si.EndTime < now()) AS completedTrendingDailyCount
-                FROM activity_instance AS si
-                JOIN patients AS pa
-                ON pa.PatientPin = si.PatientPinFK
-                JOIN stage AS st
-                ON st.StageId = pa.StageIdFK
-                WHERE st.TrialId = ?
-                GROUP BY pa.PatientPin
-                `,
-                {
-                    type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [
+                        parameterProp.get('activity.State.expired'),
+                        parameterProp.get('activity.biweekly'),
+                        parameterProp.get('activity.State.completed'),
+                        parameterProp.get('activity.biweekly'),
+                        parameterProp.get('activity.State.expired'),
+                        parameterProp.get('activity.daily'),
+                        parameterProp.get('activity.State.completed'),
+                        parameterProp.get('activity.daily'),
+                        parameterProp.get('activity.State.pending'),
+                        parameterProp.get('activity.State.deactivate'),
+                        parameterProp.get('activity.State.expired'),
+                        parameterProp.get('activity.biweekly'),
+                        parameterProp.get('activity.State.completed'),
+                        parameterProp.get('activity.biweekly'),
+                        parameterProp.get('activity.State.expired'),
+                        parameterProp.get('activity.daily'),
+                        parameterProp.get('activity.State.completed'),
+                        parameterProp.get('activity.daily'),
                         request.params.id,
                         startDate.toISOString()
                     ]
                 }
             ),
             database.sequelize.query(
-                `
-              SELECT State, EndTime, PatientPinFK
-              FROM activity_instance
-              WHERE activityTitle = 'DMTB Biweekly Survey'
-              AND EndTime > DATE_SUB(now(),INTERVAL 8 DAY)
-              AND EndTime <= now()
-              AND State != 'pending'
-              ORDER BY EndTime
-              DESC
-              `,
-                {
-                    type: database.sequelize.QueryTypes.SELECT
+                queryProp.get('sql.surveyBiweekly')
+                , {
+                    type: database.sequelize.QueryTypes.SELECT,
+                    replacements: [parameterProp.get('activity.biweekly'), parameterProp.get('activity.State.pending')]
                 }
             )
         ])
