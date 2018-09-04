@@ -13,7 +13,7 @@ const viewDateFormat = 'MM-DD-YYYY HH:mm';
 const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
-const json = parameterProp.get('score.catagory');
+const json = parameterProp.get('score.category');
 
 /**
  * Takes in a Survey Instances and processes it to get Complience chart details

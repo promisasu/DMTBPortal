@@ -13,7 +13,7 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
-const json = parameterProp.get('score.catagory');
+const json = parameterProp.get('score.category');
 
 /**
  * A dashboard with an overview of a specific patient.
