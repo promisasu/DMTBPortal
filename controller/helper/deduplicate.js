@@ -24,7 +24,6 @@ function deduplicate (rows, properties) {
             if (row[property] === 'null') {
                 row[property] = '';
                 current[property] = '';
-                console.log('---------- In deduplicate --- NULLLLL -------------');
             }
             if (row[property] === current[property]) {
                 row[property] = '';

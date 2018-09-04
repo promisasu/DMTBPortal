@@ -33,30 +33,30 @@ function createPatient (request, reply) {
             // Get Trial the patient will be added to
             return trial.findById(request.payload.trialId, {transaction});
         })
-        // Get next availible Patient Pin
+    // Get next availible Patient Pin
         .then((currentTrial) => {
             pin = currentTrial.id * trialOffset + currentTrial.patientPinCounter;
 
             return currentTrial.increment({patientPinCounter: 1}, {transaction});
         })
-        // Create the new Patient
+    // Create the new Patient
         .then(() => {
             const dateStarted = request.payload.startDate;
             const dateCompleted = request.payload.endDate;
 
             return patient.create({pin, dateStarted, dateCompleted}, {transaction});
         })
-        // Get stage that patient belongs to
+    // Get stage that patient belongs to
         .then((tempPatient) => {
             newPatient = tempPatient;
 
             return stage.findById(request.payload.stageId, {transaction});
         })
-        // Add patient to stage
+    // Add patient to stage
         .then((currentStage) => {
             return currentStage.addPatient(newPatient, {transaction});
         })
-        // Collect the surveyTemplateId for the stage associated to the patient
+    // Collect the surveyTemplateId for the stage associated to the patient
         .then(() => {
             return joinStageSurveys.findOne(
                 {
@@ -68,7 +68,7 @@ function createPatient (request, reply) {
                 }
             );
         })
-        // Create first survey instance as per the surveyTemplateId for the patient
+    // Create first survey instance as per the surveyTemplateId for the patient
         .then((data) => {
             const startDate = request.payload.startDate;
             const openUnit = 'day';
@@ -89,7 +89,7 @@ function createPatient (request, reply) {
                 transaction
             );
         })
-        // Commit the transaction
+    // Commit the transaction
         .then(() => {
             return transaction.commit();
         })

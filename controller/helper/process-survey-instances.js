@@ -10,6 +10,11 @@ const calculateScores = require('../helper/calculate-scores');
 const sqlDateFormat = 'ddd MMM DD YYYY HH:mm:ss ZZ';
 const viewDateFormat = 'MM-DD-YYYY HH:mm';
 
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
+const json = parameterProp.get('score.category');
+
 /**
  * Takes in a Survey Instances and processes it to get Complience chart details
  * @param {Array<Object>} surveys - list of survey instances
@@ -38,9 +43,11 @@ function processSurveyInstances (surveys) {
     }
 
     const numberOfDays = 1;
-    const endDateforChart = moment.utc(labels[labels.length - 1], viewDateFormat).add(numberOfDays, 'day');
+    const endDateforChart = moment.utc(labels[labels.length - 1], viewDateFormat)
+        .add(numberOfDays, 'day');
 
-    labels.push(moment.utc(endDateforChart).format(viewDateFormat));
+    labels.push(moment.utc(endDateforChart)
+        .format(viewDateFormat));
 
     return {
         labels: labels,
@@ -55,16 +62,19 @@ function processSurveyInstances (surveys) {
  */
 function pickDates (surveys) {
     const dates = surveys.map((survey) => {
-        return moment.utc(survey.StartTime).format(viewDateFormat);
+        return moment.utc(survey.StartTime)
+            .format(viewDateFormat);
     });
 
     if (surveys[0]) {
         // Adding an additional week to include all the dates in compliance chart.
         // This is done because chart js plots only the first day of the week.
         const numberOfDays = 1;
-        const endDateforChart = moment.utc(surveys[surveys.length - 1].EndTime).add(numberOfDays, 'day');
+        const endDateforChart = moment.utc(surveys[surveys.length - 1].EndTime)
+            .add(numberOfDays, 'day');
 
-        dates.push(moment.utc(endDateforChart).format(viewDateFormat));
+        dates.push(moment.utc(endDateforChart)
+            .format(viewDateFormat));
     }
 
     return dates;
@@ -96,14 +106,16 @@ function pickTimeLeft (surveys) {
             let samplePoint = surveyTypes[i][0];
 
             let dataPoints = surveyTypes[i].map((survey) => {
-                return calculateTimeLeft(moment.utc(survey.StartTime),
+                return calculateTimeLeft(
+                    moment.utc(survey.StartTime),
                     moment.utc(survey.EndTime),
                     moment.utc(survey.ActualSubmissionTime)
                 );
             });
 
             let dates = surveyTypes[i].map((survey) => {
-                return moment.utc(survey.ActualSubmissionTime).format(viewDateFormat);
+                return moment.utc(survey.ActualSubmissionTime)
+                    .format(viewDateFormat);
             });
             let dataArr = {
                 label: '% Time left until ' + samplePoint.activityTitle + ' expired',
@@ -121,18 +133,6 @@ function pickTimeLeft (surveys) {
     }
 
     return returnArray;
-}
-
-/**
- * Generates and returns random colors
- * @returns {Object} processed list of datetimes
- */
-function getRGBA () {
-    let red = Math.floor(Math.random() * 255) + 1;
-    let green = Math.floor(Math.random() * 255) + 1;
-    let blue = Math.floor(Math.random() * 255) + 1;
-
-    return 'rgba(' + red.toString() + ',' + green.toString() + ',' + blue.toString() + ',0.5)';
 }
 
 /**
@@ -169,19 +169,23 @@ function calculateTimeLeft (openTime, endTime, completedTime) {
  * @param {Array<Object>} surveyDetails - list of survey instances
  * @param {Array<Object>} bodyPainResults - list of body pain questions answered
  * @param {Array<Object>} opioidResults - list of survey instances
- * @param {Array<Object>} dailySurvey - daily survey of the chart
+ * @param {Array<Object>} scoreValue - list of questions for calculating score
  * @returns {Array<Object>} data for the chart
  */
-function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidResults, dailySurvey) {
+function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidResults, scoreValue) {
     let labels = surveys.map((survey) => {
-        return moment.utc(survey.StartTime).format(viewDateFormat);
+        return moment.utc(survey.StartTime)
+            .format(viewDateFormat);
     });
+
     const numberOfDays = 1;
-    const endDateforChart = moment.utc(labels[labels.length - 1], viewDateFormat).add(numberOfDays, 'day');
+    const endDateforChart = moment.utc(labels[labels.length - 1], viewDateFormat)
+        .add(numberOfDays, 'day');
 
-    labels.push(moment.utc(endDateforChart).format(viewDateFormat));
+    labels.push(moment.utc(endDateforChart)
+        .format(viewDateFormat));
 
-    let datasets = pickClinicianDataset(surveys, surveyDetails, bodyPainResults, opioidResults, labels, dailySurvey);
+    let datasets = pickClinicianDataset(surveys, surveyDetails, bodyPainResults, opioidResults, labels, scoreValue);
 
     return {
         labels: labels,
@@ -191,9 +195,9 @@ function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidRes
 
 let darkPink = 'rgba(250, 29, 150,1)';
 let pink = 'rgba(254, 160,172, 1)';
-let green = 'rgba(122, 198,150, 1)';
+//  let green = 'rgba(122, 198,150, 1)';
 let yellow = 'rgba(182, 29,57, 1)';
-let blue = 'rgba(2, 117,216, 0.6)';
+//  let blue = 'rgba(2, 117,216, 0.6)';
 let white = 'rgba(255,255,255, 0.9)';
 let darkBrown = 'rgba(101,56,33, 1)';
 let gray = 'rgba(76,76,76, 1)';
@@ -206,37 +210,32 @@ let violet = 'rgba(119,65,119, 1)';
  * @param {Array<Object>} bodyPainResults - list of body pain answers
  * @param {Array<Object>} opioidResults - list of survey instances
  * @param {Array<Object>} labels - labels for the chart
- * @param {Array<Object>} dailySurvey - daily Survey for the chart
+ * @param {Array<Object>} scoreValue - list of questions for calculating score
  * @returns {Array<Object>} data for the chart
  */
-function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidResults, labels, dailySurvey) {
+function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidResults, labels, scoreValue) {
     let dataPoints = [];
     let datasets = [];
 
-    dataPoints.push({
-        label: 'Cough',
-        data: getCoughScore(surveyDetails, labels, 'Cough'),
-        color: darkPink
-    });
+    let parsedJson = JSON.parse(json);
+    let queryList = [];
 
-    dataPoints.push({
-        label: 'CoughWithBlood',
-        data: getCoughScore(dailySurvey, labels, 'CoughWithBlood'),
-        color: darkBrown
-    });
+    for (let i = 0; i < parsedJson.score_type.length; i++) {
+        let filterTemp = '';
 
-    dataPoints.push({
-        label: 'ChestPain',
-        data: getCoughScore(dailySurvey, labels, 'ChestPain'),
-        color: violet
-    });
+        filterTemp = scoreValue.filter((score) => {
+            return (parsedJson.score_type[i].questionID.indexOf(score.questionId) > -1);
+        });
+        queryList.push(filterTemp);
+    }
 
-    dataPoints.push({
-        label: 'BreathingProblem',
-        data: getCoughScore(dailySurvey, labels, 'BreathingProblem'),
-        color: yellow
-    });
-
+    for (let i = 0; i < queryList.length; i++) {
+        dataPoints.push({
+            label: parsedJson.score_type[i].category,
+            data: getDMTBScore(queryList[i], labels, parsedJson.score_type[i].category),
+            color: getRGBA()
+        });
+    }
     for (let i = 0; i < dataPoints.length; i++) {
         datasets.push({
             label: dataPoints[i].label,
@@ -266,15 +265,27 @@ function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidRe
 
 /**
  * Takes in a Survey Instances and processes to get opioid equivalence
- * @param {Array<Object>} surveyDetails - details of the survey
+ * @param {Array<Object>} surveyDetails - list of survey instances
  * @param {Array<Object>} labels - labels for the chart
- * @param {Array<Object>} problemType - category of the score
+ * @param {String} problemType - category of the score
  * @returns {Array<Object>} data for the chart
  */
-function getCoughScore (surveyDetails, labels, problemType) {
-    let promisScores = calculateScores.calculateCough(surveyDetails, problemType);
+function getDMTBScore (surveyDetails, labels, problemType) {
+    let promisScores = calculateScores.calculateDMTBScore(surveyDetails, problemType);
 
     return createMultiLinePoints(promisScores[0], labels, 1);
+}
+
+/**
+ * Generates and returns random colors
+ * @returns {Object} processed list of datetimes
+ */
+function getRGBA () {
+    let red = Math.floor(Math.random() * 255) + 1;
+    let green = Math.floor(Math.random() * 255) + 1;
+    let blue = Math.floor(Math.random() * 255) + 1;
+
+    return 'rgba(' + red.toString() + ',' + green.toString() + ',' + blue.toString() + ',0.5)';
 }
 
 /**
@@ -331,6 +342,21 @@ function normalizeValues (data, conversionFactor = -1) {
     }
 
     return data;
+}
+
+/**
+ * Takes in a Survey Instances and processes to compute PROMIS score
+ * @param {Array<Object>} surveys - list of survey instances
+ * @returns {Array<Object>} data for the chart
+ */
+function calculatePromisScore (surveys) {
+    // Filter out the surveys that you are going to process, eg, Daily or weekly endDateforChart
+    // Calculate the promis score for each surveys
+    // Calculate the labels for your filtered surveys.
+    // let dates = surveys.map((survey) => {
+    //     return moment(survey.StartTime).format(viewDateFormat);
+    // });
+    // Return data like so [{x:<label>,y:<value>},{x:<label>,y:<value>}]
 }
 
 /**

@@ -10,6 +10,10 @@ const boom = require('boom');
 const deduplicate = require('../helper/deduplicate');
 const CustomMap = require('hashmap');
 
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
+
 /**
  * Create a Comma Seperate Value export of the data of all the patient's that are enrolled in a trial.
  * @param {Request} request - Hapi request
@@ -264,15 +268,11 @@ function trialCSV (request, reply) {
         query = 'Unknown';
     }
 
+    // AND a.state IN ('completed','expired')
+
     database.sequelize.query(
-        `
-        SELECT a.State, a.StartTime, p.DateStarted, p.PatientPin
-        FROM activity_instance a
-        JOIN patients p
-        ON a.PatientPinFk = p.PatientPin
-        WHERE a.activityTitle = ?
-        ORDER BY a.PatientPinFk, a.ActivityInstanceId;
-        `, {
+        queryProp.get('sql.csvTrial')
+        , {
             type: database.sequelize.QueryTypes.SELECT,
             replacements: [
                 query,
@@ -294,7 +294,8 @@ function trialCSV (request, reply) {
             return convertJsonToCsv(formattedOptionsWithAnswers, configuration);
         })
         .then((csv) => {
-            return reply(csv).type('text/csv');
+            return reply(csv)
+                .type('text/csv');
         })
         .catch((err) => {
             console.error(err);
@@ -360,10 +361,8 @@ function formatData (optionsWithAnswers) {
             // do nothing
             // console.log(row.PatientPin + 'already exists');
         } else {
-            console.log(row.PatientPin + 'First Occurence');
             for (let innerRow of optionsWithAnswers) {
                 if (innerRow.PatientPin === resultObject.PatientPin) {
-                    console.log(innerRow.PatientPin + ' ' + innerRow.State);
                     x++;
                     switch (x) {
                         case 0:
@@ -502,7 +501,6 @@ function formatData (optionsWithAnswers) {
     map.forEach((value, key) => {
         resultSet.push(JSON.parse(value));
     });
-    console.log(resultSet);
 
     return resultSet;
 }

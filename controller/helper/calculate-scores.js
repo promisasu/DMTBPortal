@@ -65,6 +65,9 @@ const moment = require('moment');
 const viewDateFormat = 'MM-DD-YYYY HH:mm';
 const config = require('../../config.json');
 
+const propReader = require('properties-reader');
+const parameterProp = propReader('parameter.properties');
+
 /**
  * A helper function that calculates promise aggragate score.
  * @param {Array<Object>} surveyResults - Array of Weekly surveyResults
@@ -108,7 +111,8 @@ function calculatePromisScores (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -178,7 +182,8 @@ function calculatePR_Fatigue (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -260,7 +265,8 @@ function calculatePR_Anxiety (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -297,11 +303,11 @@ function calculatePR_Anxiety (surveyResults) {
  * @param {Array<Object>} problemType - set of score categories
  * @returns {Array<Object>} - array of results with cough scores
  */
-function calculateCough (surveyResults, problemType) {
+function calculateDMTBScore (surveyResults, problemType) {
     let singleSurveyBlock = {};
     let instanceId = '';
     let resultSet = [];
-    let maxVal = 6;
+    let maxVal = parameterProp.get('score.maxvalue');
 
     surveyResults.forEach((result) => {
         let temp = {
@@ -334,28 +340,14 @@ function calculateCough (surveyResults, problemType) {
             let questionId = -1;
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionId = answer.questionId;
                 questionType = answer.questionType;
                 patientType = answer.patientType;
-                if (isInt(answer.likertScale) && questionId === 25 && questionType === 'Biweekly'
-                    && problemType === 'Cough') {
-                    score = parseInt(answer.likertScale);
-                }
-                if (isInt(answer.likertScale) && questionId === 40 && questionType === 'Daily'
-                    && problemType === 'CoughWithBlood') {
-                    score = parseInt(answer.likertScale);
-                }
-                if (isInt(answer.likertScale) && questionId === 41 && questionType === 'Daily'
-                    && problemType === 'BreathingProblem') {
-                    score = parseInt(answer.likertScale);
-                }
-                if (isInt(answer.likertScale) && questionId === 42 && questionType === 'Daily'
-                    && problemType === 'ChestPain') {
-                    score = parseInt(answer.likertScale);
-                }
-            });
 
+                score += parseInt(answer.likertScale);
+            });
             result.x = date;
             result.y = score;
             resultSet.push(result);
@@ -406,7 +398,8 @@ function calculatePR_PhyFuncMob (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -478,7 +471,8 @@ function calculatePR_PainInt (surveyResults) {
             let patientType = '';
 
             singleSurveyBlock[activityInstanceId].forEach((answer) => {
-                date = moment.utc(answer.StartTime).format(viewDateFormat);
+                date = moment.utc(answer.StartTime)
+                    .format(viewDateFormat);
                 questionType = answer.questionType;
                 patientType = answer.patientType;
                 if (isInt(answer.likertScale)) {
@@ -644,7 +638,8 @@ function getOpioidActualValuesCalculated (opioidResults) {
                 y: 0
             };
 
-            date = moment.utc(singleSurveyBlock[key][0].StartTime).format(viewDateFormat);
+            date = moment.utc(singleSurveyBlock[key][0].StartTime)
+                .format(viewDateFormat);
             returnDict[date] = 0;
             singleSurveyBlock[key].forEach((survey) => {
                 survey.dosage = survey.dosage.replace(' ', '');
@@ -680,5 +675,5 @@ module.exports = {
     opioidResultsCalculation: opioidResultsCalculation,
     opioidThresholdCalculation: opioidThresholdCalculation,
     calculatePR_PainInt: calculatePR_PainInt,
-    calculateCough: calculateCough
+    calculateDMTBScore: calculateDMTBScore
 };
