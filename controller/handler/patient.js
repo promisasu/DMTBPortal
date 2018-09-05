@@ -111,7 +111,7 @@ function patientView (request, reply) {
             );
 
             return reply.view('patient', {
-                title: 'Pain Reporting Portal',
+                title: parameterProp.get('activity.Title'),
                 patient: currentPatient,
                 trial: currentTrial,
                 surveys: surveyInstances.map((surveyInstance) => {
