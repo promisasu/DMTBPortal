@@ -8,6 +8,11 @@ const database = require('../../model');
 const convertJsonToCsv = require('../helper/convert-json-to-csv');
 const boom = require('boom');
 const deduplicate = require('../helper/deduplicate');
+
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
+
 const configuration = [
     {
         label: 'Patient Pin',
@@ -64,21 +69,11 @@ const configuration = [
  */
 function patientCSV (request, reply) {
     database.sequelize.query(
-        `SELECT ai.PatientPinFK AS pin, ai.activityTitle AS name, ai.UserSubmissionTime AS date, ai.ActivityInstanceId 
-       AS id, act.questionIdFk AS questionId, que.QuestionText AS questionText, act.questionOptionIdFk AS optionId,
-       ans.OptionText AS optionText, act.dosage, act.value FROM activity_instance ai
-       LEFT JOIN question_result act ON act.ActivityInstanceIdFk = ai.ActivityInstanceId
-       LEFT JOIN questions que ON act.questionIdFk = que.QuestionId
-       LEFT JOIN question_options ans ON act.questionOptionIdFk = ans.QuestionOptionId
-       WHERE ai.ActivityInstanceId
-       IN (SELECT ActivityInstanceId FROM activity_instance WHERE PatientPinFK = ? AND (State ='completed' OR 
-       State ='expired') AND activityTitle != 'Fruit Run') ORDER BY id;
-        `,
-        {
+        queryProp.get('sql.csvPatient')
+        , {
             type: database.sequelize.QueryTypes.SELECT,
-            replacements: [
-                request.params.pin
-            ]
+            replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
+                parameterProp.get('activity.State.expired'), parameterProp.get('activity.game')]
         }
     )
         .then((optionsWithAnswers) => {
@@ -88,7 +83,8 @@ function patientCSV (request, reply) {
             return convertJsonToCsv(uniqueAnswers, configuration);
         })
         .then((csv) => {
-            return reply(csv).type('text/csv');
+            return reply(csv)
+                .type('text/csv');
         })
         .catch((err) => {
             console.log('error', err);

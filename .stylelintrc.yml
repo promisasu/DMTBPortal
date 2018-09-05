@@ -1,6 +1,7 @@
 # Followed : 
 # https://github.com/stylelint/stylelint/blob/master/CHANGELOG.md#780
 # https://github.com/stylelint/stylelint-config-recommended
+# https://stylelint.io/user-guide/configuration/
 {
     "extends": "stylelint-config-recommended",
     "plugins": [

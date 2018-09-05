@@ -35,7 +35,8 @@ function createSurveyInstance (patientPin, surveyTemplateId, startDate, openForD
         surveyInstance.create(
             {
                 startTime: startDate,
-                endTime: moment.utc(startDate).add(openForDuration, openForUnit)
+                endTime: moment.utc(startDate)
+                    .add(openForDuration, openForUnit)
             },
             {transaction}
         )

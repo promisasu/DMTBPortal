@@ -7,6 +7,8 @@
 const processTrial = require('../helper/process-trial');
 const database = require('../../model');
 const httpNotFound = 404;
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
 
 /**
  * A dashboard view with overview of all trials and patients.
@@ -18,13 +20,8 @@ function dashboardView (request, reply) {
     const currentDate = new Date();
 
     database.sequelize.query(
-        `
-        SELECT t.*, s.StageId, count(1) as recruitedCount from trial t, stage s
-        INNER JOIN patients pa ON s.StageId = pa.StageIdFK  WHERE t.TrialId = s.trialId
-        GROUP BY t.TrialId, t.Name, t.Description , t.IRBID, t.IRBStart, t.IRBEnd, t.TargetCount, 
-        t.PatientPinCounter, t.CreatedAt, t.UpdatedAt, t.DeletedAt, t.Duration, s.StageId;
-
-        `,
+        queryProp.get('sql.trials')
+        ,
         {
             type: database.sequelize.QueryTypes.SELECT,
             replacements: [

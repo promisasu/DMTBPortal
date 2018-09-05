@@ -8,6 +8,10 @@ const boom = require('boom');
 const database = require('../../model');
 const moment = require('moment');
 
+const propReader = require('properties-reader');
+const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
+
 /**
  * Deactivates a patient
  * @param {Request} request - Hapi request
@@ -15,137 +19,50 @@ const moment = require('moment');
  * @returns {Null} Redirect
  */
 function deactivatePatient (request, reply) {
-    if (Number(request.params.pin) < 3000) {
-        Promise
-            .all([
-                database.sequelize.query(
-                    `
-              UPDATE activity_instance SET State = ? WHERE State = ? AND EndTime >= ? AND PatientPinFk = ?
-              `, {
-                        type: database.sequelize.QueryTypes.UPDATE,
-                        replacements: [
-                            'DEACTIVATED',
-                            'pending',
-                            moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                            request.params.pin
-                        ],
-                        plain: true
-                    }
-                ),
-                database.sequelize.query(
-                    `
-              UPDATE patients SET DateCompleted = ? WHERE PatientPin = ?
-              `, {
-                        type: database.sequelize.QueryTypes.UPDATE,
-                        replacements: [
-                            moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                            request.params.pin
-                        ],
-                        plain: true
-                    }
-                ),
-                database.sequelize.query(
-                    `
-                  DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
-                  AND PatientPinFk = ?
-                  AND activityTitle = 'DMTB Daily Survey'
-                  `, {
-                        type: database.sequelize.QueryTypes.UPDATE,
-                        replacements: [
-                            'DEACTIVATED',
-                            moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                            request.params.pin
-                        ],
-                        plain: true
-                    }
-                ),
-                database.sequelize.query(
-                    `
-                  DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
-                  AND PatientPinFk = ?
-                  AND activityTitle = 'DMTB Biweekly Survey'
-                  `, {
-                        type: database.sequelize.QueryTypes.UPDATE,
-                        replacements: [
-                            'DEACTIVATED',
-                            moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                            request.params.pin
-                        ],
-                        plain: true
-                    }
-                )
-            ])
-            .then(() => {
-                return reply();
-            }).catch((err) => {
-                request.log('error', err);
-                console.log(err);
+    Promise
+        .all([
+            database.sequelize.query(
+                queryProp.get('sql.deactivatePatient')
+                , {
+                    type: database.sequelize.QueryTypes.UPDATE,
+                    replacements: [parameterProp.get('activity.State.deactivate'),
+                        parameterProp.get('activity.currentstate'),
+                        moment.utc()
+                            .format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
+                    plain: true
+                }
+            ),
+            database.sequelize.query(
+                queryProp.get('sql.setCompleteDate')
+                , {
+                    type: database.sequelize.QueryTypes.UPDATE,
+                    replacements: [moment.utc()
+                        .format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
+                    plain: true
+                }
+            ),
+            database.sequelize.query(
+                queryProp.get('sql.deleteDeactivated')
+                , {
+                    type: database.sequelize.QueryTypes.UPDATE,
+                    replacements: [parameterProp.get('activity.State.deactivate'),
+                        moment.utc()
+                            .format('YYYY-MM-DD HH:mm:ss'),
+                        request.params.pin, parameterProp.get('activity.biweekly'),
+                        parameterProp.get('activity.daily')],
+                    plain: true
+                }
+            )
+        ])
+        .then(() => {
+            return reply();
+        })
+        .catch((err) => {
+            request.log('error', err);
+            console.log(err);
 
-                return reply(boom.conflict());
-            });
-    } else if (Number(request.params.pin) > 4000) {
-        Promise
-            .all([
-                database.sequelize.query(
-                    `
-              UPDATE activity_instance SET State = ? WHERE State = ? AND EndTime >= ? AND PatientPinFk
-              IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?));
-              `, {
-                        type: database.sequelize.QueryTypes.UPDATE,
-                        replacements: [
-                            'DEACTIVATED',
-                            'pending',
-                            moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                            request.params.pin,
-                            request.params.pin
-                        ],
-                        plain: true
-                    }
-                ),
-                database.sequelize.query(
-                    `
-              DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 1 DAY)
-              AND PatientPinFk
-              IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
-              AND activityTitle = 'DMTB Daily Survey'
-              `, {
-                        type: database.sequelize.QueryTypes.UPDATE,
-                        replacements: [
-                            'DEACTIVATED',
-                            moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                            request.params.pin,
-                            request.params.pin
-                        ],
-                        plain: true
-                    }
-                ),
-                database.sequelize.query(
-                    `
-              DELETE FROM activity_instance WHERE State = ? AND EndTime >= DATE_ADD(?, INTERVAL 7 DAY)
-              AND PatientPinFk
-              IN (?, (SELECT PatientPin FROM patients WHERE ParentPinFK = ?))
-              AND activityTitle = 'DMTB Biweekly Survey'
-              `, {
-                        type: database.sequelize.QueryTypes.UPDATE,
-                        replacements: [
-                            'DEACTIVATED',
-                            moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-                            request.params.pin,
-                            request.params.pin
-                        ],
-                        plain: true
-                    }
-                )
-            ])
-            .then(() => {
-                return reply();
-            }).catch((err) => {
-                request.log('error', err);
-                console.log(err);
-
-                return reply(boom.conflict());
-            });
-    }
+            return reply(boom.conflict());
+        });
 }
 
 module.exports = deactivatePatient;
