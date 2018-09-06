@@ -72,7 +72,7 @@
     "node-gyp": "^3.7.0",
     "npm-check": "^5.7.1",
     "parse-json": "^4.0.0",
-    "pm2": "^2.10.4",
+    "pm2": "^3.0.4",
     "properties-reader": "0.0.16",
     "read": "^1.0.7",
     "sequelize": "^4.38.0",
