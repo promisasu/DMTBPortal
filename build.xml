@@ -1,5 +1,5 @@
-
 <project name="Node installation">
+
 
 <property file="build.properties" />
   <target name="build" depends="npmuser"> 
@@ -11,34 +11,53 @@
 
 <target name="OS-WIN" if="isWindows">
     <property name="npmcmd" value="npm.cmd"/>
+    <property name="pm2cmd" value="pm2.cmd"/>
   </target>
 
 <target name="OS-MAC-UNIX" unless="isWindows">
+  <echo message="In mac or unix .."/>
     <property name="npmcmd" value="npm"/>
+    <property name="pm2cmd" value="pm2"/>
   </target>
 
-<target name="nodeins" depends="OS-MAC-UNIX,OS-WIN">
-  	<exec dir="." executable="${npmcmd}">
+<target name="check-usercreation">
+    <echo message=" In check user creation ..."/>
+    <available file="./usercreation" property="user.created"/>
+</target>
+
+<target name="check-npminit">
+  <echo message=" In check npm init ..."/>
+    <available file="./npminitialization" property="npm.initialized"/>
+</target>
+
+<target name="check-npminstall">
+  <echo message=" In check npm install ..."/>
+    <available file="./npminstall" property="npm.installation"/>
+</target>
+
+
+<target name="nodeins" depends="OS-MAC-UNIX,OS-WIN,check-npminstall" unless="npm.installation">
+  	<exec dir="." executable="${npmcmd}" output="./npminstall">
   		<arg line="install"/>
   	</exec>
   </target>
 
 
-<target name="npminit" depends="nodeins">
-    <exec dir="." executable="${npmcmd}">
+<target name="npminit" depends="nodeins,check-npminit" unless="npm.initialized">
+    <exec dir="." executable="${npmcmd}" output="./npminitialization">
    <arg line="run init_new ${env} ${portal_server_host} ${portal_server_port} ${portal_db_host} ${portal_db_name} ${db_user} ${db_pass} ${db_server} ${formPostUrl} ${apiUrl} ${opioid} ${opioid_oxycodone} ${opioid_hydromorphone}"/>
     </exec>
   </target>
 
-<target name="createUserSchema" depends="npminit">
+<target name="createUserSchema" depends="npminit,check-usercreation" unless="user.created">
     <exec dir="." executable="${npmcmd}">
       <arg line="run preuser"/>
     </exec>
   </target>
 
 
-<target name="npmuser" depends="createUserSchema">
-    <exec dir="." executable="${npmcmd}">
+<target name="npmuser" depends="createUserSchema" unless="user.created">
+    <exec dir="." executable="${npmcmd}" output="./usercreation">
       <arg line="run user_new ${user} ${role} ${password}"/>
     </exec>
   </target>
@@ -47,6 +66,32 @@
     <exec dir="." executable="${npmcmd}">
       <arg line="run start"/>
     </exec>
+  </target>
+
+
+  <target name="checkPortalStatus">
+  <exec executable="sh" outputproperty="portalstatus">
+      <arg value="-c" />
+      <arg value="${pm2cmd} ls | wc -l " />
+    </exec>
+        <condition property="portalSatrus-check-property">
+            <contains string="${portalstatus}" substring="4"/>
+        </condition>
+    </target>
+
+    <target name="alreadyStop" depends="checkPortalStatus" if="portalSatrus-check-property">
+     <echo message="The Portal is already stopped." />
+  </target>
+
+  <target name="stoppingPortal" depends="OS-MAC-UNIX,OS-WIN,checkPortalStatus" unless="portalSatrus-check-property">
+    <exec dir="." executable="${npmcmd}">
+        <arg line="run stop"/>
+        </exec>
+        <echo message=" Portal is stopped." />
+  </target>
+
+  <target name="stopportal" depends="OS-MAC-UNIX,OS-WIN,alreadyStop, stoppingPortal">
+  
   </target>
 
 

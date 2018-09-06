@@ -6,6 +6,7 @@
 
 const database = require('../../model');
 const processSurveyInstances = require('../helper/process-survey-instances');
+const processPatientStatus = require('../helper/process-patient-status');
 const moment = require('moment');
 const httpNotFound = 404;
 
@@ -14,6 +15,8 @@ const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
 const json = parameterProp.get('score.category');
+let patientStatus = '';
+let deactivateStatus = false;
 
 /**
  * A dashboard with an overview of a specific patient.
@@ -37,6 +40,8 @@ function patientView (request, reply) {
                 , {
                     type: database.sequelize.QueryTypes.SELECT,
                     replacements: [
+                        parameterProp.get('activity.State.pending'),
+                        parameterProp.get('activity.State.deactivate'),
                         request.params.pin
                     ],
                     plain: true
@@ -110,8 +115,21 @@ function patientView (request, reply) {
                 surveyInstances, surveyResults, bodyPainResults, opioidResults, scoreValue
             );
 
+            if (currentPatient.deactivatedCount > 0) {
+                patientStatus = 'Deactivated';
+                deactivateStatus = true;
+            } else if (currentPatient.pendingCount > 0) {
+                patientStatus = 'Active';
+                deactivateStatus = false;
+            } else {
+                patientStatus = 'Completed';
+                deactivateStatus = false;
+            }
+
             return reply.view('patient', {
-                title: 'Pain Reporting Portal',
+                title: parameterProp.get('activity.title'),
+                status: patientStatus,
+                deactivate: deactivateStatus,
                 patient: currentPatient,
                 trial: currentTrial,
                 surveys: surveyInstances.map((surveyInstance) => {

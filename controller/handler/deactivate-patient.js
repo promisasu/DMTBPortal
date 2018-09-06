@@ -27,8 +27,7 @@ function deactivatePatient (request, reply) {
                     type: database.sequelize.QueryTypes.UPDATE,
                     replacements: [parameterProp.get('activity.State.deactivate'),
                         parameterProp.get('activity.currentstate'),
-                        moment.utc()
-                            .format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
+                        request.params.pin],
                     plain: true
                 }
             ),
