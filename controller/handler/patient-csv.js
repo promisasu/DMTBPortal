@@ -73,8 +73,9 @@ function patientCSV (request, reply) {
         , {
             type: database.sequelize.QueryTypes.SELECT,
             replacements: [parameterProp.get('activity.State.expired'), parameterProp.get('activity.State.expired'),
-                parameterProp.get('activity.State.expired'), parameterProp.get('activity.State.expired'), parameterProp.get('activity.State.expired'),
-                parameterProp.get('activity.State.expired'), parameterProp.get('activity.State.expired'), 
+                parameterProp.get('activity.State.expired'), parameterProp.get('activity.State.expired'),
+                parameterProp.get('activity.State.expired'), parameterProp.get('activity.State.expired'),
+                parameterProp.get('activity.State.expired'),
                 request.params.pin, parameterProp.get('activity.State.completed'),
                 parameterProp.get('activity.State.expired'), parameterProp.get('activity.game')]
         }
