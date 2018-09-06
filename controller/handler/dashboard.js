@@ -37,7 +37,7 @@ function dashboardView (request, reply) {
 
             // Display view
             return reply.view('dashboard', {
-                title: parameterProp.get('activity.Title'),
+                title: parameterProp.get('activity.title'),
                 user: request.auth.credentials,
                 trials: trialData
             });
