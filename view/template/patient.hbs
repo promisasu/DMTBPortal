@@ -20,6 +20,7 @@
         <span> | </span>
         <a href="#" onclick="return showChart('scores');" id="scores-chart" class="">Scores Chart</a>
     </div>
+    
     <div class="row">
         <div class="col-sm-12">
             <div id="surveyChartCanvasDiv" class="card">
@@ -39,14 +40,22 @@
             <div class="card">
                 <div class="card-block">
                     <h4 class="card-title">
-                        Patients' Surveys <span data-proxy-pin='{{patient.ParentPinFK}}' id="parent-proxy" hidden>(Proxy for Patient: <a href="/patient/{{ patient.ParentPinFK }}">{{patient.ParentPinFK}}</a>)</span>
+                        Patients' Surveys 
+                        <span id="status">(<strong>Status : {{status}}</strong>)</span>
+                        <span data-proxy-pin='{{patient.ParentPinFK}}' id="parent-proxy" hidden>(Proxy for Patient: <a href="/patient/{{ patient.ParentPinFK }}">{{patient.ParentPinFK}}</a>)</span>
                         <span class="pull-right">
                             <a href="/patient/{{ patient.PatientPin }}.csv" class="btn btn-primary btn-sm">
                                 Export Patient Data
                             </a>
-                            <button id="deactivate-patient" class="btn btn-danger btn-sm" data-patient-pin="{{ patient.PatientPin }}">
+                            {{#if deactivate}}
+                            <button id="deactivate-patient" class="btn btn-danger btn-sm" data-patient-pin="{{ patient.PatientPin }}" disabled="disabled">
                                 Deactivate
                             </button>
+                            {{else}}
+                            <button id="deactivate-patient" class="btn btn-danger btn-sm" data-patient-pin="{{ patient.PatientPin }}" >
+                                Deactivate
+                            </button>
+                            {{/if}}
                         </span>
                     </h4>
                     <div class="table-responsive">
