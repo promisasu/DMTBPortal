@@ -9,6 +9,7 @@ const database = require('../../model');
 const httpNotFound = 404;
 const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
+const parameterProp = propReader('parameter.properties');
 
 /**
  * A dashboard view with overview of all trials and patients.
@@ -36,7 +37,7 @@ function dashboardView (request, reply) {
 
             // Display view
             return reply.view('dashboard', {
-                title: 'Pain Reporting Portal',
+                title: parameterProp.get('activity.title'),
                 user: request.auth.credentials,
                 trials: trialData
             });
