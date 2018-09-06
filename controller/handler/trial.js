@@ -143,7 +143,7 @@ function trialView (request, reply) {
             const endDate = processRules(ruleValues, Date.now());
 
             return reply.view('trial', {
-                title: parameterProp.get('activity.Title'),
+                title: parameterProp.get('activity.title'),
                 trial: processTrial(currentTrial),
                 stages,
                 endDate,

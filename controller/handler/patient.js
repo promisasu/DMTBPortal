@@ -111,7 +111,7 @@ function patientView (request, reply) {
             );
 
             return reply.view('patient', {
-                title: parameterProp.get('activity.Title'),
+                title: parameterProp.get('activity.title'),
                 patient: currentPatient,
                 trial: currentTrial,
                 surveys: surveyInstances.map((surveyInstance) => {
