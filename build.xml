@@ -1,11 +1,5 @@
-
 <project name="Node installation">
 
-<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-  <classpath>
-    <pathelement location="./lib/ant-contrib.jar"/>
-  </classpath>
-</taskdef>
 
 <property file="build.properties" />
   <target name="build" depends="npmuser"> 
@@ -21,6 +15,7 @@
   </target>
 
 <target name="OS-MAC-UNIX" unless="isWindows">
+  <echo message="In mac or unix .."/>
     <property name="npmcmd" value="npm"/>
     <property name="pm2cmd" value="pm2"/>
   </target>
@@ -57,23 +52,30 @@
     </exec>
   </target>
 
-  <target name="stopportal" depends="OS-MAC-UNIX,OS-WIN">
-    <exec executable="sh" outputproperty="portalstatus">
+
+  <target name="checkPortalStatus">
+  <exec executable="sh" outputproperty="portalstatus">
       <arg value="-c" />
-      <arg value="${pm2cmd} ls | wc -l" />
+      <arg value="${pm2cmd} ls | wc -l " />
     </exec>
-    <if>
-        <equals arg1="${portalstatus}" arg2="4" />
-        <then>
-         <echo message="The Portal is not running." />
-        </then>
-      <else>
-        <exec dir="." executable="${npmcmd}">
+        <condition property="portalSatrus-check-property">
+            <contains string="${portalstatus}" substring="4"/>
+        </condition>
+    </target>
+
+    <target name="alreadyStop" depends="checkPortalStatus" if="portalSatrus-check-property">
+     <echo message="The Portal is already stopped." />
+  </target>
+
+  <target name="stoppingPortal" depends="OS-MAC-UNIX,OS-WIN,checkPortalStatus" unless="portalSatrus-check-property">
+    <exec dir="." executable="${npmcmd}">
         <arg line="run stop"/>
         </exec>
         <echo message=" Portal is stopped." />
-      </else>
-    </if>
+  </target>
+
+  <target name="stopportal" depends="OS-MAC-UNIX,OS-WIN,alreadyStop, stoppingPortal">
+  
   </target>
 
 
