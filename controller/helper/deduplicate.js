@@ -25,11 +25,9 @@ function deduplicate (rows, properties) {
                 if (row[property] === 'null') {
                     row[property] = prop.get('activity.State.expired');
                     current[property] = '';
-                }
-                else if (row[property] === current[property]) {
+                } else if (row[property] === current[property]) {
                     row[property] = '';
-                }
-                else {
+                } else {
                     current[property] = row[property];
                 }
             }
