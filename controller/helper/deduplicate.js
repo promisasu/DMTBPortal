@@ -30,8 +30,7 @@ function deduplicate (rows, properties) {
                 } else {
                     current[property] = row[property];
                 }
-            }
-            else {
+            } else {
                 if (row[property] === 'null') {
                     row[property] = '';
                     current[property] = '';
