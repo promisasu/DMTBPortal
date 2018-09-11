@@ -7,8 +7,21 @@
  */
 
 const config = require('../../config.json');
-const server = require('../../controller/server')(config);
+const Server = require('../../controller/server');
 
-server.start(() => {
-    console.log('Server running at:', server.info.uri);
-});
+
+async function start() {
+
+    try {
+        const server = await Server.dashboardServer(config);
+        await server.start();
+        console.log('Server running at:', server.info.uri);
+    }
+    catch (err) {
+        console.log(err);
+        process.exit(1);
+    }
+
+};
+
+start();

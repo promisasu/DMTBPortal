@@ -13,19 +13,42 @@ const hapi = require('hapi');
 const inert = require('inert');
 const path = require('path');
 const vision = require('vision');
+const Bcrypt = require('bcrypt');
 
 // load router and database
 const router = require('./router');
 const database = require('../model');
-const validate = require('./helper/validate');
 
-/**
- * Sets up a the Hapi server
- * @param {Object} configuration - server options
- * @returns {Object} Hapi server instance
- */
-function dashboardServer (configuration) {
-    const server = new hapi.Server();
+
+const users = {
+    clinician: {
+        username: 'clinician',
+        passwordh: '$2b$10$IgvP07TkqN3KfGSCjmrq4.F.gAiRT7x0fcwi6u4Hg.l/80bg2P/ti',   // 'secret'
+        name: 'clinician',
+        id: '1'
+    }
+};
+
+const validate = async (request, username, password, h) => {
+
+    if (username === 'help') {
+        return { response: h.redirect('https://hapijs.com/help') };     // custom response
+    }
+
+    const user = users[username];
+    console.log('User object username' + user.name);
+    if (!user) {
+        return { credentials: null, isValid: false };
+    }
+
+    const isValid = await Bcrypt.compare(password, user.passwordh);
+    const credentials = { id: user.id, name: user.name };
+    console.log(credentials + 'fjsdfdskfnskjdfvkls');
+
+    return { isValid, credentials };
+};
+
+exports.dashboardServer = async (configuration) => {
     const connectionOptions = {
         port: configuration.dashboard.port,
         host: configuration.dashboard.hostname,
@@ -44,23 +67,22 @@ function dashboardServer (configuration) {
         }
     }
 
-    // configure server connection
-    server.connection(connectionOptions);
+    const server = new hapi.Server(connectionOptions);
 
-    // register hapi plugins
-    server.register(
+   // await server.register(authBasic);
+    await server.register(
         [
             {
-                register: vision
+                plugin: vision
             },
             {
-                register: inert
+                plugin: inert
             },
             {
-                register: authBasic
+                plugin: authBasic
             },
             {
-                register: good,
+                plugin: good,
                 options: {
                     ops: {
                         interval: 60000
@@ -110,29 +132,15 @@ function dashboardServer (configuration) {
                     }
                 }
             }
-        ],
-        (err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                // Secure dashboard with login
-                server.auth.strategy(
-                    'simple',
-                    'basic',
-                    {
-                        validateFunc: validate
-                    }
-                );
+        ]);
 
-                // allow authentication to be disabled for test
-                if (configuration.dashboard.authentication !== false) {
-                    server.auth.default('simple');
-                }
-            }
-        }
-    );
+    server.auth.strategy('simple', 'basic', { validate });
 
-    // register handlebars view engine
+    if(configuration.dashboard.authentication!=false){
+        server.auth.default('simple');
+    }
+
+    //register handlebars view engine
     server.views({
         engines: {
             hbs: handlebars
@@ -151,27 +159,42 @@ function dashboardServer (configuration) {
     });
 
     // configure database connection
-    database.setup(configuration.database);
+     database.setup(configuration.database);
 
-    // load application routes
-    server.route(router);
+
+     server.route(router);
     if (configuration.application) {
         // optionally add survey application routes
         server.route({
             method: 'GET',
             path: '/promis/{param*}',
-            handler: {
-                directory: {
-                    path: configuration.application.path
-                }
+            handler: function (request, h) {
+
+             return h.view('dashboard');
             },
+            // handler: {
+            //     directory: {
+            //         path: configuration.application.path
+            //     }
+            // },
             config: {
                 auth: false
             }
         });
     }
+    //server.route(router);
+    // server.route({
+    //     method: 'GET',
+    //     path: '/',
+    //     handler: function (request, h) {
+
+    //         return 'welcome to pain portal';
+    //     }
+    // });
+
+    await server.start();
 
     return server;
-}
+};
 
-module.exports = dashboardServer;
+//module.exports = dashboardServer;

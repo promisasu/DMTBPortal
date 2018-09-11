@@ -51,6 +51,11 @@ function dashboardView (request, reply) {
                 })
                 .code(httpNotFound);
         });
+        return reply.view('dashboard', {
+                title: parameterProp.get('activity.title'),
+                user: request.auth.credentials,
+                //trials: trialData
+            }); 
 }
 
 module.exports = dashboardView;
