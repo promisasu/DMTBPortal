@@ -19,32 +19,28 @@ const Bcrypt = require('bcrypt');
 const router = require('./router');
 const database = require('../model');
 
-
-const users = {
-    clinician: {
-        username: 'clinician',
-        passwordh: '$2b$10$IgvP07TkqN3KfGSCjmrq4.F.gAiRT7x0fcwi6u4Hg.l/80bg2P/ti',   // 'secret'
-        name: 'clinician',
-        id: '1'
-    }
-};
-
 const validate = async (request, username, password, h) => {
 
-    if (username === 'help') {
-        return { response: h.redirect('https://hapijs.com/help') };     // custom response
-    }
+    const user = await database.sequelize.model('user');
+    let selectedUser = null;
 
-    const user = users[username];
-    console.log('User object username' + user.name);
-    if (!user) {
-        return { credentials: null, isValid: false };
-    }
+    await user
+        .find({
+            where: {
+                username
+            }
+        })
+        // if user does not exist error out
+        .then((currentUser) => {
+            selectedUser = currentUser;
 
-    const isValid = await Bcrypt.compare(password, user.passwordh);
-    const credentials = { id: user.id, name: user.name };
-    console.log(credentials + 'fjsdfdskfnskjdfvkls');
+            if (!selectedUser) {
+                throw new Error('invalid login');
+            }
+        })
 
+    const isValid = await Bcrypt.compare(password, selectedUser.passwordHash);
+    const credentials = { id: selectedUser.id, name: selectedUser.username };
     return { isValid, credentials };
 };
 
@@ -168,29 +164,16 @@ exports.dashboardServer = async (configuration) => {
         server.route({
             method: 'GET',
             path: '/promis/{param*}',
-            handler: function (request, h) {
-
-             return h.view('dashboard');
+            handler: {
+                directory: {
+                    path: configuration.application.path
+                }
             },
-            // handler: {
-            //     directory: {
-            //         path: configuration.application.path
-            //     }
-            // },
             config: {
                 auth: false
             }
         });
-    }
-    //server.route(router);
-    // server.route({
-    //     method: 'GET',
-    //     path: '/',
-    //     handler: function (request, h) {
-
-    //         return 'welcome to pain portal';
-    //     }
-    // });
+    }   
 
     await server.start();
 
