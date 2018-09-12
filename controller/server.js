@@ -21,7 +21,7 @@ const database = require('../model');
 
 const validate = async (request, username, password, h) => {
 
-    const user = await database.sequelize.model('user');
+    const user = database.sequelize.model('user');
     let selectedUser = null;
 
     await user
