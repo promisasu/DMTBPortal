@@ -28,7 +28,7 @@ read({
         config.environment = environment;
 
         console.log('');
-        console.log('setup for diabetes-Tb comorbidity reporting server');
+        console.log('setup for Diabetes-TB comorbidity reporting server');
         console.log('');
 
         return read({
@@ -52,7 +52,7 @@ read({
     })
     .then(() => {
         console.log('');
-        console.log('setup for diabetes-Tb comorbidity reporting database');
+        console.log('setup for Diabetes-TB comorbidity reporting database');
         console.log('');
 
         return read({
