@@ -13,14 +13,16 @@ const CustomMap = require('hashmap');
 const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
-
+let x_queryResults="";
+let x_optionsWithAnswers="";
+let x_csv="";
 /**
  * Create a Comma Seperate Value export of the data of all the patient's that are enrolled in a trial.
  * @param {Request} request - Hapi request
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function trialCSV (request, reply) {
+async function trialCSV (request, reply) {
     const formatSpecifier = '%a %b %d %Y %T';
     let dailyregex = new RegExp('/trial/.-daily.csv', 'g');
     let weeklyregex = new RegExp('/trial/.-weekly.csv', 'g');
@@ -270,7 +272,7 @@ function trialCSV (request, reply) {
 
     // AND a.state IN ('completed','expired')
 
-    database.sequelize.query(
+    await database.sequelize.query(
         queryProp.get('sql.csvTrial')
         , {
             type: database.sequelize.QueryTypes.SELECT,
@@ -281,26 +283,17 @@ function trialCSV (request, reply) {
             ]
         })
         .then((queryResults) => {
-            let optionsWithAnswers = queryResults;
+            x_queryResults=queryResults;
+            x_optionsWithAnswers = formatData(x_queryResults);
+            x_csv = convertJsonToCsv(x_optionsWithAnswers, configuration);
 
-            return optionsWithAnswers;
-        })
-        .then((returnedOptionsWithAnswers) => {
-            let optionsWithAnswers = formatData(returnedOptionsWithAnswers);
-
-            return optionsWithAnswers;
-        })
-        .then((formattedOptionsWithAnswers) => {
-            return convertJsonToCsv(formattedOptionsWithAnswers, configuration);
-        })
-        .then((csv) => {
-            return reply(csv)
-                .type('text/csv');
         })
         .catch((err) => {
             console.error(err);
-            reply(boom.notFound('patient data not found'));
+            return err;
         });
+        return reply.response(x_csv).type('text/csv');
+
 }
 
 /**

@@ -23,6 +23,7 @@ let complianceCount = "";
 let currentTrial = "";
 let patientArray = "";
 let patients = "";
+let processCurrentTrial = "";
 /**
  * A dashboard with an overview of a specific trial.
  * @param {Request} request - Hapi request
@@ -152,6 +153,9 @@ async function trialView (request, reply) {
             stages = stages;
             currentTrial = currentTrial;
             patients = patients;
+
+            processCurrentTrial = processTrial(currentTrial);
+            
         })
         .catch((err) => {
             console.log('ERRORCUSTOM - ', err);
@@ -166,7 +170,7 @@ async function trialView (request, reply) {
         console.log('In trial Successfully doing Hapi ');
         return reply.view('trial', {
                 title: parameterProp.get('activity.title'),
-                trial: processTrial(currentTrial),
+                trial: processCurrentTrial,
                 stages,
                 endDate,
                 patients: patientArray,
