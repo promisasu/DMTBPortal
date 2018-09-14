@@ -19,8 +19,16 @@ const Bcrypt = require('bcrypt');
 const router = require('./router');
 const database = require('../model');
 
-const validate = async (request, username, password, h) => {
-
+/**
+ * Checks that a login is valid
+ * @param {Object} request - Hapi request
+ * @param {String} username - username for login
+ * @param {String} password - password for login
+ * @param {Object} h - Hapi response
+ * @returns {Boolean} - Value to check whether credentials are correct
+ * @returns {Array<Object>} - Id and username of the user
+ */
+async function validate (request, username, password, h) {
     const user = database.sequelize.model('user');
     let selectedUser = null;
 
@@ -37,12 +45,15 @@ const validate = async (request, username, password, h) => {
             if (!selectedUser) {
                 throw new Error('invalid login');
             }
-        })
+
+            return;
+        });
 
     const isValid = await Bcrypt.compare(password, selectedUser.passwordHash);
-    const credentials = { id: selectedUser.id, name: selectedUser.username };
-    return { isValid, credentials };
-};
+    const credentials = {id: selectedUser.id, name: selectedUser.username};
+
+    return {isValid, credentials};
+}
 
 exports.dashboardServer = async (configuration) => {
     const connectionOptions = {
@@ -65,7 +76,7 @@ exports.dashboardServer = async (configuration) => {
 
     const server = new hapi.Server(connectionOptions);
 
-   // await server.register(authBasic);
+    // await server.register(authBasic);
     await server.register(
         [
             {
@@ -130,13 +141,13 @@ exports.dashboardServer = async (configuration) => {
             }
         ]);
 
-    server.auth.strategy('simple', 'basic', { validate });
+    server.auth.strategy('simple', 'basic', {validate});
 
-    if(configuration.dashboard.authentication!=false){
+    if (configuration.dashboard.authentication !== false) {
         server.auth.default('simple');
     }
 
-    //register handlebars view engine
+    // register handlebars view engine
     server.views({
         engines: {
             hbs: handlebars
@@ -155,10 +166,9 @@ exports.dashboardServer = async (configuration) => {
     });
 
     // configure database connection
-     database.setup(configuration.database);
+    database.setup(configuration.database);
 
-
-     server.route(router);
+    server.route(router);
     if (configuration.application) {
         // optionally add survey application routes
         server.route({
@@ -173,11 +183,10 @@ exports.dashboardServer = async (configuration) => {
                 auth: false
             }
         });
-    }   
+    }
 
     await server.start();
 
     return server;
 };
 
-//module.exports = dashboardServer;

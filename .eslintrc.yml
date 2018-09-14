@@ -193,7 +193,9 @@ rules:
     max-nested-callbacks:
         - error
         - 2
-    max-params: error
+    max-params: 
+        - error
+        - 4
     max-statements:
         - error
         - 30

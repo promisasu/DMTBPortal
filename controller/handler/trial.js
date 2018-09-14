@@ -16,14 +16,15 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
-let stages="";
-let endDate="";
-let patientCount = "";
-let complianceCount = "";
-let currentTrial = "";
-let patientArray = "";
-let patients = "";
-let processCurrentTrial = "";
+let stages = '';
+let endDate = '';
+let patientCount = '';
+let complianceCount = '';
+let currentTrial = '';
+let patientArray = '';
+let patients = '';
+let processCurrentTrial = '';
+
 /**
  * A dashboard with an overview of a specific trial.
  * @param {Request} request - Hapi request
@@ -89,20 +90,21 @@ async function trialView (request, reply) {
                 }
             )
         ])
-        .then(([currentTrial, stages, patients, compliance, missedLastWeek]) => {
+        .then(([xCurrentTrial, xStages, xPatients, compliance, missedLastWeek]) => {
             const rules = [];
-            
-            if (!currentTrial) {
+
+            if (!xCurrentTrial) {
                 throw new Error('trial does not exist');
             }
             const ruleValues = rules.map((ruleData) => {
                 return parseInt(ruleData.rule, 10);
             });
+
             complianceCount = processComplianceCount(compliance);
-            patientCount = patients.length;
+            patientCount = xPatients.length;
             const patientStatuses = compliance.map(processPatientStatus);
 
-            patientArray = patients.map((patient) => {
+            patientArray = xPatients.map((patient) => {
                 const patientStatus = patientStatuses.find((status) => {
                     return status.PatientPin === patient.PatientPin;
                 });
@@ -147,15 +149,15 @@ async function trialView (request, reply) {
 
                 return patient;
             });
-            
 
             endDate = processRules(ruleValues, Date.now());
-            stages = stages;
-            currentTrial = currentTrial;
-            patients = patients;
+            stages = xStages;
+            currentTrial = xCurrentTrial;
+            patients = xPatients;
 
             processCurrentTrial = processTrial(currentTrial);
-            
+
+            return;
         })
         .catch((err) => {
             console.log('ERRORCUSTOM - ', err);
@@ -167,24 +169,24 @@ async function trialView (request, reply) {
                 })
                 .code(httpNotFound);
         });
-        console.log('In trial Successfully doing Hapi ');
-        return reply.view('trial', {
-                title: parameterProp.get('activity.title'),
-                trial: processCurrentTrial,
-                stages,
-                endDate,
-                patients: patientArray,
-                complianceCount,
-                patientCount,
-                graphData: JSON.stringify({
-                    datasets: complianceCount,
-                    labels: [
-                        'Compliant',
-                        'Semicompliant',
-                        'Noncompliant'
-                    ]
-                })
-            });
+
+    return reply.view('trial', {
+        title: parameterProp.get('activity.title'),
+        trial: processCurrentTrial,
+        stages,
+        endDate,
+        patients: patientArray,
+        complianceCount,
+        patientCount,
+        graphData: JSON.stringify({
+            datasets: complianceCount,
+            labels: [
+                'Compliant',
+                'Semicompliant',
+                'Noncompliant'
+            ]
+        })
+    });
 }
 
 module.exports = trialView;

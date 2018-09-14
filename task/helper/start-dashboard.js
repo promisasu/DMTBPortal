@@ -9,19 +9,24 @@
 const config = require('../../config.json');
 const Server = require('../../controller/server');
 
-
-async function start() {
-
+/**
+ * A function to start the dashboard
+ * @returns {null} Nothing
+ */
+async function start () {
     try {
         const server = await Server.dashboardServer(config);
+
         await server.start();
         console.log('Server running at:', server.info.uri);
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
-        process.exit(1);
+
+        return err;
     }
 
-};
+    return null;
+}
 
 start();
+
