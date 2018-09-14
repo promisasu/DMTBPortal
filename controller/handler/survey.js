@@ -15,7 +15,7 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
-let x_csv = "";
+let x_csv = '';
 
 const configuration = [
     {
@@ -77,9 +77,9 @@ async function surveyCSV (request, reply) {
         ,
         {
             type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin, 
-                        request.params.activityInstanceId,
-                        parameterProp.get('activity.State.completed')]
+            replacements: [request.params.pin,
+                request.params.activityInstanceId,
+                parameterProp.get('activity.State.completed')]
         }
     )
         .then((optionsWithAnswers) => {
@@ -87,6 +87,8 @@ async function surveyCSV (request, reply) {
             const uniqueAnswers = deduplicate(optionsWithAnswers, property);
 
             x_csv = convertJsonToCsv(uniqueAnswers, configuration);
+
+            return;
         })
         .catch((err) => {
             console.log('error', err);
@@ -96,7 +98,8 @@ async function surveyCSV (request, reply) {
                 })
                 .code(httpNotFound);
         });
-        return reply.response(x_csv).type('text/csv');
+
+    return reply.response(x_csv).type('text/csv');
 }
 
 module.exports = surveyCSV;

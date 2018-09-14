@@ -13,9 +13,10 @@ const CustomMap = require('hashmap');
 const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
-let x_queryResults="";
-let x_optionsWithAnswers="";
-let x_csv="";
+let x_queryResults = '';
+let x_optionsWithAnswers = '';
+let x_csv = '';
+
 /**
  * Create a Comma Seperate Value export of the data of all the patient's that are enrolled in a trial.
  * @param {Request} request - Hapi request
@@ -24,6 +25,7 @@ let x_csv="";
  */
 async function trialCSV (request, reply) {
     const formatSpecifier = '%a %b %d %Y %T';
+
     let dailyregex = new RegExp('/trial/.-daily.csv', 'g');
     let weeklyregex = new RegExp('/trial/.-weekly.csv', 'g');
     let configuration = '';
@@ -270,8 +272,6 @@ async function trialCSV (request, reply) {
         query = 'Unknown';
     }
 
-    // AND a.state IN ('completed','expired')
-
     await database.sequelize.query(
         queryProp.get('sql.csvTrial')
         , {
@@ -283,17 +283,19 @@ async function trialCSV (request, reply) {
             ]
         })
         .then((queryResults) => {
-            x_queryResults=queryResults;
+            x_queryResults = queryResults;
             x_optionsWithAnswers = formatData(x_queryResults);
             x_csv = convertJsonToCsv(x_optionsWithAnswers, configuration);
 
+            return;
         })
         .catch((err) => {
             console.error(err);
+
             return err;
         });
-        return reply.response(x_csv).type('text/csv');
 
+    return reply.response(x_csv).type('text/csv');
 }
 
 /**

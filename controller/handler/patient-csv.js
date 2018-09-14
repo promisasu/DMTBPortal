@@ -13,8 +13,8 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
-const x_type = "";
-let x_csv = "";
+const x_type = '';
+let x_csv = '';
 
 const configuration = [
     {
@@ -70,7 +70,7 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-async function patientCSV (request, reply){
+async function patientCSV (request, reply) {
     await database.sequelize.query(
         queryProp.get('sql.csvPatient')
         , {
@@ -83,17 +83,18 @@ async function patientCSV (request, reply){
         .then((optionsWithAnswers) => {
             const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
             const uniqueAnswers = deduplicate(optionsWithAnswers, property);
-            
+
             x_csv = convertJsonToCsv(uniqueAnswers, configuration);
+
+            return;
         })
         .catch((err) => {
             console.log('error', err);
+
             return err;
         });
-        // const res = h.response(x_csv);
-        // res.type('text/csv');
-        // return res;
-        return reply.response(x_csv).type('text/csv');
+
+    return reply.response(x_csv).type('text/csv');
 }
 
 module.exports = patientCSV;
