@@ -40,6 +40,9 @@
   	<exec dir="." executable="${npmcmd}" output="./npminstall">
   		<arg line="install"/>
   	</exec>
+    <exec dir="." executable="${pm2cmd}">
+      <arg line="update"/>
+    </exec>
   </target>
 
 
