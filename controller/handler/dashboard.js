@@ -11,6 +11,7 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 let trialData = '';
+let username = '';
 
 /**
  * A dashboard view with overview of all trials and patients.
@@ -50,7 +51,7 @@ async function dashboardView (request, reply) {
 
     return reply.view('dashboard', {
         title: parameterProp.get('activity.title'),
-        user: {username: 'clinician'},
+        user: {username: request.auth.credentials.name},
         trials: trialData
     });
 }
