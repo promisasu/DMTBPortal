@@ -13,7 +13,7 @@ const database = require('../../model');
  * @param {Reply} reply - Hapi Reply
  * @returns {Null} Redirect
  */
-const createTrial = async (request, reply) => {
+async function createTrial (request, reply) {
     const trial = database.sequelize.model('trial');
     const stage = database.sequelize.model('stage');
     let newTrial = null;
@@ -67,7 +67,8 @@ const createTrial = async (request, reply) => {
             request.log('error', err);
             reply(boom.badRequest('Invalid Trial'));
         });
-        return reply.redirect(`/trial/${newTrial.id}`);
+
+    return reply.redirect(`/trial/${newTrial.id}`);
 }
 
 module.exports = createTrial;

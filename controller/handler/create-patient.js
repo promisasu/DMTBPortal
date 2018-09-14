@@ -15,7 +15,7 @@ const createSurvey = require('../helper/create-survey-instance');
  * @param {Reply} reply - Hapi Reply
  * @returns {Null} Redirect
  */
-const createPatient = async (request, reply) => {
+async function createPatient (request, reply) {
     const patient = database.sequelize.model('patient');
     const trial = database.sequelize.model('trial');
     const stage = database.sequelize.model('stage');
@@ -101,7 +101,8 @@ const createPatient = async (request, reply) => {
             request.log('error', err);
             reply(boom.badRequest('Patient could not be created'));
         });
-        return reply.redirect(`/patient/${newPatient.pin}?newPatient=true`);
+
+    return reply.redirect(`/patient/${newPatient.pin}?newPatient=true`);
 }
 
 module.exports = createPatient;
