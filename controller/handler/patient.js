@@ -18,13 +18,19 @@ const json = parameterProp.get('score.category');
 let patientStatus = '';
 let deactivateStatus = false;
 
+let x_currentPatient = '';
+let x_currentTrial = '';
+let x_surveyInstances = '';
+let x_dataChart = '';
+let x_clinicalValuesChart = '';
+
 /**
  * A dashboard with an overview of a specific patient.
  * @param {Request} request - Hapi request
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientView (request, reply) {
+async function patientView (request, reply) {
     let parsedJson = JSON.parse(json);
     let listOfQuestionScore = [];
 
@@ -33,7 +39,7 @@ function patientView (request, reply) {
             listOfQuestionScore.push(parsedJson.score_type[i].questionID[j]);
         }
     }
-    Promise
+    await Promise
         .all([
             database.sequelize.query(
                 queryProp.get('sql.currentPatient')
@@ -127,33 +133,13 @@ function patientView (request, reply) {
                 deactivateStatus = false;
             }
 
-            return reply.view('patient', {
-                title: parameterProp.get('activity.title'),
-                status: patientStatus,
-                deactivate: deactivateStatus,
-                patient: currentPatient,
-                trial: currentTrial,
-                surveys: surveyInstances.map((surveyInstance) => {
-                    const surveyInstanceCopy = Object.assign({}, surveyInstance);
+            x_currentPatient = currentPatient;
+            x_currentTrial = currentTrial;
+            x_surveyInstances = surveyInstances;
+            x_dataChart = dataChart;
+            x_clinicalValuesChart = clinicalValuesChart;
 
-                    surveyInstanceCopy.startTime = moment.utc(surveyInstanceCopy.StartTime)
-                        .format('MM-DD-YYYY');
-                    surveyInstanceCopy.endTime = moment.utc(surveyInstanceCopy.EndTime)
-                        .format('MM-DD-YYYY');
-                    if (surveyInstanceCopy.UserSubmissionTime) {
-                        surveyInstanceCopy.UserSubmissionTime = moment.utc(surveyInstanceCopy.UserSubmissionTime)
-                            .format('MM-DD-YYYY h:mma');
-                    }
-                    if (surveyInstanceCopy.ActualSubmissionTime) {
-                        surveyInstanceCopy.ActualSubmissionTime = moment.utc(surveyInstanceCopy.ActualSubmissionTime)
-                            .format('MM-DD-YYYY h:mma');
-                    }
-
-                    return surveyInstanceCopy;
-                }),
-                datesJson: JSON.stringify(dataChart),
-                clinicalValues: JSON.stringify(clinicalValuesChart)
-            });
+            return;
         })
         .catch((err) => {
             request.log('error', err);
@@ -163,6 +149,34 @@ function patientView (request, reply) {
                 })
                 .code(httpNotFound);
         });
+
+    return reply.view('patient', {
+        title: parameterProp.get('activity.title'),
+        status: patientStatus,
+        deactivate: deactivateStatus,
+        patient: x_currentPatient,
+        trial: x_currentTrial,
+        surveys: x_surveyInstances.map((surveyInstance) => {
+            const surveyInstanceCopy = Object.assign({}, surveyInstance);
+
+            surveyInstanceCopy.startTime = moment.utc(surveyInstanceCopy.StartTime)
+                .format('MM-DD-YYYY');
+            surveyInstanceCopy.endTime = moment.utc(surveyInstanceCopy.EndTime)
+                .format('MM-DD-YYYY');
+            if (surveyInstanceCopy.UserSubmissionTime) {
+                surveyInstanceCopy.UserSubmissionTime = moment.utc(surveyInstanceCopy.UserSubmissionTime)
+                    .format('MM-DD-YYYY h:mma');
+            }
+            if (surveyInstanceCopy.ActualSubmissionTime) {
+                surveyInstanceCopy.ActualSubmissionTime = moment.utc(surveyInstanceCopy.ActualSubmissionTime)
+                    .format('MM-DD-YYYY h:mma');
+            }
+
+            return surveyInstanceCopy;
+        }),
+        datesJson: JSON.stringify(x_dataChart),
+        clinicalValues: JSON.stringify(x_clinicalValuesChart)
+    });
 }
 
 module.exports = patientView;

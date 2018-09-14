@@ -18,8 +18,8 @@ const parameterProp = propReader('parameter.properties');
  * @param {Reply} reply - Hapi Reply
  * @returns {Null} Redirect
  */
-function deactivatePatient (request, reply) {
-    Promise
+async function deactivatePatient (request, reply) {
+    await Promise
         .all([
             database.sequelize.query(
                 queryProp.get('sql.deactivatePatient')
@@ -54,7 +54,7 @@ function deactivatePatient (request, reply) {
             )
         ])
         .then(() => {
-            return reply();
+            return;
         })
         .catch((err) => {
             request.log('error', err);
@@ -62,6 +62,8 @@ function deactivatePatient (request, reply) {
 
             return reply(boom.conflict());
         });
+
+    return null;
 }
 
 module.exports = deactivatePatient;

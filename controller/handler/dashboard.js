@@ -10,6 +10,7 @@ const httpNotFound = 404;
 const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
+let trialData = '';
 
 /**
  * A dashboard view with overview of all trials and patients.
@@ -17,10 +18,10 @@ const parameterProp = propReader('parameter.properties');
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function dashboardView (request, reply) {
+async function dashboardView (request, reply) {
     const currentDate = new Date();
 
-    database.sequelize.query(
+    await database.sequelize.query(
         queryProp.get('sql.trials')
         ,
         {
@@ -33,14 +34,9 @@ function dashboardView (request, reply) {
     )
         .then((trials) => {
             // Process data into format expected in view
-            const trialData = trials.map(processTrial);
+            trialData = trials.map(processTrial);
 
-            // Display view
-            return reply.view('dashboard', {
-                title: parameterProp.get('activity.title'),
-                user: request.auth.credentials,
-                trials: trialData
-            });
+            return;
         })
         .catch((err) => {
             console.log('error', err);
@@ -51,6 +47,12 @@ function dashboardView (request, reply) {
                 })
                 .code(httpNotFound);
         });
+
+    return reply.view('dashboard', {
+        title: parameterProp.get('activity.title'),
+        user: {username: 'clinician'},
+        trials: trialData
+    });
 }
 
 module.exports = dashboardView;

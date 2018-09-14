@@ -13,19 +13,49 @@ const hapi = require('hapi');
 const inert = require('inert');
 const path = require('path');
 const vision = require('vision');
+const Bcrypt = require('bcrypt');
 
 // load router and database
 const router = require('./router');
 const database = require('../model');
-const validate = require('./helper/validate');
 
 /**
- * Sets up a the Hapi server
- * @param {Object} configuration - server options
- * @returns {Object} Hapi server instance
+ * Checks that a login is valid
+ * @param {Object} request - Hapi request
+ * @param {String} username - username for login
+ * @param {String} password - password for login
+ * @param {Object} h - Hapi response
+ * @returns {Boolean} - Value to check whether credentials are correct
+ * @returns {Array<Object>} - Id and username of the user
  */
-function dashboardServer (configuration) {
-    const server = new hapi.Server();
+async function validate (request, username, password, h) {
+    const user = database.sequelize.model('user');
+    let selectedUser = null;
+
+    await user
+        .find({
+            where: {
+                username
+            }
+        })
+        // if user does not exist error out
+        .then((currentUser) => {
+            selectedUser = currentUser;
+
+            if (!selectedUser) {
+                throw new Error('invalid login');
+            }
+
+            return;
+        });
+
+    const isValid = await Bcrypt.compare(password, selectedUser.passwordHash);
+    const credentials = {id: selectedUser.id, name: selectedUser.username};
+
+    return {isValid, credentials};
+}
+
+exports.dashboardServer = async (configuration) => {
     const connectionOptions = {
         port: configuration.dashboard.port,
         host: configuration.dashboard.hostname,
@@ -44,23 +74,22 @@ function dashboardServer (configuration) {
         }
     }
 
-    // configure server connection
-    server.connection(connectionOptions);
+    const server = new hapi.Server(connectionOptions);
 
-    // register hapi plugins
-    server.register(
+    // await server.register(authBasic);
+    await server.register(
         [
             {
-                register: vision
+                plugin: vision
             },
             {
-                register: inert
+                plugin: inert
             },
             {
-                register: authBasic
+                plugin: authBasic
             },
             {
-                register: good,
+                plugin: good,
                 options: {
                     ops: {
                         interval: 60000
@@ -110,27 +139,13 @@ function dashboardServer (configuration) {
                     }
                 }
             }
-        ],
-        (err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                // Secure dashboard with login
-                server.auth.strategy(
-                    'simple',
-                    'basic',
-                    {
-                        validateFunc: validate
-                    }
-                );
+        ]);
 
-                // allow authentication to be disabled for test
-                if (configuration.dashboard.authentication !== false) {
-                    server.auth.default('simple');
-                }
-            }
-        }
-    );
+    server.auth.strategy('simple', 'basic', {validate});
+
+    if (configuration.dashboard.authentication !== false) {
+        server.auth.default('simple');
+    }
 
     // register handlebars view engine
     server.views({
@@ -153,7 +168,6 @@ function dashboardServer (configuration) {
     // configure database connection
     database.setup(configuration.database);
 
-    // load application routes
     server.route(router);
     if (configuration.application) {
         // optionally add survey application routes
@@ -171,7 +185,8 @@ function dashboardServer (configuration) {
         });
     }
 
-    return server;
-}
+    await server.start();
 
-module.exports = dashboardServer;
+    return server;
+};
+

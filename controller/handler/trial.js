@@ -16,17 +16,26 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
+let stages = '';
+let endDate = '';
+let patientCount = '';
+let complianceCount = '';
+let currentTrial = '';
+let patientArray = '';
+let patients = '';
+let processCurrentTrial = '';
+
 /**
  * A dashboard with an overview of a specific trial.
  * @param {Request} request - Hapi request
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function trialView (request, reply) {
+async function trialView (request, reply) {
     const trial = database.sequelize.model('trial');
     const startDate = moment.utc('2016-11-23');
 
-    Promise
+    await Promise
         .all([
             trial.findById(request.params.id),
             database.sequelize.query(
@@ -81,20 +90,21 @@ function trialView (request, reply) {
                 }
             )
         ])
-        .then(([currentTrial, stages, patients, compliance, missedLastWeek]) => {
+        .then(([xCurrentTrial, xStages, xPatients, compliance, missedLastWeek]) => {
             const rules = [];
 
-            if (!currentTrial) {
+            if (!xCurrentTrial) {
                 throw new Error('trial does not exist');
             }
             const ruleValues = rules.map((ruleData) => {
                 return parseInt(ruleData.rule, 10);
             });
-            const complianceCount = processComplianceCount(compliance);
-            const patientCount = patients.length;
+
+            complianceCount = processComplianceCount(compliance);
+            patientCount = xPatients.length;
             const patientStatuses = compliance.map(processPatientStatus);
 
-            const patientArray = patients.map((patient) => {
+            patientArray = xPatients.map((patient) => {
                 const patientStatus = patientStatuses.find((status) => {
                     return status.PatientPin === patient.PatientPin;
                 });
@@ -140,25 +150,14 @@ function trialView (request, reply) {
                 return patient;
             });
 
-            const endDate = processRules(ruleValues, Date.now());
+            endDate = processRules(ruleValues, Date.now());
+            stages = xStages;
+            currentTrial = xCurrentTrial;
+            patients = xPatients;
 
-            return reply.view('trial', {
-                title: parameterProp.get('activity.title'),
-                trial: processTrial(currentTrial),
-                stages,
-                endDate,
-                patients: patientArray,
-                complianceCount,
-                patientCount,
-                graphData: JSON.stringify({
-                    datasets: complianceCount,
-                    labels: [
-                        'Compliant',
-                        'Semicompliant',
-                        'Noncompliant'
-                    ]
-                })
-            });
+            processCurrentTrial = processTrial(currentTrial);
+
+            return;
         })
         .catch((err) => {
             console.log('ERRORCUSTOM - ', err);
@@ -170,6 +169,24 @@ function trialView (request, reply) {
                 })
                 .code(httpNotFound);
         });
+
+    return reply.view('trial', {
+        title: parameterProp.get('activity.title'),
+        trial: processCurrentTrial,
+        stages,
+        endDate,
+        patients: patientArray,
+        complianceCount,
+        patientCount,
+        graphData: JSON.stringify({
+            datasets: complianceCount,
+            labels: [
+                'Compliant',
+                'Semicompliant',
+                'Noncompliant'
+            ]
+        })
+    });
 }
 
 module.exports = trialView;
