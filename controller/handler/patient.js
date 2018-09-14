@@ -57,7 +57,8 @@ const patientView = async (request, reply) => {
                 queryProp.get('sql.surveyInstances')
                 , {
                     type: database.sequelize.QueryTypes.SELECT,
-                    replacements: [request.params.pin, parameterProp.get('activity.game')]
+                    replacements: [request.params.pin, parameterProp.get('activity.game'),
+                        parameterProp.get('activity.initial')]
                 }
             ),
             database.sequelize.query(

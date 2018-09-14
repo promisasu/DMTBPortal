@@ -3,6 +3,8 @@
 /**
  * @module controller/helper/deduplicate
  */
+const propReader = require('properties-reader');
+const prop = propReader('parameter.properties');
 
 /**
  * Finds groups of duplicated values and replaces duplicated values with a single value
@@ -20,15 +22,24 @@ function deduplicate (rows, properties) {
                 /* Used to facilitate the comparison of the date coming from
                 the database with the date in current[property] */
                 row[property] = String(row[property]);
-            }
-            if (row[property] === 'null') {
-                row[property] = '';
-                current[property] = '';
-            }
-            if (row[property] === current[property]) {
-                row[property] = '';
+                if (row[property] === 'null') {
+                    row[property] = prop.get('activity.State.expired');
+                    current[property] = '';
+                } else if (row[property] === current[property]) {
+                    row[property] = '';
+                } else {
+                    current[property] = row[property];
+                }
             } else {
-                current[property] = row[property];
+                if (row[property] === 'null') {
+                    row[property] = '';
+                    current[property] = '';
+                }
+                if (row[property] === current[property]) {
+                    row[property] = '';
+                } else {
+                    current[property] = row[property];
+                }
             }
         }
 
