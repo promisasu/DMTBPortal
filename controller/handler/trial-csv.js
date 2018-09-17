@@ -30,6 +30,7 @@ async function trialCSV (request, reply) {
     let weeklyregex = new RegExp('/trial/.-weekly.csv', 'g');
     let configuration = '';
     let query = '';
+    let csvTrial = '';
 
     if (weeklyregex.test(request.path) === true) {
         configuration = [
@@ -272,30 +273,27 @@ async function trialCSV (request, reply) {
         query = 'Unknown';
     }
 
-    await database.sequelize.query(
-        queryProp.get('sql.csvTrial')
-        , {
-            type: database.sequelize.QueryTypes.SELECT,
-            replacements: [
-                query,
-                formatSpecifier,
-                formatSpecifier
-            ]
-        })
-        .then((queryResults) => {
-            x_queryResults = queryResults;
-            x_optionsWithAnswers = formatData(x_queryResults);
-            x_csv = convertJsonToCsv(x_optionsWithAnswers, configuration);
+    try {
+        csvTrial = await database.sequelize.query(
+            queryProp.get('sql.csvTrial')
+            , {
+                type: database.sequelize.QueryTypes.SELECT,
+                replacements: [
+                    query,
+                    formatSpecifier,
+                    formatSpecifier
+                ]
+            });
+        x_queryResults = csvTrial;
+        x_optionsWithAnswers = formatData(x_queryResults);
+        x_csv = convertJsonToCsv(x_optionsWithAnswers, configuration);
 
-            return;
-        })
-        .catch((err) => {
-            console.error(err);
+        return reply.response(x_csv).type('text/csv');
+    } catch (err) {
+        console.error(err);
 
-            return err;
-        });
-
-    return reply.response(x_csv).type('text/csv');
+        return err;
+    }
 }
 
 /**

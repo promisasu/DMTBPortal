@@ -72,34 +72,32 @@ const configuration = [
  * @returns {View} Rendered page
  */
 async function surveyCSV (request, reply) {
-    await database.sequelize.query(
-        queryProp.get('sql.csvSurvey')
-        ,
-        {
-            type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin,
-                request.params.activityInstanceId,
-                parameterProp.get('activity.State.completed')]
-        }
-    )
-        .then((optionsWithAnswers) => {
-            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+    try {
+        const csvSurvey = await database.sequelize.query(
+            queryProp.get('sql.csvSurvey')
+            ,
+            {
+                type: database.sequelize.QueryTypes.SELECT,
+                replacements: [request.params.pin,
+                    request.params.activityInstanceId,
+                    parameterProp.get('activity.State.completed')]
+            }
+        );
+        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+        const uniqueAnswers = deduplicate(csvSurvey, property);
 
-            x_csv = convertJsonToCsv(uniqueAnswers, configuration);
+        x_csv = convertJsonToCsv(uniqueAnswers, configuration);
 
-            return;
-        })
-        .catch((err) => {
-            console.log('error', err);
-            reply
-                .view('404', {
-                    title: 'Not Found'
-                })
-                .code(httpNotFound);
-        });
+        return reply.response(x_csv).type('text/csv');
+    } catch (err) {
+        console.log('error', err);
 
-    return reply.response(x_csv).type('text/csv');
+        return reply
+            .view('404', {
+                title: 'Not Found'
+            })
+            .code(httpNotFound);
+    }
 }
 
 module.exports = surveyCSV;

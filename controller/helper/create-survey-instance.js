@@ -17,45 +17,49 @@ const database = require('../../model');
  * @param {Transaction} transaction - DB transaction to group operations
  * @returns {Null} Returns when completed
  */
-function createSurveyInstance (patientPin, surveyTemplateId, startDate, openForDuration, openForUnit, transaction) {
-    const patient = database.sequelize.model('patient');
-    const surveyTemplate = database.sequelize.model('survey_template');
-    const surveyInstance = database.sequelize.model('survey_instance');
+async function createSurveyInstance (patientPin, surveyTemplateId,
+    startDate, openForDuration, openForUnit, transaction) {
+    try {
+        const patient = database.sequelize.model('patient');
+        const surveyTemplate = database.sequelize.model('survey_template');
+        const surveyInstance = database.sequelize.model('survey_instance');
+        let newSurveyInstance = '';
 
-    return Promise.all([
-        patient.findOne(
+        const currentPatient = await patient.findOne(
             {
                 where: {
                     pin: patientPin
                 },
                 transaction
             }
-        ),
-        surveyTemplate.findById(surveyTemplateId, {transaction}),
-        surveyInstance.create(
-            {
-                startTime: startDate,
+        );
+
+        const currentSurveyTemplate = await surveyTemplate.findById(surveyTemplateId, {transaction});
+
+        newSurveyInstance = await surveyInstance.create(
+            {startTime: startDate,
                 endTime: moment.utc(startDate)
                     .add(openForDuration, openForUnit)
             },
             {transaction}
-        )
-    ])
-    // Link SurveyInstance to Patient and SurveyTemplate
-        .then(([currentPatient, currentSurveyTemplate, newSurveyInstance]) => {
-            if (!currentPatient) {
-                throw new Error('patient does not exist');
-            }
+        );
+        if (!currentPatient) {
+            throw new Error('patient does not exist');
+        }
 
-            if (!currentSurveyTemplate) {
-                throw new Error('survey template does not exist');
-            }
+        if (!currentSurveyTemplate) {
+            throw new Error('survey template does not exist');
+        }
 
-            return Promise.all([
-                currentSurveyTemplate.addSurvey_instance(newSurveyInstance, {transaction}),
-                currentPatient.addSurvey_instance(newSurveyInstance, {transaction})
-            ]);
-        });
+        return Promise.all([
+            currentSurveyTemplate.addSurvey_instance(newSurveyInstance, {transaction}),
+            currentPatient.addSurvey_instance(newSurveyInstance, {transaction})
+        ]);
+    } catch (err) {
+        console.log(err);
+
+        return err;
+    }
 }
 
 module.exports = createSurveyInstance;

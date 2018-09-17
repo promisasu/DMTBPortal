@@ -13,7 +13,6 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
-const x_type = '';
 let x_csv = '';
 
 const configuration = [
@@ -71,30 +70,28 @@ const configuration = [
  * @returns {View} Rendered page
  */
 async function patientCSV (request, reply) {
-    await database.sequelize.query(
-        queryProp.get('sql.csvPatient')
-        , {
-            type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
-                parameterProp.get('activity.State.expired'), parameterProp.get('activity.game')]
+    try {
+        const csvPatient = await database.sequelize.query(
+            queryProp.get('sql.csvPatient')
+            , {
+                type: database.sequelize.QueryTypes.SELECT,
+                replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
+                    parameterProp.get('activity.State.expired'), parameterProp.get('activity.game'),
+                    parameterProp.get('activity.initial')]
+            }
+        );
 
-        }
-    )
-        .then((optionsWithAnswers) => {
-            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+        const uniqueAnswers = deduplicate(csvPatient, property);
 
-            x_csv = convertJsonToCsv(uniqueAnswers, configuration);
+        x_csv = convertJsonToCsv(uniqueAnswers, configuration);
 
-            return;
-        })
-        .catch((err) => {
-            console.log('error', err);
+        return reply.response(x_csv).type('text/csv');
+    } catch (err) {
+        console.log('error', err);
 
-            return err;
-        });
-
-    return reply.response(x_csv).type('text/csv');
+        return err;
+    }
 }
 
 module.exports = patientCSV;

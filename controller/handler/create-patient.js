@@ -20,89 +20,62 @@ async function createPatient (request, reply) {
     const trial = database.sequelize.model('trial');
     const stage = database.sequelize.model('stage');
     const joinStageSurveys = database.sequelize.model('join_stages_and_surveys');
-    let transaction = null;
+    let transaction = await database.sequelize.transaction();
     let newPatient = null;
     let pin = null;
 
-    await database
-        .sequelize
-        .transaction()
-        .then((newTransaction) => {
-            transaction = newTransaction;
+    try {
+        const x_newPatient = await trial.findById(request.payload.trialId, {transaction});
 
-            // Get Trial the patient will be added to
-            return trial.findById(request.payload.trialId, {transaction});
-        })
-    // Get next availible Patient Pin
-        .then((currentTrial) => {
-            pin = currentTrial.id * trialOffset + currentTrial.patientPinCounter;
+        pin = x_newPatient.id * trialOffset + x_newPatient.patientPinCounter;
+        const x_currTrial = await x_newPatient.increment({patientPinCounter: 1}, {transaction});
 
-            return currentTrial.increment({patientPinCounter: 1}, {transaction});
-        })
-    // Create the new Patient
-        .then(() => {
-            const dateStarted = request.payload.startDate;
-            const dateCompleted = request.payload.endDate;
+        const dateStarted = request.payload.startDate;
+        const dateCompleted = request.payload.endDate;
 
-            return patient.create({pin, dateStarted, dateCompleted}, {transaction});
-        })
-    // Get stage that patient belongs to
-        .then((tempPatient) => {
-            newPatient = tempPatient;
+        const x_createPatient = await patient.create({pin, dateStarted, dateCompleted}, {transaction});
 
-            return stage.findById(request.payload.stageId, {transaction});
-        })
-    // Add patient to stage
-        .then((currentStage) => {
-            return currentStage.addPatient(newPatient, {transaction});
-        })
-    // Collect the surveyTemplateId for the stage associated to the patient
-        .then(() => {
-            return joinStageSurveys.findOne(
-                {
-                    where: {
-                        stageId: request.payload.stageId,
-                        stagePriority: 0
-                    },
-                    transaction
-                }
-            );
-        })
-    // Create first survey instance as per the surveyTemplateId for the patient
-        .then((data) => {
-            const startDate = request.payload.startDate;
-            const openUnit = 'day';
-            let openFor = null;
+        newPatient = x_createPatient;
 
-            if (data.rule === 'daily') {
-                openFor = 1;
-            } else {
-                openFor = 2;
-            }
+        const x_stage = await stage.findById(request.payload.stageId, {transaction});
+        const x_addPatientStage = x_stage.addPatient(newPatient, {transaction});
 
-            return createSurvey(
-                pin,
-                data.surveyTemplateId,
-                startDate,
-                openFor,
-                openUnit,
+        const x_findStage = joinStageSurveys.findOne(
+            {
+                where: {
+                    stageId: request.payload.stageId,
+                    stagePriority: 0
+                },
                 transaction
-            );
-        })
-    // Commit the transaction
-        .then(() => {
-            return transaction.commit();
-        })
-        // .then(() => {
-        //     return reply.redirect(`/patient/${newPatient.pin}?newPatient=true`);
-        // })
-        .catch((err) => {
-            transaction.rollback();
-            request.log('error', err);
-            reply(boom.badRequest('Patient could not be created'));
-        });
+            }
+        );
 
-    return reply.redirect(`/patient/${newPatient.pin}?newPatient=true`);
+        const startDate = request.payload.startDate;
+        const openUnit = 'day';
+        let openFor = null;
+
+        if (x_findStage.rule === 'daily') {
+            openFor = 1;
+        } else {
+            openFor = 2;
+        }
+
+        await createSurvey(
+            pin,
+            x_findStage.surveyTemplateId,
+            startDate,
+            openFor,
+            openUnit,
+            transaction
+        );
+        await transaction.commit();
+
+        reply.redirect(`/patient/${newPatient.pin}?newPatient=true`);
+    } catch (err) {
+        transaction.rollback();
+        request.log('error', err);
+        reply(boom.badRequest('Patient could not be created'));
+    }
 }
 
 module.exports = createPatient;

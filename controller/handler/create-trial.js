@@ -16,59 +16,47 @@ const database = require('../../model');
 async function createTrial (request, reply) {
     const trial = database.sequelize.model('trial');
     const stage = database.sequelize.model('stage');
-    let newTrial = null;
-    let transaction = null;
+    const transaction = await database.sequelize.transaction();
 
-    await database
-        .sequelize
-        .transaction()
-        .then((newTransaction) => {
-            transaction = newTransaction;
-
-            return trial.create({
+    try {
+        const newTrial = await trial.create(
+            {
                 name: request.payload.name,
                 description: request.payload.description,
                 IRBID: request.payload.IRBID,
                 IRBStart: request.payload.IRBStart,
                 IRBEnd: request.payload.IRBEnd,
                 targetCount: request.payload.targetCount
-            }, {transaction});
-        })
-        .then((nTrial) => {
-            newTrial = nTrial;
-            const stagePromises = [];
-            const stageNames = request
-                .payload
-                .stageName
-                .split(',');
-
-            if (stageNames.length !== request.payload.stagecount) {
-                throw new Error('No of Stages not matched with Stage Schedule information given');
+            },
+            {
+                transaction
             }
-            for (const name of stageNames) {
-                stagePromises.push(
-                    stage.create({name}, {transaction})
-                );
-            }
+        );
 
-            return Promise.all(stagePromises);
-        })
-        .then((newStages) => {
-            return newTrial.addStages(newStages, {transaction});
-        })
-        .then(() => {
-            return transaction.commit();
-        })
-        // .then(() => {
-        //     return reply.redirect(`/trial/${newTrial.id}`);
-        // })
-        .catch((err) => {
-            transaction.rollback();
-            request.log('error', err);
-            reply(boom.badRequest('Invalid Trial'));
-        });
+        const stageNames = request.payload.stageName.split(',');
 
-    return reply.redirect(`/trial/${newTrial.id}`);
+        if (stageNames.length !== request.payload.stagecount) {
+            throw new Error(
+                'No of Stages not matched with Stage Schedule information given'
+            );
+        }
+
+        const newStages = await Promise.all(
+            stageNames.map((name) => {
+                return stage.create({name}, {transaction});
+            })
+        );
+
+        await newTrial.addStages(newStages, {transaction});
+
+        await transaction.commit();
+
+        reply.redirect(`/trial/${newTrial.id}`);
+    } catch (err) {
+        transaction.rollback();
+        request.log('error', err);
+        reply(boom.badRequest('Invalid Trial'));
+    }
 }
 
 module.exports = createTrial;
