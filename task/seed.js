@@ -45,9 +45,9 @@ Promise
             .model('join_current_and_next_stages')
             .bulkCreate(seedData.joinCurrentAndNextStage)
     ])
-    .then(() => {
-        return database.sequelize.close();
-    })
+    .then(() =>
+        database.sequelize.close()
+    )
     .catch((err) => {
         console.error(err);
 

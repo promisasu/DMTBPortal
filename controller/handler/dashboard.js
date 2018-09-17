@@ -25,8 +25,7 @@ async function dashboardView (request, reply) {
 
     try {
         transaction = await database.sequelize.query(
-            queryProp.get('sql.trials')
-            ,
+            queryProp.get('sql.trials'),
             {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [

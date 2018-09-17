@@ -42,9 +42,8 @@ async function createTrial (request, reply) {
         }
 
         const newStages = await Promise.all(
-            stageNames.map((name) => {
-                return stage.create({name}, {transaction});
-            })
+            stageNames.map((name) =>
+                stage.create({name}, {transaction}))
         );
 
         await newTrial.addStages(newStages, {transaction});

@@ -42,8 +42,8 @@ async function patientView (request, reply) {
 
     try {
         const currentPatient = await database.sequelize.query(
-            queryProp.get('sql.currentPatient')
-            , {
+            queryProp.get('sql.currentPatient'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [
                     parameterProp.get('activity.State.pending'),
@@ -55,8 +55,8 @@ async function patientView (request, reply) {
         );
 
         const surveyInstances = await database.sequelize.query(
-            queryProp.get('sql.surveyInstances')
-            , {
+            queryProp.get('sql.surveyInstances'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin, parameterProp.get('activity.game'),
                     parameterProp.get('activity.initial')]
@@ -64,8 +64,8 @@ async function patientView (request, reply) {
         );
 
         const currentTrial = await database.sequelize.query(
-            queryProp.get('sql.currentTrial')
-            , {
+            queryProp.get('sql.currentTrial'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [
                     request.params.pin
@@ -75,8 +75,8 @@ async function patientView (request, reply) {
         );
 
         const surveyResults = await database.sequelize.query(
-            queryProp.get('sql.surveyResults')
-            , {
+            queryProp.get('sql.surveyResults'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
                     parameterProp.get('activity.biweekly')]
@@ -84,8 +84,8 @@ async function patientView (request, reply) {
         );
 
         const opioidResults = await database.sequelize.query(
-            queryProp.get('sql.opioidResults')
-            , {
+            queryProp.get('sql.opioidResults'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
                     parameterProp.get('activity.daily')]
@@ -93,16 +93,16 @@ async function patientView (request, reply) {
         );
 
         const bodyPainResults = await database.sequelize.query(
-            queryProp.get('sql.bodyPainResults')
-            , {
+            queryProp.get('sql.bodyPainResults'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin, parameterProp.get('activity.State.completed')]
             }
         );
 
         const dailySurvey = await database.sequelize.query(
-            queryProp.get('sql.dailySurvey')
-            , {
+            queryProp.get('sql.dailySurvey'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
                     parameterProp.get('activity.daily')]
@@ -110,8 +110,8 @@ async function patientView (request, reply) {
         );
 
         const getScoreData = await database.sequelize.query(
-            queryProp.get('sql.getScoreData')
-            , {
+            queryProp.get('sql.getScoreData'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
                     listOfQuestionScore]

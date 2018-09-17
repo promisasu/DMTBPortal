@@ -74,8 +74,7 @@ const configuration = [
 async function surveyCSV (request, reply) {
     try {
         const csvSurvey = await database.sequelize.query(
-            queryProp.get('sql.csvSurvey')
-            ,
+            queryProp.get('sql.csvSurvey'),
             {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin,

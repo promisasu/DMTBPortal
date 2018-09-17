@@ -275,8 +275,8 @@ async function trialCSV (request, reply) {
 
     try {
         csvTrial = await database.sequelize.query(
-            queryProp.get('sql.csvTrial')
-            , {
+            queryProp.get('sql.csvTrial'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [
                     query,

@@ -23,8 +23,8 @@ async function deactivatePatient (request, reply) {
         const transaction = await Promise
             .all([
                 database.sequelize.query(
-                    queryProp.get('sql.deactivatePatient')
-                    , {
+                    queryProp.get('sql.deactivatePatient'),
+                    {
                         type: database.sequelize.QueryTypes.UPDATE,
                         replacements: [parameterProp.get('activity.State.deactivate'),
                             parameterProp.get('activity.currentstate'),
@@ -33,8 +33,8 @@ async function deactivatePatient (request, reply) {
                     }
                 ),
                 database.sequelize.query(
-                    queryProp.get('sql.setCompleteDate')
-                    , {
+                    queryProp.get('sql.setCompleteDate'),
+                    {
                         type: database.sequelize.QueryTypes.UPDATE,
                         replacements: [moment.utc()
                             .format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
@@ -42,8 +42,8 @@ async function deactivatePatient (request, reply) {
                     }
                 ),
                 database.sequelize.query(
-                    queryProp.get('sql.deleteDeactivated')
-                    , {
+                    queryProp.get('sql.deleteDeactivated'),
+                    {
                         type: database.sequelize.QueryTypes.UPDATE,
                         replacements: [parameterProp.get('activity.State.deactivate'),
                             moment.utc()

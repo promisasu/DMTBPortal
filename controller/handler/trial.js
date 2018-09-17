@@ -38,16 +38,16 @@ async function trialView (request, reply) {
 
         const xCurrentTrial = await trial.findById(request.params.id);
         const xStages = await database.sequelize.query(
-            queryProp.get('sql.trialData')
-            , {
+            queryProp.get('sql.trialData'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.id]
             }
         );
 
         const xPatients = await database.sequelize.query(
-            queryProp.get('sql.trialCompliance')
-            , {
+            queryProp.get('sql.trialCompliance'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [
                     request.params.id
@@ -56,8 +56,8 @@ async function trialView (request, reply) {
         );
 
         const compliance = await database.sequelize.query(
-            queryProp.get('sql.complianceData')
-            , {
+            queryProp.get('sql.complianceData'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [
                     parameterProp.get('activity.State.expired'),
@@ -85,8 +85,8 @@ async function trialView (request, reply) {
         );
 
         const missedLastWeek = await database.sequelize.query(
-            queryProp.get('sql.surveyBiweekly')
-            , {
+            queryProp.get('sql.surveyBiweekly'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [parameterProp.get('activity.biweekly'), parameterProp.get('activity.State.pending')]
             }
@@ -97,22 +97,19 @@ async function trialView (request, reply) {
         if (!xCurrentTrial) {
             throw new Error('trial does not exist');
         }
-        const ruleValues = rules.map((ruleData) => {
-            return parseInt(ruleData.rule, 10);
-        });
+        const ruleValues = rules.map((ruleData) =>
+            parseInt(ruleData.rule, 10));
 
         complianceCount = processComplianceCount(compliance);
         patientCount = xPatients.length;
         const patientStatuses = compliance.map(processPatientStatus);
 
         patientArray = xPatients.map((patient) => {
-            const patientStatus = patientStatuses.find((status) => {
-                return status.PatientPin === patient.PatientPin;
-            });
+            const patientStatus = patientStatuses.find((status) =>
+                status.PatientPin === patient.PatientPin);
 
-            let missedWeekly = missedLastWeek.find((missed) => {
-                return missed.PatientPinFK === patient.PatientPin;
-            });
+            let missedWeekly = missedLastWeek.find((missed) =>
+                missed.PatientPinFK === patient.PatientPin);
 
             if (missedWeekly) {
                 if (typeof patient.lastWeekly === 'undefined') {

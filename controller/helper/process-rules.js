@@ -14,9 +14,8 @@ const initRule = 0;
  * @returns {String} Formatted end date
  */
 function processRule (rules, start) {
-    const ruleTotal = rules.reduce((preVal, postVal) => {
-        return preVal + postVal;
-    }, initRule);
+    const ruleTotal = rules.reduce((preVal, postVal) =>
+        preVal + postVal, initRule);
 
     return moment.utc(start).add(ruleTotal, 'days').format('MM-DD-YYYY');
 }

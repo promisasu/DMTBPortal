@@ -72,8 +72,8 @@ const configuration = [
 async function patientCSV (request, reply) {
     try {
         const csvPatient = await database.sequelize.query(
-            queryProp.get('sql.csvPatient')
-            , {
+            queryProp.get('sql.csvPatient'),
+            {
                 type: database.sequelize.QueryTypes.SELECT,
                 replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
                     parameterProp.get('activity.State.expired'), parameterProp.get('activity.game'),
