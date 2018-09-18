@@ -18,50 +18,50 @@ const parameterProp = propReader('parameter.properties');
  * @param {Reply} reply - Hapi Reply
  * @returns {Null} Redirect
  */
-function deactivatePatient (request, reply) {
-    Promise
-        .all([
-            database.sequelize.query(
-                queryProp.get('sql.deactivatePatient')
-                , {
-                    type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [parameterProp.get('activity.State.deactivate'),
-                        parameterProp.get('activity.currentstate'),
-                        request.params.pin],
-                    plain: true
-                }
-            ),
-            database.sequelize.query(
-                queryProp.get('sql.setCompleteDate')
-                , {
-                    type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [moment.utc()
-                        .format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
-                    plain: true
-                }
-            ),
-            database.sequelize.query(
-                queryProp.get('sql.deleteDeactivated')
-                , {
-                    type: database.sequelize.QueryTypes.UPDATE,
-                    replacements: [parameterProp.get('activity.State.deactivate'),
-                        moment.utc()
-                            .format('YYYY-MM-DD HH:mm:ss'),
-                        request.params.pin, parameterProp.get('activity.biweekly'),
-                        parameterProp.get('activity.daily')],
-                    plain: true
-                }
-            )
-        ])
-        .then(() => {
-            return reply();
-        })
-        .catch((err) => {
-            request.log('error', err);
-            console.log(err);
+async function deactivatePatient (request, reply) {
+    try {
+        const transaction = await Promise
+            .all([
+                database.sequelize.query(
+                    queryProp.get('sql.deactivatePatient'),
+                    {
+                        type: database.sequelize.QueryTypes.UPDATE,
+                        replacements: [parameterProp.get('activity.State.deactivate'),
+                            parameterProp.get('activity.currentstate'),
+                            request.params.pin],
+                        plain: true
+                    }
+                ),
+                database.sequelize.query(
+                    queryProp.get('sql.setCompleteDate'),
+                    {
+                        type: database.sequelize.QueryTypes.UPDATE,
+                        replacements: [moment.utc()
+                            .format('YYYY-MM-DD HH:mm:ss'), request.params.pin],
+                        plain: true
+                    }
+                ),
+                database.sequelize.query(
+                    queryProp.get('sql.deleteDeactivated'),
+                    {
+                        type: database.sequelize.QueryTypes.UPDATE,
+                        replacements: [parameterProp.get('activity.State.deactivate'),
+                            moment.utc()
+                                .format('YYYY-MM-DD HH:mm:ss'),
+                            request.params.pin, parameterProp.get('activity.biweekly'),
+                            parameterProp.get('activity.daily')],
+                        plain: true
+                    }
+                )
+            ]);
 
-            return reply(boom.conflict());
-        });
+        return null;
+    } catch (err) {
+        request.log('error', err);
+        console.log(err);
+
+        return reply(boom.conflict());
+    }
 }
 
 module.exports = deactivatePatient;

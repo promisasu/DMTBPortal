@@ -40,15 +40,8 @@ test.cb('when survey does not exist', (t) => {
         }
     };
 
-    const reply = () => {
-        return {
-            type: () => {
-                t.end();
-
-                return;
-            }
-        };
-    };
+    const reply = () =>
+        t.end();
 
     survey(request, reply);
 });

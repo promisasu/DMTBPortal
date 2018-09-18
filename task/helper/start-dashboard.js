@@ -7,8 +7,26 @@
  */
 
 const config = require('../../config.json');
-const server = require('../../controller/server')(config);
+const Server = require('../../controller/server');
 
-server.start(() => {
-    console.log('Server running at:', server.info.uri);
-});
+/**
+ * A function to start the dashboard
+ * @returns {null} Nothing
+ */
+async function start () {
+    try {
+        const server = await Server.dashboardServer(config);
+
+        await server.start();
+        console.log('Server running at:', server.info.uri);
+    } catch (err) {
+        console.log(err);
+
+        return err;
+    }
+
+    return null;
+}
+
+start();
+

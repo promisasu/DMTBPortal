@@ -15,6 +15,8 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
+let x_csv = '';
+
 const configuration = [
     {
         label: 'Patient Pin',
@@ -69,34 +71,32 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function surveyCSV (request, reply) {
-    database.sequelize.query(
-        queryProp.get('sql.csvSurvey')
-        ,
-        {
-            type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin, request.params.activityInstanceId,
-                parameterProp.get('activity.State.completed')]
-        }
-    )
-        .then((optionsWithAnswers) => {
-            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+async function surveyCSV (request, reply) {
+    try {
+        const csvSurvey = await database.sequelize.query(
+            queryProp.get('sql.csvSurvey'),
+            {
+                type: database.sequelize.QueryTypes.SELECT,
+                replacements: [request.params.pin,
+                    request.params.activityInstanceId,
+                    parameterProp.get('activity.State.completed')]
+            }
+        );
+        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+        const uniqueAnswers = deduplicate(csvSurvey, property);
 
-            return convertJsonToCsv(uniqueAnswers, configuration);
-        })
-        .then((csv) => {
-            return reply(csv)
-                .type('text/csv');
-        })
-        .catch((err) => {
-            console.log('error', err);
-            reply
-                .view('404', {
-                    title: 'Not Found'
-                })
-                .code(httpNotFound);
-        });
+        x_csv = convertJsonToCsv(uniqueAnswers, configuration);
+
+        return reply.response(x_csv).type('text/csv');
+    } catch (err) {
+        console.log('error', err);
+
+        return reply
+            .view('404', {
+                title: 'Not Found'
+            })
+            .code(httpNotFound);
+    }
 }
 
 module.exports = surveyCSV;

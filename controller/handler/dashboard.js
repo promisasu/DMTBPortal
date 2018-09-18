@@ -10,6 +10,8 @@ const httpNotFound = 404;
 const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
+let trialData = '';
+let username = '';
 
 /**
  * A dashboard view with overview of all trials and patients.
@@ -17,40 +19,37 @@ const parameterProp = propReader('parameter.properties');
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function dashboardView (request, reply) {
+async function dashboardView (request, reply) {
     const currentDate = new Date();
+    let transaction = null;
 
-    database.sequelize.query(
-        queryProp.get('sql.trials')
-        ,
-        {
-            type: database.sequelize.QueryTypes.SELECT,
-            replacements: [
-                currentDate.toISOString(),
-                currentDate.toISOString()
-            ]
-        }
-    )
-        .then((trials) => {
-            // Process data into format expected in view
-            const trialData = trials.map(processTrial);
+    try {
+        transaction = await database.sequelize.query(
+            queryProp.get('sql.trials'),
+            {
+                type: database.sequelize.QueryTypes.SELECT,
+                replacements: [
+                    currentDate.toISOString(),
+                    currentDate.toISOString()
+                ]
+            }
+        );
+        trialData = transaction.map(processTrial);
 
-            // Display view
-            return reply.view('dashboard', {
-                title: parameterProp.get('activity.title'),
-                user: request.auth.credentials,
-                trials: trialData
-            });
-        })
-        .catch((err) => {
-            console.log('error', err);
-
-            reply
-                .view('404', {
-                    title: 'Not Found'
-                })
-                .code(httpNotFound);
+        return reply.view('dashboard', {
+            title: parameterProp.get('activity.title'),
+            user: {username: request.auth.credentials.name},
+            trials: trialData
         });
+    } catch (err) {
+        console.log('error', err);
+
+        return reply
+            .view('404', {
+                title: 'Not Found'
+            })
+            .code(httpNotFound);
+    }
 }
 
 module.exports = dashboardView;

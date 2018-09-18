@@ -11,9 +11,9 @@ database.setup(require('../config.json').database);
 database
     .sequelize
     .sync({force: true})
-    .then(() => {
-        return database.sequelize.close();
-    })
+    .then(() =>
+        database.sequelize.close()
+    )
     .catch((err) => {
         console.error(err);
 

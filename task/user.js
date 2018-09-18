@@ -50,15 +50,15 @@ read({
             prompt: 'repeat password:'
         });
     })
-    .then((password) => {
-        return new Promise((resolve, reject) => {
+    .then((password) =>
+        new Promise((resolve, reject) => {
             if (password === newUser.password) {
                 resolve();
             } else {
                 reject('passwords did not match');
             }
-        });
-    })
+        })
+    )
     .then(() => {
         const x = userModel.create(newUser);
 

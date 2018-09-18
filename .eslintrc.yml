@@ -6,7 +6,7 @@ plugins:
     - promise
 
 parserOptions:
-    ecmaVersion: 6
+    ecmaVersion: 8
 
 rules:
     # Possible Errors
@@ -193,7 +193,9 @@ rules:
     max-nested-callbacks:
         - error
         - 2
-    max-params: error
+    max-params: 
+        - error
+        - 4
     max-statements:
         - error
         - 30
@@ -263,7 +265,7 @@ rules:
     # ECMAScript 6
     arrow-body-style:
         - error
-        - always
+        - as-needed
     arrow-parens: error
     arrow-spacing: error
     constructor-super: error

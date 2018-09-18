@@ -662,9 +662,8 @@ function getOpioidActualValuesCalculated (opioidResults) {
  * @returns {Boolean} - boolean value which returns if the value is a number or not
  */
 function isInt (value) {
-    return !isNaN(value) && ((x) => {
-        return (x | 0) === x;
-    })(parseFloat(value));
+    return !isNaN(value) && ((x) =>
+        (x | 0) === x)(parseFloat(value));
 }
 
 module.exports = {

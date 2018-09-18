@@ -13,6 +13,8 @@ const propReader = require('properties-reader');
 const queryProp = propReader('query.properties');
 const parameterProp = propReader('parameter.properties');
 
+let x_csv = '';
+
 const configuration = [
     {
         label: 'Patient Pin',
@@ -67,29 +69,29 @@ const configuration = [
  * @param {Reply} reply - Hapi Reply
  * @returns {View} Rendered page
  */
-function patientCSV (request, reply) {
-    database.sequelize.query(
-        queryProp.get('sql.csvPatient')
-        , {
-            type: database.sequelize.QueryTypes.SELECT,
-            replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
-                parameterProp.get('activity.State.expired'), parameterProp.get('activity.game')]
-        }
-    )
-        .then((optionsWithAnswers) => {
-            const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
-            const uniqueAnswers = deduplicate(optionsWithAnswers, property);
+async function patientCSV (request, reply) {
+    try {
+        const csvPatient = await database.sequelize.query(
+            queryProp.get('sql.csvPatient'),
+            {
+                type: database.sequelize.QueryTypes.SELECT,
+                replacements: [request.params.pin, parameterProp.get('activity.State.completed'),
+                    parameterProp.get('activity.State.expired'), parameterProp.get('activity.game'),
+                    parameterProp.get('activity.initial')]
+            }
+        );
 
-            return convertJsonToCsv(uniqueAnswers, configuration);
-        })
-        .then((csv) => {
-            return reply(csv)
-                .type('text/csv');
-        })
-        .catch((err) => {
-            console.log('error', err);
-            reply(boom.notFound('patient data not found'));
-        });
+        const property = ['pin', 'name', 'id', 'date', 'questionText', 'questionId'];
+        const uniqueAnswers = deduplicate(csvPatient, property);
+
+        x_csv = convertJsonToCsv(uniqueAnswers, configuration);
+
+        return reply.response(x_csv).type('text/csv');
+    } catch (err) {
+        console.log('error', err);
+
+        return err;
+    }
 }
 
 module.exports = patientCSV;

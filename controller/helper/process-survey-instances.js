@@ -21,9 +21,9 @@ const json = parameterProp.get('score.category');
  * @returns {Object} Complience chart data
  */
 function processSurveyInstances (surveys) {
-    const filterSurveyByState = surveys.filter((survey) => {
-        return survey.state === 'completed';
-    });
+    const filterSurveyByState = surveys.filter((survey) =>
+        survey.state === 'completed'
+    );
     let datasets = pickTimeLeft(filterSurveyByState);
     let labels = [];
 
@@ -61,10 +61,10 @@ function processSurveyInstances (surveys) {
  * @returns {Object} processed list of datetimes
  */
 function pickDates (surveys) {
-    const dates = surveys.map((survey) => {
-        return moment.utc(survey.StartTime)
-            .format(viewDateFormat);
-    });
+    const dates = surveys.map((survey) =>
+        moment.utc(survey.StartTime)
+            .format(viewDateFormat)
+    );
 
     if (surveys[0]) {
         // Adding an additional week to include all the dates in compliance chart.
@@ -94,9 +94,9 @@ function pickTimeLeft (surveys) {
     let surveyTypes = [];
 
     for (let activityTitle of surveySet) {
-        surveyTypes.push(surveys.filter((survey) => {
-            return survey.activityTitle === activityTitle;
-        }));
+        surveyTypes.push(surveys.filter((survey) =>
+            survey.activityTitle === activityTitle
+        ));
     }
 
     let returnArray = [];
@@ -105,18 +105,18 @@ function pickTimeLeft (surveys) {
         if (surveyTypes[i].length > 0) {
             let samplePoint = surveyTypes[i][0];
 
-            let dataPoints = surveyTypes[i].map((survey) => {
-                return calculateTimeLeft(
+            let dataPoints = surveyTypes[i].map((survey) =>
+                calculateTimeLeft(
                     moment.utc(survey.StartTime),
                     moment.utc(survey.EndTime),
                     moment.utc(survey.ActualSubmissionTime)
-                );
-            });
+                )
+            );
 
-            let dates = surveyTypes[i].map((survey) => {
-                return moment.utc(survey.ActualSubmissionTime)
-                    .format(viewDateFormat);
-            });
+            let dates = surveyTypes[i].map((survey) =>
+                moment.utc(survey.ActualSubmissionTime)
+                    .format(viewDateFormat)
+            );
             let dataArr = {
                 label: '% Time left until ' + samplePoint.activityTitle + ' expired',
                 backgroundColor: getRGBA(),
@@ -173,10 +173,10 @@ function calculateTimeLeft (openTime, endTime, completedTime) {
  * @returns {Array<Object>} data for the chart
  */
 function processClinicanData (surveys, surveyDetails, bodyPainResults, opioidResults, scoreValue) {
-    let labels = surveys.map((survey) => {
-        return moment.utc(survey.StartTime)
-            .format(viewDateFormat);
-    });
+    let labels = surveys.map((survey) =>
+        moment.utc(survey.StartTime)
+            .format(viewDateFormat)
+    );
 
     const numberOfDays = 1;
     const endDateforChart = moment.utc(labels[labels.length - 1], viewDateFormat)
@@ -223,9 +223,9 @@ function pickClinicianDataset (surveys, surveyDetails, bodyPainResults, opioidRe
     for (let i = 0; i < parsedJson.score_type.length; i++) {
         let filterTemp = '';
 
-        filterTemp = scoreValue.filter((score) => {
-            return (parsedJson.score_type[i].questionID.indexOf(score.questionId) > -1);
-        });
+        filterTemp = scoreValue.filter((score) =>
+            (parsedJson.score_type[i].questionID.indexOf(score.questionId) > -1)
+        );
         queryList.push(filterTemp);
     }
 
@@ -365,9 +365,9 @@ function calculatePromisScore (surveys) {
  * @returns {Boolean} return true if the number is an integer or false otherwise
  */
 function isInt (value) {
-    return !isNaN(value) && ((x) => {
-        return (x | 0) === x;
-    })(parseFloat(value));
+    return !isNaN(value) && ((x) =>
+        (x | 0) === x
+    )(parseFloat(value));
 }
 
 module.exports = processSurveyInstances;

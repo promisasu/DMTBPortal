@@ -5,6 +5,7 @@
  */
 const propReader = require('properties-reader');
 const prop = propReader('parameter.properties');
+const moment = require('moment');
 
 /**
  * Finds groups of duplicated values and replaces duplicated values with a single value
